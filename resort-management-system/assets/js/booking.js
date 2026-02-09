@@ -254,6 +254,7 @@
                     room_id: this.state.selectedRoom.id,
                     checkin: this.state.checkin,
                     checkout: this.state.checkout,
+                    guests: this.state.guests,
                     guest_data: this.state.guestData,
                     services: this.state.selectedServices.map(s => s.id),
                     payment_method: paymentMethod,

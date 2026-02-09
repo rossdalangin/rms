@@ -7,6 +7,7 @@ class MetaBoxes {
 		add_action( 'save_post_accommodation', [ $this, 'save_accommodation_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_service_meta_boxes' ] );
 		add_action( 'save_post_service', [ $this, 'save_service_meta' ] );
+		add_action( 'add_meta_boxes', [ $this, 'add_booking_meta_boxes' ] );
 	}
 
 	public function add_accommodation_meta_boxes() {
@@ -18,6 +19,92 @@ class MetaBoxes {
 			'normal',
 			'high'
 		);
+	}
+
+	public function add_booking_meta_boxes() {
+		add_meta_box(
+			'booking_reservation_details',
+			__( 'Reservation Information', 'resort-manager' ),
+			[ $this, 'render_booking_details' ],
+			'booking',
+			'normal',
+			'high'
+		);
+	}
+
+	public function render_booking_details( $post ) {
+		$room_id = get_post_meta( $post->ID, '_resort_room_id', true );
+		$checkin = get_post_meta( $post->ID, '_resort_checkin', true );
+		$checkout = get_post_meta( $post->ID, '_resort_checkout', true );
+		$guests_count = get_post_meta( $post->ID, '_resort_guests', true );
+		$guest_id = get_post_meta( $post->ID, '_resort_guest_id', true );
+		$total_price = get_post_meta( $post->ID, '_resort_total_price', true );
+		$services = get_post_meta( $post->ID, '_resort_services', true ) ?: [];
+		$coupon = get_post_meta( $post->ID, '_resort_coupon_used', true );
+
+		$room = get_post( $room_id );
+		$guest = get_userdata( $guest_id );
+
+		?>
+		<div class="booking-details-admin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+			<div>
+				<h4><?php _e( 'Stay Information', 'resort-manager' ); ?></h4>
+				<table class="form-table">
+					<tr>
+						<th><?php _e( 'Accommodation:', 'resort-manager' ); ?></th>
+						<td><?php echo $room ? '<a href="'.get_edit_post_link($room->ID).'">'.esc_html($room->post_title).'</a>' : 'N/A'; ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Check-in:', 'resort-manager' ); ?></th>
+						<td><?php echo esc_html( $checkin ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Check-out:', 'resort-manager' ); ?></th>
+						<td><?php echo esc_html( $checkout ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Guests:', 'resort-manager' ); ?></th>
+						<td><?php echo esc_html( $guests_count ); ?></td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<h4><?php _e( 'Guest Details', 'resort-manager' ); ?></h4>
+				<table class="form-table">
+					<tr>
+						<th><?php _e( 'Name:', 'resort-manager' ); ?></th>
+						<td><?php echo $guest ? esc_html( $guest->display_name ) : 'N/A'; ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Email:', 'resort-manager' ); ?></th>
+						<td><?php echo $guest ? esc_html( $guest->user_email ) : 'N/A'; ?></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<hr>
+		<h4><?php _e( 'Extras & Services', 'resort-manager' ); ?></h4>
+		<ul>
+			<?php if ( empty( $services ) ) : ?>
+				<li><em><?php _e( 'No extras selected.', 'resort-manager' ); ?></em></li>
+			<?php else : ?>
+				<?php foreach ( $services as $s_id ) :
+					$s_post = get_post( $s_id );
+					?>
+					<li><?php echo $s_post ? esc_html( $s_post->post_title ) : 'Unknown Service'; ?></li>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		</ul>
+		<hr>
+		<div style="font-size: 1.2em; font-weight: bold; color: var(--resort-teal);">
+			<?php _e( 'Final Price:', 'resort-manager' ); ?> <?php echo \ResortManager\Core\PricingEngine::format_price( $total_price ); ?>
+			<?php if ( $coupon ) : ?>
+				<span style="font-size: 0.8em; color: var(--resort-coral); margin-left: 20px;">
+					(<?php printf( __( 'Coupon "%s" applied', 'resort-manager' ), $coupon ); ?>)
+				</span>
+			<?php endif; ?>
+		</div>
+		<?php
 	}
 
 	public function add_service_meta_boxes() {

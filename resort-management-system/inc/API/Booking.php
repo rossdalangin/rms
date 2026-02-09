@@ -16,6 +16,7 @@ class Booking {
 		$room_id = intval( $_POST['room_id'] );
 		$checkin = sanitize_text_field( $_POST['checkin'] );
 		$checkout = sanitize_text_field( $_POST['checkout'] );
+		$guests_count = intval( $_POST['guests'] ?? 1 );
 
 		$guest_data = [];
 		if ( isset( $_POST['guest_data'] ) && is_array( $_POST['guest_data'] ) ) {
@@ -69,6 +70,7 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_room_id', $room_id );
 		update_post_meta( $booking_id, '_resort_checkin', $checkin );
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
+		update_post_meta( $booking_id, '_resort_guests', $guests_count );
 		update_post_meta( $booking_id, '_resort_guest_id', $user_id );
 		update_post_meta( $booking_id, '_resort_guest_email', sanitize_email( $guest_data['email'] ) );
 		update_post_meta( $booking_id, '_resort_guest_phone', sanitize_text_field( $guest_data['phone'] ?? '' ) );

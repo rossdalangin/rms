@@ -117,37 +117,59 @@ Guests automatically earn **1 point for every $10 spent**.
 
 ---
 
-## 9. Troubleshooting & Support
+## 9. Operational Workflows
+Understanding how the system manages the "behind-the-scenes" logic.
+
+### 9.1 Payment & Booking Association
+The system maintains a direct link between transactions and reservations:
+- **Automatic Linking**: Every payment initiated through the booking engine carries a `booking_id`. When a payment is successfully verified, the record in the **Payments** table is automatically linked to the correct reservation.
+- **Manual Reconciliation**: In the **Payments** dashboard, you can view the Room and Guest associated with every transaction ID.
+
+### 9.2 Guest Reviewing (Admin)
+To view the full details of a reservation:
+1. Go to **LuxeResort > Bookings**.
+2. Click on a specific booking.
+3. Find the **Reservation Information** meta box. This provides a complete breakdown of the Accommodation, Guest details, Stay Dates, Guest Count, and selected Extras.
+
+### 9.3 Loyalty Points Logic
+Guests earn points automatically to encourage repeat business:
+- **Calculation**: Guests receive **1 Loyalty Point for every $10** spent on confirmed bookings (e.g., a $450 stay earns 45 points).
+- **Assignment**: Points are credited to the guest's profile immediately after a payment is verified as "Completed".
+- **Tracking**: Admin can monitor total points per guest under **LuxeResort > Guest Profiles**.
+
+---
+
+## 10. Troubleshooting & Support
 - **Calendars not syncing?** Ensure your server can make outbound requests and that your external iCal URL is public.
 - **Payments failing?** Double-check your API keys and ensure you are using the correct currency code (e.g., USD, EUR).
 - **Data Reset**: If you need to wipe everything, use the **Maintenance Tools** in **Settings**.
 
 ---
 
-## 10. Advanced Enterprise Features
+## 11. Advanced Enterprise Features
 LuxeResort Manager provides high-level tools for optimizing your operations.
 
-### 10.1 Revenue Optimization
+### 11.1 Revenue Optimization
 Visit **LuxeResort > Reports > Revenue Optimization** for AI-driven pricing suggestions. The system analyzes your occupancy for the next 30 days and recommends rate increases during high-demand periods or promotional discounts during slow seasons.
 
-### 10.2 Guest Retention (Loyalty & CRM)
+### 11.2 Guest Retention (Loyalty & CRM)
 - **Automatic Account Creation**: Every guest gets a private dashboard to manage their stay.
 - **Loyalty Program**: Guests earn points on every booking, encouraging repeat visits.
 - **Mailchimp Integration**: Sync your guest list to Mailchimp for seasonal newsletters and exclusive member-only offers.
 
-### 10.3 Staff Oversight
+### 11.3 Staff Oversight
 Use the **Activity Logs** to monitor all administrative changes, from price updates to booking modifications, ensuring full accountability.
 
 ---
 
-## 11. Developer API
+## 12. Developer API
 Extend LuxeResort Manager with custom code.
 
-### 11.1 PHP Hooks
+### 12.1 PHP Hooks
 - `resort_booking_confirmed`: Triggers after successful payment.
 - `resort_submit_review`: Triggers when a guest submits feedback.
 
-### 11.2 REST API Endpoints
+### 12.2 REST API Endpoints
 - `GET /wp-json/resort/v1/availability`: Fetch real-time room availability.
 - `GET /wp-json/resort/v1/services`: List all available extras.
 - `POST /wp-json/resort/v1/validate_coupon`: Validate promotional codes.

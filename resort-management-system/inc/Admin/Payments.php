@@ -85,29 +85,42 @@ class Payments {
 				<thead>
 					<tr>
 						<th><?php _e( 'ID', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Booking ID', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Transaction ID', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Booking', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Reference', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Details', 'resort-manager' ); ?></th>
 						<th><?php _e( 'Amount', 'resort-manager' ); ?></th>
 						<th><?php _e( 'Method', 'resort-manager' ); ?></th>
 						<th><?php _e( 'Status', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Date', 'resort-manager' ); ?></th>
+						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $payments ) ) : ?>
 						<tr>
-							<td colspan="7"><?php _e( 'No payment records found.', 'resort-manager' ); ?></td>
+							<td colspan="8"><?php _e( 'No payment records found.', 'resort-manager' ); ?></td>
 						</tr>
 					<?php else : ?>
-						<?php foreach ( $payments as $payment ) : ?>
+						<?php foreach ( $payments as $payment ) :
+							$booking_title = get_the_title( $payment->booking_id );
+							$room_id = get_post_meta( $payment->booking_id, '_resort_room_id', true );
+							$room_title = get_the_title( $room_id );
+							$checkin = get_post_meta( $payment->booking_id, '_resort_checkin', true );
+							?>
 							<tr>
 								<form method="post">
 									<?php wp_nonce_field( 'resort_payment_action' ); ?>
 									<input type="hidden" name="payment_id" value="<?php echo $payment->id; ?>">
 									<td><?php echo $payment->id; ?></td>
-									<td><a href="<?php echo get_edit_post_link( $payment->booking_id ); ?>">#<?php echo $payment->booking_id; ?></a></td>
+									<td>
+										<a href="<?php echo get_edit_post_link( $payment->booking_id ); ?>"><strong>#<?php echo $payment->booking_id; ?></strong></a><br>
+										<small><?php echo esc_html( $booking_title ); ?></small>
+									</td>
 									<td>
 										<input type="text" name="transaction_id" value="<?php echo esc_attr( $payment->transaction_id ); ?>" style="width: 100%;">
+									</td>
+									<td>
+										<small><?php echo esc_html( $room_title ); ?></small><br>
+										<small><?php echo esc_html( $checkin ); ?></small>
 									</td>
 									<td><strong><?php echo \ResortManager\Core\PricingEngine::format_price( $payment->amount ); ?></strong></td>
 									<td><?php echo esc_html( ucfirst( $payment->method ) ); ?></td>
