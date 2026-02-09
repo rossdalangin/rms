@@ -78,6 +78,7 @@ class ResortManager {
 			new ResortManager\Admin\Coupons();
 			new ResortManager\Admin\BookingCommunication();
 			new ResortManager\Admin\Reports();
+			new ResortManager\Admin\Payments();
 		}
 	}
 
@@ -89,10 +90,25 @@ class ResortManager {
 		if ( isset( $_GET['resort_payment'] ) || isset( $_GET['resort_paypal_status'] ) ) {
 			$status = $_GET['resort_payment'] ?? $_GET['resort_paypal_status'];
 			$booking_id = intval( $_GET['booking_id'] );
+			$method = isset( $_GET['resort_paypal_status'] ) ? 'paypal' : 'stripe';
 
 			if ( 'success' === $status ) {
 				update_post_meta( $booking_id, '_resort_status', 'confirmed' );
 				update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
+
+				// Log to Payments table
+				global $wpdb;
+				$table_payments = $wpdb->prefix . 'resort_payments';
+				$amount = get_post_meta( $booking_id, '_resort_total_price', true );
+
+				$wpdb->insert( $table_payments, [
+					'booking_id'     => $booking_id,
+					'transaction_id' => 'EXT-' . time(), // In real-world, we would fetch the actual ID from the gateway session
+					'amount'         => $amount,
+					'method'         => $method,
+					'status'         => 'completed'
+				] );
+
 				do_action( 'resort_booking_confirmed', $booking_id );
 			}
 		}

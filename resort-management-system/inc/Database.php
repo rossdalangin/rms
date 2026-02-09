@@ -42,9 +42,23 @@ class Database {
 			UNIQUE KEY code (code)
 		) $charset_collate;";
 
+		$table_payments = $wpdb->prefix . 'resort_payments';
+		$sql_payments = "CREATE TABLE $table_payments (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			booking_id bigint(20) NOT NULL,
+			transaction_id varchar(100) DEFAULT NULL,
+			amount decimal(10,2) NOT NULL,
+			method varchar(20) NOT NULL,
+			status varchar(20) NOT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY  (id),
+			KEY booking_id (booking_id)
+		) $charset_collate;";
+
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql_availability );
 		dbDelta( $sql_pricing );
 		dbDelta( $sql_coupons );
+		dbDelta( $sql_payments );
 	}
 }

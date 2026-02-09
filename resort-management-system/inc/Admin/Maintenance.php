@@ -18,7 +18,8 @@ class Maintenance {
 		$tables = [
 			$wpdb->prefix . 'resort_availability',
 			$wpdb->prefix . 'resort_pricing',
-			$wpdb->prefix . 'resort_coupons'
+			$wpdb->prefix . 'resort_coupons',
+			$wpdb->prefix . 'resort_payments'
 		];
 
 		foreach ( $tables as $table ) {
