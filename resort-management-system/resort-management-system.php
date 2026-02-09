@@ -61,6 +61,7 @@ class ResortManager {
 		new ResortManager\Frontend\Assets();
 		new ResortManager\API\Availability();
 		new ResortManager\API\Booking();
+		new ResortManager\API\Services();
 		new ResortManager\Core\ICalSync();
 		new ResortManager\Gateways\Stripe();
 		new ResortManager\Gateways\PayPal();
@@ -73,6 +74,7 @@ class ResortManager {
 			new ResortManager\Admin\Pricing();
 			new ResortManager\Admin\Coupons();
 			new ResortManager\Admin\BookingCommunication();
+			new ResortManager\Admin\Reports();
 		}
 	}
 

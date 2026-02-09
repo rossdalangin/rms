@@ -8,6 +8,7 @@
             checkout: '',
             guests: 1,
             selectedRoom: null,
+            selectedServices: [],
             guestData: {}
         },
 
@@ -18,6 +19,7 @@
         bindEvents: function() {
             $(document).on('click', '#resort-search-btn', this.handleSearch.bind(this));
             $(document).on('click', '.select-room-btn', this.handleRoomSelection.bind(this));
+            $(document).on('click', '#resort-services-next', this.handleServicesSelection.bind(this));
             $(document).on('submit', '#resort-guest-form', this.handleGuestForm.bind(this));
             $(document).on('click', '#resort-complete-booking', this.handleCompleteBooking.bind(this));
         },
@@ -83,7 +85,49 @@
 
         handleRoomSelection: function(e) {
             this.state.selectedRoom = $(e.currentTarget).data('room');
-            this.goToStep(3);
+            this.fetchServices();
+        },
+
+        fetchServices: function() {
+            $.ajax({
+                url: `${resortData.api_url}/services`,
+                method: 'GET',
+                success: (services) => {
+                    this.renderServices(services);
+                    this.goToStep(3);
+                }
+            });
+        },
+
+        renderServices: function(services) {
+            const $list = $('#resort-services-list');
+            const template = document.getElementById('resort-service-item-template');
+            $list.empty();
+
+            if (services.length === 0) {
+                $list.append('<p>No additional services available.</p>');
+                return;
+            }
+
+            services.forEach(service => {
+                const clone = template.content.cloneNode(true);
+                $(clone).find('.service-title').text(service.title);
+                $(clone).find('.service-price').text(`$${service.price}`);
+                $(clone).find('.resort-service-checkbox').val(service.id).data('price', service.price).data('title', service.title);
+                $list.append(clone);
+            });
+        },
+
+        handleServicesSelection: function() {
+            this.state.selectedServices = [];
+            $('.resort-service-checkbox:checked').each((i, el) => {
+                this.state.selectedServices.push({
+                    id: $(el).val(),
+                    price: $(el).data('price'),
+                    title: $(el).data('title')
+                });
+            });
+            this.goToStep(4);
         },
 
         handleGuestForm: function(e) {
@@ -92,16 +136,25 @@
             formData.forEach(item => {
                 this.state.guestData[item.name] = item.value;
             });
-            this.goToStep(4);
+            this.goToStep(5);
             this.renderSummary();
         },
 
         renderSummary: function() {
             const $summary = $('.booking-summary');
+            let servicesHtml = '';
+            let servicesTotal = 0;
+            if (this.state.selectedServices.length > 0) {
+                servicesHtml = '<p><strong>Extras:</strong> ' + this.state.selectedServices.map(s => s.title).join(', ') + '</p>';
+                this.state.selectedServices.forEach(s => servicesTotal += parseFloat(s.price));
+            }
+            const grandTotal = parseFloat(this.state.selectedRoom.price) + servicesTotal;
+
             $summary.html(`
                 <p><strong>Room:</strong> ${this.state.selectedRoom.title}</p>
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
-                <p><strong>Total Price:</strong> $${this.state.selectedRoom.price}</p>
+                ${servicesHtml}
+                <p><strong>Total Price:</strong> $${grandTotal}</p>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name}</p>
             `);
         },
@@ -121,7 +174,8 @@
                     room_id: this.state.selectedRoom.id,
                     checkin: this.state.checkin,
                     checkout: this.state.checkout,
-                    guest_data: this.state.guestData
+                    guest_data: this.state.guestData,
+                    services: this.state.selectedServices.map(s => s.id)
                 },
                 success: (res) => {
                     if (res.success) {

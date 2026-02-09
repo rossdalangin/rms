@@ -6,6 +6,7 @@ class PostTypes {
 		self::register_accommodation();
 		self::register_booking();
 		self::register_review();
+		self::register_service();
 	}
 
 	private static function register_accommodation() {
@@ -100,5 +101,28 @@ class PostTypes {
 		];
 
 		register_post_type( 'review', $args );
+	}
+
+	private static function register_service() {
+		$labels = [
+			'name'               => _x( 'Services/Extras', 'post type general name', 'resort-manager' ),
+			'singular_name'      => _x( 'Service', 'post type singular name', 'resort-manager' ),
+			'menu_name'          => _x( 'Services/Extras', 'admin menu', 'resort-manager' ),
+			'add_new'            => _x( 'Add New', 'service', 'resort-manager' ),
+			'add_new_item'       => __( 'Add New Service', 'resort-manager' ),
+			'edit_item'          => __( 'Edit Service', 'resort-manager' ),
+			'all_items'          => __( 'All Services', 'resort-manager' ),
+		];
+
+		$args = [
+			'labels'             => $labels,
+			'public'             => true,
+			'show_ui'            => true,
+			'show_in_menu'       => 'edit.php?post_type=accommodation',
+			'supports'           => [ 'title', 'excerpt' ],
+			'show_in_rest'       => true,
+		];
+
+		register_post_type( 'service', $args );
 	}
 }

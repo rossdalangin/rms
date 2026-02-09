@@ -25,6 +25,7 @@ We use a combination of Custom Post Types (CPT) for content and Custom Tables fo
 - **Availability Search**: `GET /wp-json/resort/v1/availability?checkin=...&checkout=...&guests=...`
 - **Booking Creation**: `POST /wp-json/resort/v1/book` (Payload: room_id, dates, guest_info, payment_method)
 - **iCal Export**: `GET /wp-json/resort/v1/sync/ical/{room_id}`
+- **Services API**: `GET /wp-json/resort/v1/services`
 
 ## 3. UI/UX Design (Sketches)
 ### 3.1 Guest Booking Flow
@@ -46,5 +47,7 @@ We use a combination of Custom Post Types (CPT) for content and Custom Tables fo
 ## 5. Settings Screens
 - **General**: Resort info, Currency, Timezone.
 - **Rooms**: Manage room types and tiers.
+- **Services/Extras**: Manage spa, tours, and add-ons.
 - **Payments**: Stripe/PayPal keys, Deposit % settings.
+- **Reports**: Revenue, Occupancy, and Inventory Cleanup.
 - **Notifications**: Edit Email/SMS templates.

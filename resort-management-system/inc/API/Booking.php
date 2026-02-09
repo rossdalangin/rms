@@ -35,12 +35,20 @@ class Booking {
 		// Calculate Total Price
 		$total_price = \ResortManager\Core\PricingEngine::calculate_total( $room_id, $checkin, $checkout );
 
+		// Add services prices
+		$services = isset( $_POST['services'] ) ? (array) $_POST['services'] : [];
+		foreach ( $services as $service_id ) {
+			$service_price = get_post_meta( $service_id, '_resort_service_price', true );
+			$total_price += floatval( $service_price );
+		}
+
 		// Save Meta
 		update_post_meta( $booking_id, '_resort_room_id', $room_id );
 		update_post_meta( $booking_id, '_resort_checkin', $checkin );
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
 		update_post_meta( $booking_id, '_resort_guest_email', sanitize_email( $guest_data['email'] ) );
 		update_post_meta( $booking_id, '_resort_total_price', $total_price );
+		update_post_meta( $booking_id, '_resort_services', $services );
 		update_post_meta( $booking_id, '_resort_status', 'pending' );
 
 		// Mark as booked in availability table

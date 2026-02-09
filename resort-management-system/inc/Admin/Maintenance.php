@@ -6,7 +6,7 @@ class Maintenance {
 		global $wpdb;
 
 		// 1. Delete all posts of our types
-		$post_types = [ 'accommodation', 'booking', 'review' ];
+		$post_types = [ 'accommodation', 'booking', 'review', 'service' ];
 		foreach ( $post_types as $type ) {
 			$posts = get_posts( [ 'post_type' => $type, 'numberposts' => -1, 'post_status' => 'any' ] );
 			foreach ( $posts as $post ) {
@@ -76,6 +76,23 @@ class Maintenance {
 			update_post_meta( $post_id, '_resort_sample_image', $sample['image'] );
 		}
 
+		// Add sample services
+		$services = [
+			[ 'title' => 'Airport Transfer', 'price' => 50 ],
+			[ 'title' => 'Daily Breakfast Buffet', 'price' => 30 ],
+			[ 'title' => 'Spa Treatment (60 min)', 'price' => 120 ],
+			[ 'title' => 'Private Dinner on the Beach', 'price' => 200 ]
+		];
+
+		foreach ( $services as $service ) {
+			$s_id = wp_insert_post( [
+				'post_type'   => 'service',
+				'post_title'  => $service['title'],
+				'post_status' => 'publish',
+			] );
+			update_post_meta( $s_id, '_resort_service_price', $service['price'] );
+		}
+
 		// Update settings
 		update_option( 'resort_name', 'LuxeResort & Spa' );
 		update_option( 'resort_currency', 'USD' );
@@ -119,5 +136,39 @@ class Maintenance {
 				update_option( $option_key, $page_id );
 			}
 		}
+	}
+
+	public static function cleanup_abandoned_bookings() {
+		$abandoned_bookings = get_posts( [
+			'post_type'    => 'booking',
+			'post_status'  => 'publish',
+			'numberposts'  => -1,
+			'meta_query'   => [
+				[
+					'key'     => '_resort_status',
+					'value'   => 'pending',
+				],
+			],
+			'date_query'   => [
+				[
+					'column' => 'post_date_gmt',
+					'before' => '30 minutes ago',
+				],
+			],
+		] );
+
+		$count = 0;
+		global $wpdb;
+		$table_availability = $wpdb->prefix . 'resort_availability';
+
+		foreach ( $abandoned_bookings as $booking ) {
+			// Release availability
+			$wpdb->delete( $table_availability, [ 'booking_id' => $booking->ID ] );
+			// Mark as abandoned
+			update_post_meta( $booking->ID, '_resort_status', 'abandoned' );
+			$count++;
+		}
+
+		return $count;
 	}
 }

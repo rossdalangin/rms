@@ -15,10 +15,12 @@ In the **Resort Settings** page, click **Install Sample Data** to quickly popula
 - Set the title, description, and featured image.
 - Use the **Accommodation Details** meta box to set the base price and guest capacity.
 - Go to **Accommodations > Pricing Rules** to set seasonal rates (e.g., higher prices for holidays).
+- Go to **Accommodations > Services/Extras** to add amenities like Spa or Breakfast.
 
-## 4. Bookings & Calendar
+## 4. Bookings & Reports
 - All guest reservations appear under **Bookings**.
 - Use the **Bookings > Calendar** to see a visual timeline of all reservations and room availability.
+- Use the **Bookings > Reports** to view revenue analytics and perform inventory cleanup for abandoned bookings.
 - Click on a booking to see guest details and record **Communication Log** notes for follow-up.
 
 ## 5. Shortcodes

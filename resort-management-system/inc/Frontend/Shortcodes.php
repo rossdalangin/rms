@@ -15,9 +15,10 @@ class Shortcodes {
 		<div id="resort-booking-app" class="resort-booking-container">
 			<div class="resort-step-indicator">
 				<span class="step active" data-step="1">1. Search</span>
-				<span class="step" data-step="2">2. Select</span>
-				<span class="step" data-step="3">3. Details</span>
-				<span class="step" data-step="4">4. Payment</span>
+				<span class="step" data-step="2">2. Room</span>
+				<span class="step" data-step="3">3. Extras</span>
+				<span class="step" data-step="4">4. Details</span>
+				<span class="step" data-step="5">5. Payment</span>
 			</div>
 
 			<div id="resort-step-content">
@@ -28,9 +29,12 @@ class Shortcodes {
 					<?php include RESORT_MANAGER_PATH . 'templates/room-selection.php'; ?>
 				</div>
 				<div id="resort-step-3" class="resort-step" style="display:none;">
-					<?php include RESORT_MANAGER_PATH . 'templates/guest-info.php'; ?>
+					<?php include RESORT_MANAGER_PATH . 'templates/services-selection.php'; ?>
 				</div>
 				<div id="resort-step-4" class="resort-step" style="display:none;">
+					<?php include RESORT_MANAGER_PATH . 'templates/guest-info.php'; ?>
+				</div>
+				<div id="resort-step-5" class="resort-step" style="display:none;">
 					<?php include RESORT_MANAGER_PATH . 'templates/payment-confirmation.php'; ?>
 				</div>
 			</div>

@@ -5,6 +5,8 @@ class MetaBoxes {
 	public function __construct() {
 		add_action( 'add_meta_boxes', [ $this, 'add_accommodation_meta_boxes' ] );
 		add_action( 'save_post_accommodation', [ $this, 'save_accommodation_meta' ] );
+		add_action( 'add_meta_boxes', [ $this, 'add_service_meta_boxes' ] );
+		add_action( 'save_post_service', [ $this, 'save_service_meta' ] );
 	}
 
 	public function add_accommodation_meta_boxes() {
@@ -16,6 +18,37 @@ class MetaBoxes {
 			'normal',
 			'high'
 		);
+	}
+
+	public function add_service_meta_boxes() {
+		add_meta_box(
+			'service_details',
+			__( 'Service Details', 'resort-manager' ),
+			[ $this, 'render_service_details' ],
+			'service',
+			'normal',
+			'high'
+		);
+	}
+
+	public function render_service_details( $post ) {
+		wp_nonce_field( 'service_meta_box', 'service_meta_box_nonce' );
+		$price = get_post_meta( $post->ID, '_resort_service_price', true );
+		?>
+		<p>
+			<label for="resort_service_price"><?php _e( 'Price:', 'resort-manager' ); ?></label>
+			<input type="number" id="resort_service_price" name="resort_service_price" value="<?php echo esc_attr( $price ); ?>" step="0.01">
+		</p>
+		<?php
+	}
+
+	public function save_service_meta( $post_id ) {
+		if ( ! isset( $_POST['service_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['service_meta_box_nonce'], 'service_meta_box' ) ) {
+			return;
+		}
+		if ( isset( $_POST['resort_service_price'] ) ) {
+			update_post_meta( $post_id, '_resort_service_price', sanitize_text_field( $_POST['resort_service_price'] ) );
+		}
 	}
 
 	public function render_accommodation_details( $post ) {
