@@ -26,19 +26,39 @@ class Calendar {
 	}
 
 	public function render_calendar_page() {
+		$start_date = isset( $_GET['start_date'] ) ? sanitize_text_field( $_GET['start_date'] ) : date( 'Y-m-d' );
+		$duration = isset( $_GET['duration'] ) ? intval( $_GET['duration'] ) : 14;
+		$end_date = date( 'Y-m-d', strtotime( "$start_date +" . ($duration - 1) . " days" ) );
+
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Reservation Calendar', 'resort-manager' ); ?></h1>
+
+			<div class="calendar-controls" style="background: #fff; padding: 15px; border: 1px solid #ccd0d4; margin-bottom: 20px;">
+				<form method="get" action="">
+					<input type="hidden" name="page" value="resort-calendar">
+					<label><?php _e( 'Start Date:', 'resort-manager' ); ?></label>
+					<input type="date" name="start_date" value="<?php echo esc_attr( $start_date ); ?>">
+
+					<label style="margin-left: 20px;"><?php _e( 'Timeline Range:', 'resort-manager' ); ?></label>
+					<select name="duration">
+						<option value="7" <?php selected( $duration, 7 ); ?>>7 Days</option>
+						<option value="14" <?php selected( $duration, 14 ); ?>>14 Days</option>
+						<option value="30" <?php selected( $duration, 30 ); ?>>30 Days</option>
+					</select>
+
+					<input type="submit" class="button" value="<?php _e( 'Update View', 'resort-manager' ); ?>">
+				</form>
+			</div>
+
 			<div id="resort-calendar-container">
-				<p><?php _e( 'Timeline view coming soon...', 'resort-manager' ); ?></p>
-				<div class="calendar-grid">
-					<!-- Simplified grid representation -->
-					<table class="wp-list-table widefat fixed striped">
+				<div class="calendar-grid" style="overflow-x: auto;">
+					<table class="wp-list-table widefat fixed striped" style="min-width: <?php echo ($duration * 100 + 200); ?>px;">
 						<thead>
 							<tr>
-								<th><?php _e( 'Room / Date', 'resort-manager' ); ?></th>
-								<?php for ( $i = 0; $i < 7; $i++ ) : ?>
-									<th><?php echo date( 'D, M j', strtotime( "+$i days" ) ); ?></th>
+								<th style="width: 200px;"><?php _e( 'Room / Date', 'resort-manager' ); ?></th>
+								<?php for ( $i = 0; $i < $duration; $i++ ) : ?>
+									<th><?php echo date( 'D, M j', strtotime( "$start_date +$i days" ) ); ?></th>
 								<?php endfor; ?>
 							</tr>
 						</thead>
@@ -47,9 +67,6 @@ class Calendar {
 							global $wpdb;
 							$table_availability = $wpdb->prefix . 'resort_availability';
 							$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
-
-							$start_date = date( 'Y-m-d' );
-							$end_date   = date( 'Y-m-d', strtotime( '+6 days' ) );
 
 							// Fetch all availability for the range in one query
 							$availabilities = $wpdb->get_results( $wpdb->prepare(
@@ -67,12 +84,14 @@ class Calendar {
 								<tr>
 									<td><strong><?php echo esc_html( $room->post_title ); ?></strong></td>
 									<?php
-									for ( $i = 0; $i < 7; $i++ ) :
-										$date = date( 'Y-m-d', strtotime( "+$i days" ) );
+									for ( $i = 0; $i < $duration; $i++ ) :
+										$date = date( 'Y-m-d', strtotime( "$start_date +$i days" ) );
 										$status = isset( $availability_map[$room->ID][$date] ) ? $availability_map[$room->ID][$date] : 'available';
 
 										$class = $status === 'booked' ? 'status-booked' : 'status-available';
-										$label = $status === 'booked' ? __( 'Booked', 'resort-manager' ) : __( 'Available', 'resort-manager' );
+										if ( $status === 'blocked_external' ) $class = 'status-booked-external';
+
+										$label = $status === 'booked' ? __( 'Booked', 'resort-manager' ) : ( $status === 'blocked_external' ? __( 'Sync', 'resort-manager' ) : __( 'Free', 'resort-manager' ) );
 										?>
 										<td class="<?php echo $class; ?>"><?php echo $label; ?></td>
 									<?php endfor; ?>

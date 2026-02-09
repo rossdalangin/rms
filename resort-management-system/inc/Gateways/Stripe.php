@@ -45,7 +45,7 @@ class Stripe {
 					'quantity' => 1,
 				]],
 				'mode' => 'payment',
-				'success_url' => home_url( '/?resort_payment=success&booking_id=' . $booking_id ),
+				'success_url' => home_url( '/?resort_payment=success&booking_id=' . $booking_id . '&session_id={CHECKOUT_SESSION_ID}' ),
 				'cancel_url'  => home_url( '/?resort_payment=cancel&booking_id=' . $booking_id ),
 			],
 		] );

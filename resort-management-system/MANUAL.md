@@ -65,8 +65,20 @@ LuxeResort supports real-world transactions via Stripe and PayPal. Configure the
 
 ### 6.2 Reservation Calendar
 View a visual timeline of your resort's occupancy under **LuxeResort > Calendar**.
+- **Start Date**: Select a specific day to start the view from.
+- **Timeline Range**: Choose between 7, 14, or 30-day views to see short or long-term availability.
+- **Status Indicators**:
+    - **Free**: Room is available for booking.
+    - **Booked**: Room has a confirmed or pending reservation.
+    - **Sync**: Room is blocked via external iCal (e.g., Airbnb).
 
-### 6.3 Analytics & Reports
+### 6.3 Managing Payments
+Track all financial activity under **LuxeResort > Payments**.
+- **Online Payments**: Stripe and PayPal transactions are logged automatically.
+- **Offline Payments**: When a guest chooses "Pay at Resort", a pending record is created. Once they pay (cash/check), find the record and click **Update** to mark it as **Completed**.
+- **Manual Recording**: Use the form at the top to record on-site payments that weren't part of an online flow.
+
+### 6.4 Analytics & Reports
 Monitor your performance under **LuxeResort > Reports**.
 - **Revenue Stats**: Track total income from confirmed stays.
 - **Occupancy**: View today's resort load.

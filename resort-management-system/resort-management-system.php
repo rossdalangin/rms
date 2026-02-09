@@ -93,23 +93,38 @@ class ResortManager {
 			$method = isset( $_GET['resort_paypal_status'] ) ? 'paypal' : 'stripe';
 
 			if ( 'success' === $status ) {
-				update_post_meta( $booking_id, '_resort_status', 'confirmed' );
-				update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
+				$verified = false;
+				$transaction_id = 'EXT-' . time();
 
-				// Log to Payments table
-				global $wpdb;
-				$table_payments = $wpdb->prefix . 'resort_payments';
-				$amount = get_post_meta( $booking_id, '_resort_total_price', true );
+				// Simple verification logic
+				if ( 'stripe' === $method && isset($_GET['session_id']) ) {
+					// In production, call Stripe API to check session status
+					$verified = true;
+					$transaction_id = sanitize_text_field($_GET['session_id']);
+				} elseif ( 'paypal' === $method ) {
+					// In production, call PayPal API to check order status
+					$verified = true;
+				}
 
-				$wpdb->insert( $table_payments, [
-					'booking_id'     => $booking_id,
-					'transaction_id' => 'EXT-' . time(), // In real-world, we would fetch the actual ID from the gateway session
-					'amount'         => $amount,
-					'method'         => $method,
-					'status'         => 'completed'
-				] );
+				if ( $verified ) {
+					update_post_meta( $booking_id, '_resort_status', 'confirmed' );
+					update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
 
-				do_action( 'resort_booking_confirmed', $booking_id );
+					// Log to Payments table
+					global $wpdb;
+					$table_payments = $wpdb->prefix . 'resort_payments';
+					$amount = get_post_meta( $booking_id, '_resort_total_price', true );
+
+					$wpdb->insert( $table_payments, [
+						'booking_id'     => $booking_id,
+						'transaction_id' => $transaction_id,
+						'amount'         => $amount,
+						'method'         => $method,
+						'status'         => 'completed'
+					] );
+
+					do_action( 'resort_booking_confirmed', $booking_id );
+				}
 			}
 		}
 	}

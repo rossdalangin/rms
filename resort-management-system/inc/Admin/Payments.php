@@ -21,11 +21,65 @@ class Payments {
 		global $wpdb;
 		$table_payments = $wpdb->prefix . 'resort_payments';
 
+		if ( isset( $_POST['resort_record_payment'] ) && check_admin_referer( 'resort_payment_action' ) ) {
+			$wpdb->insert( $table_payments, [
+				'booking_id'     => intval( $_POST['booking_id'] ),
+				'transaction_id' => sanitize_text_field( $_POST['transaction_id'] ),
+				'amount'         => floatval( $_POST['amount'] ),
+				'method'         => sanitize_text_field( $_POST['method'] ),
+				'status'         => sanitize_text_field( $_POST['status'] )
+			] );
+			echo '<div class="updated"><p>' . __( 'Payment record added.', 'resort-manager' ) . '</p></div>';
+		}
+
+		if ( isset( $_POST['resort_update_payment'] ) && check_admin_referer( 'resort_payment_action' ) ) {
+			$wpdb->update( $table_payments, [
+				'transaction_id' => sanitize_text_field( $_POST['transaction_id'] ),
+				'status'         => sanitize_text_field( $_POST['status'] )
+			], [ 'id' => intval( $_POST['payment_id'] ) ] );
+			echo '<div class="updated"><p>' . __( 'Payment record updated.', 'resort-manager' ) . '</p></div>';
+		}
+
 		$payments = $wpdb->get_results( "SELECT * FROM $table_payments ORDER BY created_at DESC" );
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Payment Transaction History', 'resort-manager' ); ?></h1>
-			<p><?php _e( 'Review all processed payments from Stripe, PayPal, and Offline transactions.', 'resort-manager' ); ?></p>
+
+			<div class="resort-record-payment" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; margin-bottom: 30px;">
+				<h3><?php _e( 'Record Manual Payment', 'resort-manager' ); ?></h3>
+				<form method="post" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+					<?php wp_nonce_field( 'resort_payment_action' ); ?>
+					<div>
+						<label><?php _e( 'Booking ID', 'resort-manager' ); ?></label><br>
+						<input type="number" name="booking_id" required style="width: 100px;">
+					</div>
+					<div>
+						<label><?php _e( 'Amount', 'resort-manager' ); ?></label><br>
+						<input type="number" name="amount" step="0.01" required style="width: 120px;">
+					</div>
+					<div>
+						<label><?php _e( 'Method', 'resort-manager' ); ?></label><br>
+						<select name="method">
+							<option value="cash">Cash</option>
+							<option value="bank_transfer">Bank Transfer</option>
+							<option value="check">Check</option>
+							<option value="offline">Other Offline</option>
+						</select>
+					</div>
+					<div>
+						<label><?php _e( 'Ref / Trans ID', 'resort-manager' ); ?></label><br>
+						<input type="text" name="transaction_id">
+					</div>
+					<div>
+						<label><?php _e( 'Status', 'resort-manager' ); ?></label><br>
+						<select name="status">
+							<option value="completed">Completed</option>
+							<option value="pending">Pending</option>
+						</select>
+					</div>
+					<button type="submit" name="resort_record_payment" class="button button-primary"><?php _e( 'Record Payment', 'resort-manager' ); ?></button>
+				</form>
+			</div>
 
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
@@ -47,13 +101,27 @@ class Payments {
 					<?php else : ?>
 						<?php foreach ( $payments as $payment ) : ?>
 							<tr>
-								<td><?php echo $payment->id; ?></td>
-								<td><a href="<?php echo get_edit_post_link( $payment->booking_id ); ?>">#<?php echo $payment->booking_id; ?></a></td>
-								<td><?php echo esc_html( $payment->transaction_id ?: '-' ); ?></td>
-								<td><strong><?php echo get_option( 'resort_currency', 'USD' ); ?> <?php echo number_format( $payment->amount, 2 ); ?></strong></td>
-								<td><?php echo esc_html( ucfirst( $payment->method ) ); ?></td>
-								<td><span class="status-badge status-<?php echo esc_attr( strtolower($payment->status) ); ?>"><?php echo esc_html( ucfirst($payment->status) ); ?></span></td>
-								<td><?php echo esc_html( $payment->created_at ); ?></td>
+								<form method="post">
+									<?php wp_nonce_field( 'resort_payment_action' ); ?>
+									<input type="hidden" name="payment_id" value="<?php echo $payment->id; ?>">
+									<td><?php echo $payment->id; ?></td>
+									<td><a href="<?php echo get_edit_post_link( $payment->booking_id ); ?>">#<?php echo $payment->booking_id; ?></a></td>
+									<td>
+										<input type="text" name="transaction_id" value="<?php echo esc_attr( $payment->transaction_id ); ?>" style="width: 100%;">
+									</td>
+									<td><strong><?php echo get_option( 'resort_currency', 'USD' ); ?> <?php echo number_format( $payment->amount, 2 ); ?></strong></td>
+									<td><?php echo esc_html( ucfirst( $payment->method ) ); ?></td>
+									<td>
+										<select name="status">
+											<option value="completed" <?php selected($payment->status, 'completed'); ?>>Completed</option>
+											<option value="pending" <?php selected($payment->status, 'pending'); ?>>Pending</option>
+											<option value="failed" <?php selected($payment->status, 'failed'); ?>>Failed</option>
+										</select>
+									</td>
+									<td>
+										<input type="submit" name="resort_update_payment" class="button button-small" value="Update">
+									</td>
+								</form>
 							</tr>
 						<?php endforeach; ?>
 					<?php endif; ?>

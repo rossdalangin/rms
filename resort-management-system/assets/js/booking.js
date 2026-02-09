@@ -21,6 +21,7 @@
             $(document).on('click', '.select-room-btn', this.handleRoomSelection.bind(this));
             $(document).on('click', '#resort-services-next', this.handleServicesSelection.bind(this));
             $(document).on('submit', '#resort-guest-form', this.handleGuestForm.bind(this));
+            $(document).on('click', '#resort-apply-coupon', this.handleCouponApply.bind(this));
             $(document).on('click', '#resort-complete-booking', this.handleCompleteBooking.bind(this));
 
             // Review Modal
@@ -162,9 +163,41 @@
                 <p><strong>Room:</strong> ${this.state.selectedRoom.title}</p>
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
                 ${servicesHtml}
-                <p><strong>Total Price:</strong> $${grandTotal}</p>
+                <p><strong>Subtotal:</strong> $${grandTotal}</p>
+                <div id="discount-display" style="color: #d63638; display:none;"></div>
+                <p><strong>Total Price:</strong> $<span id="grand-total-display">${grandTotal}</span></p>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name}</p>
             `);
+            this.state.finalTotal = grandTotal;
+        },
+
+        handleCouponApply: function() {
+            const code = $('#resort-coupon-code').val();
+            if (!code) return;
+
+            $.post(resortData.ajax_url, {
+                action: 'resort_validate_coupon',
+                nonce: resortData.nonce,
+                code: code
+            }, (res) => {
+                if (res.success) {
+                    let discount = 0;
+                    if (res.data.type === 'fixed') {
+                        discount = parseFloat(res.data.amount);
+                    } else {
+                        discount = (this.state.finalTotal * parseFloat(res.data.amount)) / 100;
+                    }
+
+                    const newTotal = Math.max(0, this.state.finalTotal - discount);
+                    $('#discount-display').text(`Discount (${code}): -$${discount.toFixed(2)}`).show();
+                    $('#grand-total-display').text(newTotal.toFixed(2));
+                    this.state.couponCode = code;
+                    this.state.finalTotal = newTotal;
+                    $('#coupon-message').text('Coupon applied!').css('color', 'green');
+                } else {
+                    $('#coupon-message').text(res.data.message).css('color', 'red');
+                }
+            });
         },
 
         handleCompleteBooking: function() {
@@ -183,7 +216,10 @@
                     checkin: this.state.checkin,
                     checkout: this.state.checkout,
                     guest_data: this.state.guestData,
-                    services: this.state.selectedServices.map(s => s.id)
+                    services: this.state.selectedServices.map(s => s.id),
+                    payment_method: paymentMethod,
+                    coupon: this.state.couponCode || '',
+                    final_total: this.state.finalTotal
                 },
                 success: (res) => {
                     if (res.success) {

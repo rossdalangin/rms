@@ -51,6 +51,12 @@
     font-weight: 500;
 }
 
+.status-booked-external {
+    background-color: #e0f2ff;
+    color: #0073aa;
+    font-weight: 500;
+}
+
 /* Settings Styling */
 .resort-settings-form, .resort-maintenance-form {
     background: #fff;
