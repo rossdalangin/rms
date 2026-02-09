@@ -1,0 +1,82 @@
+.resort-booking-container {
+	max-width: 1000px;
+	margin: 20px auto;
+	padding: 20px;
+	border: 1px solid #ddd;
+	background: #fff;
+	font-family: sans-serif;
+}
+
+.resort-step-indicator {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 30px;
+	border-bottom: 2px solid #eee;
+	padding-bottom: 10px;
+}
+
+.resort-step-indicator .step {
+	color: #999;
+}
+
+.resort-step-indicator .step.active {
+	color: #000;
+	font-weight: bold;
+}
+
+.resort-search-form {
+	display: flex;
+	gap: 15px;
+	flex-wrap: wrap;
+	align-items: flex-end;
+}
+
+.resort-field {
+	display: flex;
+	flex-direction: column;
+}
+
+.resort-btn {
+	padding: 10px 20px;
+	background: #c5a059;
+	color: #fff;
+	border: none;
+	cursor: pointer;
+}
+
+.resort-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.resort-room-card {
+	border: 1px solid #eee;
+	padding: 15px;
+	border-radius: 5px;
+}
+
+.resort-room-card img {
+	max-width: 100%;
+	height: auto;
+}
+
+.resort-step {
+	margin-top: 20px;
+}
+
+.booking-summary {
+	background: #f9f9f9;
+	padding: 15px;
+	border: 1px solid #eee;
+	margin-bottom: 20px;
+}
+
+.payment-methods {
+	margin-bottom: 20px;
+}
+
+.payment-methods label {
+	display: block;
+	margin-bottom: 10px;
+}

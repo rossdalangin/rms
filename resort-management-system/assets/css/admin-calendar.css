@@ -1,0 +1,26 @@
+#resort-calendar-container {
+	background: #fff;
+	padding: 20px;
+	margin-top: 20px;
+	border: 1px solid #ccd0d4;
+}
+
+.calendar-grid table {
+	border-collapse: collapse;
+}
+
+.calendar-grid th, .calendar-grid td {
+	text-align: center;
+	padding: 10px;
+	border: 1px solid #eee;
+}
+
+.status-booked {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+.status-available {
+	background-color: #d4edda;
+	color: #155724;
+}
