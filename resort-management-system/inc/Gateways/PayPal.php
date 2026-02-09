@@ -25,6 +25,9 @@ class PayPal {
 		}
 
 		$total_price = get_post_meta( $booking_id, '_resort_total_price', true );
+		$deposit_percent = get_option( 'resort_deposit_percentage', '100' );
+		$payable_amount = ( floatval($total_price) * intval($deposit_percent) ) / 100;
+
 		$currency = get_option( 'resort_currency', 'USD' );
 		$mode = get_option( 'resort_paypal_test_mode', '1' ) === '1' ? 'sandbox' : 'live';
 		$api_url = $mode === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
@@ -60,7 +63,7 @@ class PayPal {
 				'purchase_units' => [[
 					'amount' => [
 						'currency_code' => strtoupper($currency),
-						'value'         => number_format( floatval($total_price), 2, '.', '' ),
+						'value'         => number_format( floatval($payable_amount), 2, '.', '' ),
 					],
 					'description' => sprintf( __( 'Resort Booking #%d', 'resort-manager' ), $booking_id ),
 				]],

@@ -16,6 +16,15 @@
             this.bindEvents();
         },
 
+        formatPrice: function(amount) {
+            const formatted = parseFloat(amount).toFixed(2);
+            if (resortData.currency.pos === 'before') {
+                return `${resortData.currency.code} ${formatted}`;
+            } else {
+                return `${formatted} ${resortData.currency.code}`;
+            }
+        },
+
         bindEvents: function() {
             $(document).on('click', '#resort-search-btn', this.handleSearch.bind(this));
             $(document).on('click', '.select-room-btn', this.handleRoomSelection.bind(this));
@@ -52,6 +61,23 @@
                 return;
             }
 
+            // Enforce Min/Max Nights (passed via localized data)
+            const start = new Date(checkin);
+            const end = new Date(checkout);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (resortData.rules) {
+                if (diffDays < resortData.rules.min_nights) {
+                    alert(`Minimum stay is ${resortData.rules.min_nights} nights.`);
+                    return;
+                }
+                if (diffDays > resortData.rules.max_nights) {
+                    alert(`Maximum stay is ${resortData.rules.max_nights} nights.`);
+                    return;
+                }
+            }
+
             this.state.checkin = checkin;
             this.state.checkout = checkout;
             this.state.guests = guests;
@@ -85,7 +111,7 @@
                 $(clone).find('.room-title').text(room.title);
                 $(clone).find('.room-description').text(room.description);
                 $(clone).find('.room-capacity').text(`Capacity: ${room.capacity}`);
-                $(clone).find('.room-price').text(`Total: $${room.price}`);
+                $(clone).find('.room-price').text(`Total: ${this.formatPrice(room.price)}`);
                 $(clone).find('img').attr('src', room.image || '');
                 $(clone).find('.select-room-btn').data('room', room);
                 $grid.append(clone);
@@ -121,7 +147,7 @@
             services.forEach(service => {
                 const clone = template.content.cloneNode(true);
                 $(clone).find('.service-title').text(service.title);
-                $(clone).find('.service-price').text(`$${service.price}`);
+                $(clone).find('.service-price').text(this.formatPrice(service.price));
                 $(clone).find('.resort-service-checkbox').val(service.id).data('price', service.price).data('title', service.title);
                 $list.append(clone);
             });
@@ -163,11 +189,12 @@
                 <p><strong>Room:</strong> ${this.state.selectedRoom.title}</p>
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
                 ${servicesHtml}
-                <p><strong>Subtotal:</strong> $${grandTotal}</p>
+                <p><strong>Subtotal:</strong> ${this.formatPrice(grandTotal)}</p>
                 <div id="discount-display" style="color: #d63638; display:none;"></div>
-                <p><strong>Total Price:</strong> $<span id="grand-total-display">${grandTotal}</span></p>
+                <p><strong>Total Price:</strong> <span id="grand-total-display-container"></span></p>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name}</p>
             `);
+            $('#grand-total-display-container').text(this.formatPrice(grandTotal));
             this.state.finalTotal = grandTotal;
         },
 
@@ -189,8 +216,8 @@
                     }
 
                     const newTotal = Math.max(0, this.state.finalTotal - discount);
-                    $('#discount-display').text(`Discount (${code}): -$${discount.toFixed(2)}`).show();
-                    $('#grand-total-display').text(newTotal.toFixed(2));
+                    $('#discount-display').text(`Discount (${code}): -${this.formatPrice(discount)}`).show();
+                    $('#grand-total-display-container').text(this.formatPrice(newTotal));
                     this.state.couponCode = code;
                     this.state.finalTotal = newTotal;
                     $('#coupon-message').text('Coupon applied!').css('color', 'green');

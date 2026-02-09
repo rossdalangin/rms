@@ -24,6 +24,9 @@ class Stripe {
 		}
 
 		$total_price = get_post_meta( $booking_id, '_resort_total_price', true );
+		$deposit_percent = get_option( 'resort_deposit_percentage', '100' );
+		$payable_amount = ( floatval($total_price) * intval($deposit_percent) ) / 100;
+
 		$currency = get_option( 'resort_currency', 'USD' );
 
 		// Create Stripe Checkout Session via REST API
@@ -40,7 +43,7 @@ class Stripe {
 						'product_data' => [
 							'name' => sprintf( __( 'Resort Booking #%d', 'resort-manager' ), $booking_id ),
 						],
-						'unit_amount' => round( floatval($total_price) * 100 ),
+						'unit_amount' => round( floatval($payable_amount) * 100 ),
 					],
 					'quantity' => 1,
 				]],

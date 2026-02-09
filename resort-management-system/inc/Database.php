@@ -55,10 +55,20 @@ class Database {
 			KEY booking_id (booking_id)
 		) $charset_collate;";
 
+		$table_logs = $wpdb->prefix . 'resort_activity_logs';
+		$sql_logs = "CREATE TABLE $table_logs (
+			id bigint(20) NOT NULL AUTO_INCREMENT,
+			user_id bigint(20) NOT NULL,
+			action text NOT NULL,
+			created_at datetime DEFAULT CURRENT_TIMESTAMP,
+			PRIMARY KEY  (id)
+		) $charset_collate;";
+
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql_availability );
 		dbDelta( $sql_pricing );
 		dbDelta( $sql_coupons );
 		dbDelta( $sql_payments );
+		dbDelta( $sql_logs );
 	}
 }

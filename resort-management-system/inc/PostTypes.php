@@ -90,6 +90,7 @@ class PostTypes {
 			'dates'      => __( 'Stay Dates', 'resort-manager' ),
 			'total'      => __( 'Total Price', 'resort-manager' ),
 			'status'     => __( 'Status', 'resort-manager' ),
+			'check_status' => __( 'Check-in Status', 'resort-manager' ),
 			'date'       => $columns['date'],
 		];
 		return $new_columns;
@@ -104,11 +105,15 @@ class PostTypes {
 				break;
 			case 'total':
 				$total = get_post_meta( $post_id, '_resort_total_price', true );
-				echo '$' . number_format( floatval($total), 2 );
+				echo \ResortManager\Core\PricingEngine::format_price( floatval($total) );
 				break;
 			case 'status':
 				$status = get_post_meta( $post_id, '_resort_status', true );
 				echo '<span class="status-badge status-' . esc_attr($status) . '">' . esc_html( ucfirst($status) ) . '</span>';
+				break;
+			case 'check_status':
+				$check_status = get_post_meta( $post_id, '_resort_check_status', true ) ?: 'pending';
+				echo '<span class="status-badge status-' . esc_attr($check_status) . '">' . esc_html( ucfirst($check_status) ) . '</span>';
 				break;
 		}
 	}

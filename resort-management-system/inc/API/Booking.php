@@ -24,6 +24,26 @@ class Booking {
 			}
 		}
 
+		// 1. Create or Get Guest User
+		$email = sanitize_email( $guest_data['email'] );
+		$user_id = email_exists( $email );
+
+		if ( ! $user_id ) {
+			$username = strtolower( ($guest_data['first_name'] ?? 'guest') . time() );
+			$password = wp_generate_password();
+			$user_id = wp_create_user( $username, $password, $email );
+
+			if ( ! is_wp_error( $user_id ) ) {
+				wp_update_user( [
+					'ID'         => $user_id,
+					'first_name' => $guest_data['first_name'] ?? '',
+					'last_name'  => $guest_data['last_name'] ?? '',
+					'role'       => 'subscriber'
+				] );
+				// In production, send email with login info
+			}
+		}
+
 		// Create Booking Post
 		$booking_id = wp_insert_post( [
 			'post_type'   => 'booking',
@@ -49,7 +69,9 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_room_id', $room_id );
 		update_post_meta( $booking_id, '_resort_checkin', $checkin );
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
+		update_post_meta( $booking_id, '_resort_guest_id', $user_id );
 		update_post_meta( $booking_id, '_resort_guest_email', sanitize_email( $guest_data['email'] ) );
+		update_post_meta( $booking_id, '_resort_guest_phone', sanitize_text_field( $guest_data['phone'] ?? '' ) );
 
 		// If a final total was passed from JS (after coupons), use it, but validate it
 		if ( isset($_POST['final_total']) ) {
@@ -60,6 +82,11 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_services', $services );
 		update_post_meta( $booking_id, '_resort_coupon_used', sanitize_text_field($_POST['coupon'] ?? '') );
 		update_post_meta( $booking_id, '_resort_status', 'pending' );
+
+		// 2. Mailchimp Sync
+		if ( isset( $guest_data['marketing_optin'] ) ) {
+			$this->sync_to_mailchimp( $email, $guest_data['first_name'], $guest_data['last_name'] );
+		}
 
 		// Mark as booked in availability table
 		\ResortManager\Core\AvailabilityEngine::mark_as_booked( $room_id, $checkin, $checkout, $booking_id );
@@ -101,6 +128,32 @@ class Booking {
 
 		update_post_meta( $review_id, '_resort_booking_id', $booking_id );
 		wp_send_json_success();
+	}
+
+	private function sync_to_mailchimp( $email, $fname, $lname ) {
+		$api_key = get_option( 'resort_mailchimp_api_key' );
+		$list_id = get_option( 'resort_mailchimp_list_id' );
+
+		if ( empty( $api_key ) || empty( $list_id ) ) return;
+
+		$datacenter = substr( $api_key, strpos( $api_key, '-' ) + 1 );
+		$url = "https://$datacenter.api.mailchimp.com/3.0/lists/$list_id/members/" . md5( strtolower( $email ) );
+
+		wp_remote_request( $url, [
+			'method'  => 'PUT',
+			'headers' => [
+				'Authorization' => 'apikey ' . $api_key,
+				'Content-Type'  => 'application/json',
+			],
+			'body' => json_encode( [
+				'email_address' => $email,
+				'status'        => 'subscribed',
+				'merge_fields'  => [
+					'FNAME' => $fname,
+					'LNAME' => $lname,
+				],
+			] ),
+		] );
 	}
 
 	public function validate_coupon() {

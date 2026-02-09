@@ -41,4 +41,16 @@ class PricingEngine {
 
 		return $base_price;
 	}
+
+	public static function format_price( $amount ) {
+		$currency = get_option( 'resort_currency', 'USD' );
+		$pos = get_option( 'resort_currency_symbol_pos', 'before' );
+		$formatted = number_format( $amount, 2 );
+
+		if ( 'before' === $pos ) {
+			return $currency . ' ' . $formatted;
+		} else {
+			return $formatted . ' ' . $currency;
+		}
+	}
 }

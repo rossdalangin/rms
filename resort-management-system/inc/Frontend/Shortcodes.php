@@ -59,7 +59,7 @@ class Shortcodes {
 					<h4><?php echo esc_html( $room->post_title ); ?></h4>
 					<p><?php echo esc_html( $room->post_excerpt ); ?></p>
 					<div class="room-meta">
-						<strong>$<?php echo esc_html( $price ); ?> / night</strong>
+						<strong><?php echo \ResortManager\Core\PricingEngine::format_price( $price ); ?> / night</strong>
 					</div>
 					<a href="<?php echo get_permalink( $room->ID ); ?>" class="resort-btn" style="display:inline-block; text-decoration:none; margin-top:10px;">
 						<?php _e( 'View Details', 'resort-manager' ); ?>
@@ -73,16 +73,18 @@ class Shortcodes {
 
 	public function render_guest_dashboard( $atts ) {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . __( 'Please log in to view your bookings.', 'resort-manager' ) . '</p>';
+			return '<div class="resort-booking-container"><p>' . __( 'Please log in to view your personalized dashboard.', 'resort-manager' ) . '</p>' . wp_login_form(['echo' => false]) . '</div>';
 		}
 
 		$current_user = wp_get_current_user();
+		$loyalty_points = get_user_meta( $current_user->ID, '_resort_loyalty_points', true ) ?: 0;
+
 		$bookings = get_posts( [
 			'post_type'  => 'booking',
 			'meta_query' => [
 				[
-					'key'   => '_resort_guest_email',
-					'value' => $current_user->user_email,
+					'key'   => '_resort_guest_id',
+					'value' => $current_user->ID,
 				]
 			],
 			'numberposts' => -1
@@ -90,8 +92,19 @@ class Shortcodes {
 
 		ob_start();
 		?>
-		<div class="resort-guest-dashboard">
-			<h3><?php _e( 'My Reservations', 'resort-manager' ); ?></h3>
+		<div class="resort-guest-dashboard resort-booking-container">
+			<div class="guest-welcome" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;">
+				<div>
+					<h2 style="margin:0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $current_user->first_name ); ?></h2>
+					<p><?php _e( 'Welcome to your private guest portal.', 'resort-manager' ); ?></p>
+				</div>
+				<div class="loyalty-badge" style="background:var(--resort-primary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
+					<span style="font-size:24px; font-weight:bold; display:block;"><?php echo $loyalty_points; ?></span>
+					<span style="font-size:10px; text-transform:uppercase;"><?php _e( 'Loyalty Points', 'resort-manager' ); ?></span>
+				</div>
+			</div>
+
+			<h3><?php _e( 'Your Stay History', 'resort-manager' ); ?></h3>
 			<?php if ( empty( $bookings ) ) : ?>
 				<p><?php _e( 'You have no reservations.', 'resort-manager' ); ?></p>
 			<?php else : ?>
@@ -116,6 +129,9 @@ class Shortcodes {
 									<?php echo esc_html( ucfirst( $status ) ); ?>
 									<?php if ( 'confirmed' === $status && strtotime( $checkout ) < time() ) : ?>
 										<br><button class="resort-btn-small show-review-form" data-booking="<?php echo $booking->ID; ?>"><?php _e( 'Leave a Review', 'resort-manager' ); ?></button>
+									<?php endif; ?>
+									<?php if ( 'confirmed' === $status && strtotime( $checkin ) > time() ) : ?>
+										<br><a href="#" class="resort-btn-small" style="background:#636e72;"><?php _e( 'Modify Stay', 'resort-manager' ); ?></a>
 									<?php endif; ?>
 								</td>
 							</tr>
@@ -148,20 +164,35 @@ class Shortcodes {
 	}
 
 	public function render_reviews( $atts ) {
-		$reviews = get_posts( [ 'post_type' => 'review', 'numberposts' => 5 ] );
+		$reviews = get_posts( [ 'post_type' => 'review', 'numberposts' => 10, 'post_status' => 'publish' ] );
 		ob_start();
 		?>
-		<div class="resort-reviews-section">
-			<h3><?php _e( 'Guest Reviews', 'resort-manager' ); ?></h3>
+		<div class="resort-reviews-section resort-booking-container">
+			<h3><?php _e( 'Guest Memories', 'resort-manager' ); ?></h3>
+
+			<div class="review-filters" style="margin-bottom:30px;">
+				<button class="resort-btn-small" style="background:var(--resort-primary);"><?php _e( 'Most Recent', 'resort-manager' ); ?></button>
+				<button class="resort-btn-small" style="background:#eee; color:#333; margin-left:10px;"><?php _e( 'Top Rated', 'resort-manager' ); ?></button>
+			</div>
+
 			<?php if ( empty( $reviews ) ) : ?>
-				<p><?php _e( 'No reviews yet.', 'resort-manager' ); ?></p>
+				<p><?php _e( 'No stories shared yet. Be the first after your stay!', 'resort-manager' ); ?></p>
 			<?php else : ?>
-				<?php foreach ( $reviews as $review ) : ?>
-					<div class="resort-review-card" style="border: 1px solid #eee; padding: 15px; margin-bottom: 10px;">
-						<h4><?php echo esc_html( $review->post_title ); ?></h4>
-						<div><?php echo wp_kses_post( $review->post_content ); ?></div>
+				<div class="reviews-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+				<?php foreach ( $reviews as $review ) :
+					$rating = get_post_meta( $review->ID, '_resort_rating', true ) ?: 5;
+					?>
+					<div class="resort-review-card" style="padding: 25px; margin-bottom: 0;">
+						<div class="stars" style="color:var(--resort-accent); margin-bottom:10px;">
+							<?php for($i=0; $i<$rating; $i++) echo '★'; ?>
+						</div>
+						<h4 style="margin:0 0 10px 0;"><?php echo esc_html( $review->post_title ); ?></h4>
+						<div style="font-style:italic; color:var(--resort-muted); font-size:14px;">
+							<?php echo wp_kses_post( $review->post_content ); ?>
+						</div>
 					</div>
 				<?php endforeach; ?>
+				</div>
 			<?php endif; ?>
 		</div>
 		<?php

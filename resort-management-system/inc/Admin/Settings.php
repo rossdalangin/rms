@@ -35,11 +35,39 @@ class Settings {
 			'resort-settings',
 			[ $this, 'render_settings_page' ]
 		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Guest Profiles', 'resort-manager' ),
+			__( 'Guest Profiles', 'resort-manager' ),
+			'manage_options',
+			'resort-guests',
+			[ $this, 'render_guest_profiles_page' ]
+		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Activity Logs', 'resort-manager' ),
+			__( 'Activity Logs', 'resort-manager' ),
+			'manage_options',
+			'resort-logs',
+			[ $this, 'render_logs_page' ]
+		);
 	}
 
 	public function register_settings() {
 		register_setting( 'resort_settings_group', 'resort_name' );
 		register_setting( 'resort_settings_group', 'resort_currency' );
+		register_setting( 'resort_settings_group', 'resort_currency_symbol_pos' );
+		register_setting( 'resort_settings_group', 'resort_min_nights' );
+		register_setting( 'resort_settings_group', 'resort_max_nights' );
+		register_setting( 'resort_settings_group', 'resort_deposit_percentage' );
+		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
+		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
+		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
+		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
+		register_setting( 'resort_settings_group', 'resort_twilio_token' );
+		register_setting( 'resort_settings_group', 'resort_twilio_number' );
 
 		// Stripe Settings
 		register_setting( 'resort_settings_group', 'resort_stripe_publishable_key' );
@@ -66,6 +94,30 @@ class Settings {
 			'resort_general_section'
 		);
 
+		add_settings_field(
+			'resort_currency_settings',
+			__( 'Currency Display', 'resort-manager' ),
+			[ $this, 'render_currency_settings' ],
+			'resort-settings',
+			'resort_general_section'
+		);
+
+		add_settings_field(
+			'resort_booking_rules',
+			__( 'Stay Duration Rules', 'resort-manager' ),
+			[ $this, 'render_duration_rules' ],
+			'resort-settings',
+			'resort_general_section'
+		);
+
+		add_settings_field(
+			'resort_deposit_policy',
+			__( 'Deposit Policy (%)', 'resort-manager' ),
+			[ $this, 'render_deposit_field' ],
+			'resort-settings',
+			'resort_general_section'
+		);
+
 		add_settings_section(
 			'resort_payments_section',
 			__( 'Payment Gateway Configurations', 'resort-manager' ),
@@ -87,6 +139,29 @@ class Settings {
 			[ $this, 'render_paypal_fields' ],
 			'resort-settings',
 			'resort_payments_section'
+		);
+
+		add_settings_section(
+			'resort_notifications_section',
+			__( 'Notifications & Marketing', 'resort-manager' ),
+			null,
+			'resort-settings'
+		);
+
+		add_settings_field(
+			'resort_email_template',
+			__( 'Confirmation Email Template', 'resort-manager' ),
+			[ $this, 'render_email_template_field' ],
+			'resort-settings',
+			'resort_notifications_section'
+		);
+
+		add_settings_field(
+			'resort_marketing_integrations',
+			__( 'Marketing (API Keys)', 'resort-manager' ),
+			[ $this, 'render_marketing_fields' ],
+			'resort-settings',
+			'resort_notifications_section'
 		);
 	}
 
@@ -110,6 +185,34 @@ class Settings {
 		<?php
 	}
 
+	public function render_email_template_field() {
+		$value = get_option( 'resort_email_template_confirmation', '<h1>Booking Confirmed!</h1><p>Thank you for choosing LuxeResort.</p>' );
+		wp_editor( $value, 'resort_email_template_confirmation' );
+	}
+
+	public function render_marketing_fields() {
+		$mc_key = get_option( 'resort_mailchimp_api_key', '' );
+		$mc_list = get_option( 'resort_mailchimp_list_id', '' );
+		$tw_sid = get_option( 'resort_twilio_sid', '' );
+		$tw_token = get_option( 'resort_twilio_token', '' );
+		$tw_num = get_option( 'resort_twilio_number', '' );
+		?>
+		<p><strong><?php _e( 'Mailchimp Integration', 'resort-manager' ); ?></strong></p>
+		<label>API Key:</label><br>
+		<input type="text" name="resort_mailchimp_api_key" value="<?php echo esc_attr($mc_key); ?>" class="regular-text"><br>
+		<label>Audience (List) ID:</label><br>
+		<input type="text" name="resort_mailchimp_list_id" value="<?php echo esc_attr($mc_list); ?>" class="regular-text"><br><br>
+
+		<p><strong><?php _e( 'Twilio SMS Integration', 'resort-manager' ); ?></strong></p>
+		<label>Account SID:</label><br>
+		<input type="text" name="resort_twilio_sid" value="<?php echo esc_attr($tw_sid); ?>" class="regular-text"><br>
+		<label>Auth Token:</label><br>
+		<input type="password" name="resort_twilio_token" value="<?php echo esc_attr($tw_token); ?>" class="regular-text"><br>
+		<label>Twilio Number:</label><br>
+		<input type="text" name="resort_twilio_number" value="<?php echo esc_attr($tw_num); ?>" class="regular-text">
+		<?php
+	}
+
 	public function render_paypal_fields() {
 		$cid = get_option( 'resort_paypal_client_id', '' );
 		$secret = get_option( 'resort_paypal_secret', '' );
@@ -129,6 +232,105 @@ class Settings {
 	public function render_name_field() {
 		$value = get_option( 'resort_name', '' );
 		echo '<input type="text" name="resort_name" value="' . esc_attr( $value ) . '" class="regular-text">';
+	}
+
+	public function render_currency_settings() {
+		$currency = get_option( 'resort_currency', 'USD' );
+		$pos = get_option( 'resort_currency_symbol_pos', 'before' );
+		?>
+		<input type="text" name="resort_currency" value="<?php echo esc_attr($currency); ?>" placeholder="USD" style="width: 80px;">
+		<select name="resort_currency_symbol_pos">
+			<option value="before" <?php selected($pos, 'before'); ?>><?php _e( 'Symbol Before ($100)', 'resort-manager' ); ?></option>
+			<option value="after" <?php selected($pos, 'after'); ?>><?php _e( 'Symbol After (100 €)', 'resort-manager' ); ?></option>
+		</select>
+		<?php
+	}
+
+	public function render_duration_rules() {
+		$min = get_option( 'resort_min_nights', '1' );
+		$max = get_option( 'resort_max_nights', '30' );
+		?>
+		<label><?php _e( 'Min Nights:', 'resort-manager' ); ?></label>
+		<input type="number" name="resort_min_nights" value="<?php echo esc_attr( $min ); ?>" style="width: 60px;">
+		<label style="margin-left: 20px;"><?php _e( 'Max Nights:', 'resort-manager' ); ?></label>
+		<input type="number" name="resort_max_nights" value="<?php echo esc_attr( $max ); ?>" style="width: 60px;">
+		<?php
+	}
+
+	public function render_deposit_field() {
+		$value = get_option( 'resort_deposit_percentage', '100' );
+		?>
+		<input type="number" name="resort_deposit_percentage" value="<?php echo esc_attr( $value ); ?>" style="width: 80px;"> %
+		<p class="description"><?php _e( 'Set to 100 for full payment at booking.', 'resort-manager' ); ?></p>
+		<?php
+	}
+
+	public function render_logs_page() {
+		global $wpdb;
+		$table_logs = $wpdb->prefix . 'resort_activity_logs';
+		$logs = $wpdb->get_results( "SELECT * FROM $table_logs ORDER BY created_at DESC LIMIT 100" );
+		?>
+		<div class="wrap">
+			<h1><?php _e( 'Staff Activity Logs', 'resort-manager' ); ?></h1>
+			<table class="wp-list-table widefat fixed striped">
+				<thead>
+					<tr>
+						<th><?php _e( 'Date', 'resort-manager' ); ?></th>
+						<th><?php _e( 'User', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Action', 'resort-manager' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $logs as $log ) :
+						$user = get_userdata( $log->user_id );
+						?>
+						<tr>
+							<td><?php echo $log->created_at; ?></td>
+							<td><?php echo $user ? esc_html( $user->display_name ) : 'System'; ?></td>
+							<td><?php echo esc_html( $log->action ); ?></td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+		<?php
+	}
+
+	public function render_guest_profiles_page() {
+		$guests = get_users( [ 'role__in' => [ 'subscriber', 'customer' ] ] );
+		?>
+		<div class="wrap">
+			<h1><?php _e( 'Guest Profiles', 'resort-manager' ); ?></h1>
+			<table class="wp-list-table widefat fixed striped">
+				<thead>
+					<tr>
+						<th><?php _e( 'Guest Name', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Email', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Loyalty Points', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Total Bookings', 'resort-manager' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $guests as $guest ) :
+						$points = get_user_meta( $guest->ID, '_resort_loyalty_points', true ) ?: 0;
+						$bookings_count = count( get_posts( [
+							'post_type'  => 'booking',
+							'meta_key'   => '_resort_guest_id',
+							'meta_value' => $guest->ID,
+							'numberposts' => -1
+						] ) );
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $guest->display_name ); ?></strong></td>
+							<td><?php echo esc_html( $guest->user_email ); ?></td>
+							<td><?php echo $points; ?></td>
+							<td><?php echo $bookings_count; ?></td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		</div>
+		<?php
 	}
 
 	public function render_settings_page() {

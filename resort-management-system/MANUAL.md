@@ -1,7 +1,7 @@
 # LuxeResort Manager - Professional User Manual
 
 ## 1. Introduction
-Welcome to **LuxeResort Manager**, the definitive hospitality solution for WordPress. This plugin is designed to handle everything from real-time availability and dynamic pricing to secure online payments and guest relationship management.
+Welcome to **LuxeResort Manager**, the definitive hospitality solution for WordPress. Featuring a modern **Tropical Modern** UI, this plugin handles everything from real-time availability and dynamic pricing to secure online payments and guest loyalty management.
 
 ---
 
@@ -94,7 +94,12 @@ Open any individual **Booking** to find the **Guest Communication Log**. Record 
 ### 7.2 Guest Reviews
 Guests can leave reviews via the **Guest Dashboard** after their stay.
 - Moderate new reviews under **LuxeResort > Reviews**.
-- Display them using the `[resort_reviews]` shortcode.
+- Display them using the `[resort_reviews]` shortcode, featuring star ratings and tropical design.
+
+### 7.3 Loyalty & Perks
+Guests automatically earn **1 point for every $10 spent**.
+- Points are displayed in the **Guest Dashboard**.
+- Admin can view total points and booking counts under **LuxeResort > Guest Profiles**.
 
 ---
 
@@ -112,3 +117,33 @@ Guests can leave reviews via the **Guest Dashboard** after their stay.
 - **Calendars not syncing?** Ensure your server can make outbound requests and that your external iCal URL is public.
 - **Payments failing?** Double-check your API keys and ensure you are using the correct currency code (e.g., USD, EUR).
 - **Data Reset**: If you need to wipe everything, use the **Maintenance Tools** in **Settings**.
+
+---
+
+## 10. Enterprise Strategy & Revenue Management
+LuxeResort Manager provides high-level tools for optimizing your operations.
+
+### 10.1 Revenue Optimization
+Visit **LuxeResort > Reports > Revenue Optimization** for AI-driven pricing suggestions. The system analyzes your occupancy for the next 30 days and recommends rate increases during high-demand periods or promotional discounts during slow seasons.
+
+### 10.2 Guest Retention (Loyalty & CRM)
+- **Automatic Account Creation**: Every guest gets a private dashboard to manage their stay.
+- **Loyalty Program**: Guests earn points on every booking, encouraging repeat visits.
+- **Mailchimp Integration**: Sync your guest list to Mailchimp for seasonal newsletters and exclusive member-only offers.
+
+### 10.3 Staff Oversight
+Use the **Activity Logs** to monitor all administrative changes, from price updates to booking modifications, ensuring full accountability.
+
+---
+
+## 11. Developer API
+Extend LuxeResort Manager with custom code.
+
+### 11.1 PHP Hooks
+- `resort_booking_confirmed`: Triggers after successful payment.
+- `resort_submit_review`: Triggers when a guest submits feedback.
+
+### 11.2 REST API Endpoints
+- `GET /wp-json/resort/v1/availability`: Fetch real-time room availability.
+- `GET /wp-json/resort/v1/services`: List all available extras.
+- `GET /wp-json/resort/v1/sync/ical/{id}`: Export iCal feed.

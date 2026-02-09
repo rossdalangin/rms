@@ -110,6 +110,15 @@ class ResortManager {
 					update_post_meta( $booking_id, '_resort_status', 'confirmed' );
 					update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
 
+				// Add Loyalty Points (1 point per $10)
+				$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+				if ( $guest_id ) {
+					$amount = get_post_meta( $booking_id, '_resort_total_price', true );
+					$points = floor( floatval( $amount ) / 10 );
+					$current_points = get_user_meta( $guest_id, '_resort_loyalty_points', true ) ?: 0;
+					update_user_meta( $guest_id, '_resort_loyalty_points', intval($current_points) + $points );
+				}
+
 					// Log to Payments table
 					global $wpdb;
 					$table_payments = $wpdb->prefix . 'resort_payments';

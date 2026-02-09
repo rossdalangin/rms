@@ -109,7 +109,7 @@ class Payments {
 									<td>
 										<input type="text" name="transaction_id" value="<?php echo esc_attr( $payment->transaction_id ); ?>" style="width: 100%;">
 									</td>
-									<td><strong><?php echo get_option( 'resort_currency', 'USD' ); ?> <?php echo number_format( $payment->amount, 2 ); ?></strong></td>
+									<td><strong><?php echo \ResortManager\Core\PricingEngine::format_price( $payment->amount ); ?></strong></td>
 									<td><?php echo esc_html( ucfirst( $payment->method ) ); ?></td>
 									<td>
 										<select name="status">

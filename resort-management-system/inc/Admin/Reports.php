@@ -87,14 +87,23 @@ class Reports {
 			$occupancy_rate = ( $booked_today / $rooms_count ) * 100;
 		}
 
+		// Fetch Smart Pricing Insights
+		$insights = $this->generate_smart_pricing_suggestions();
+
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Resort Analytics & Reports', 'resort-manager' ); ?></h1>
 
+			<h2 class="nav-tab-wrapper">
+				<a href="#" class="nav-tab nav-tab-active" id="resort-tab-analytics"><?php _e( 'Analytics', 'resort-manager' ); ?></a>
+				<a href="#" class="nav-tab" id="resort-tab-optimization"><?php _e( 'Revenue Optimization', 'resort-manager' ); ?></a>
+			</h2>
+
+			<div id="resort-analytics-content">
 			<div class="resort-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
 				<div class="stat-card" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
 					<h3><?php _e( 'Total Revenue', 'resort-manager' ); ?></h3>
-					<p style="font-size: 24px; font-weight: bold; color: #c5a059;">$<?php echo number_format( $total_revenue, 2 ); ?></p>
+					<p style="font-size: 24px; font-weight: bold; color: #c5a059;"><?php echo \ResortManager\Core\PricingEngine::format_price( $total_revenue ); ?></p>
 					<p><small><?php _e( 'From confirmed bookings', 'resort-manager' ); ?></small></p>
 				</div>
 				<div class="stat-card" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
@@ -146,13 +155,117 @@ class Reports {
 						<tr>
 							<td><strong><?php echo esc_html( $booking->post_title ); ?></strong></td>
 							<td><?php echo esc_html( $checkin ); ?> to <?php echo esc_html( $checkout ); ?></td>
-							<td>$<?php echo number_format( floatval($price), 2 ); ?></td>
+							<td><?php echo \ResortManager\Core\PricingEngine::format_price( floatval($price) ); ?></td>
 							<td><?php echo esc_html( ucfirst( $status ) ); ?></td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+			</div>
+
+			<div id="resort-optimization-content" style="display:none; margin-top:30px;">
+				<div class="postbox" style="padding:20px; border-left: 4px solid #008080;">
+					<h3><span class="dashicons dashicons-lightbulb" style="color:#FFD700;"></span> <?php _e( 'Smart Pricing Suggestions', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Based on your occupancy trends for the next 30 days, we suggest the following adjustments to maximize revenue.', 'resort-manager' ); ?></p>
+
+					<table class="wp-list-table widefat fixed striped">
+						<thead>
+							<tr>
+								<th><?php _e( 'Period', 'resort-manager' ); ?></th>
+								<th><?php _e( 'Current Occupancy', 'resort-manager' ); ?></th>
+								<th><?php _e( 'Recommendation', 'resort-manager' ); ?></th>
+								<th><?php _e( 'Action', 'resort-manager' ); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ( $insights as $insight ) : ?>
+								<tr>
+									<td><?php echo esc_html( $insight['period'] ); ?></td>
+									<td><?php echo $insight['occupancy']; ?>%</td>
+									<td>
+										<span style="color: <?php echo $insight['type'] === 'increase' ? '#46b450' : '#FF7F50'; ?>; font-weight:bold;">
+											<?php echo esc_html( $insight['suggestion'] ); ?>
+										</span>
+									</td>
+									<td><a href="<?php echo admin_url('edit.php?post_type=accommodation&page=resort-pricing'); ?>" class="button button-small"><?php _e( 'Apply Rule', 'resort-manager' ); ?></a></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<script>
+				jQuery(document).ready(function($) {
+					$('#resort-tab-analytics').click(function(e) {
+						e.preventDefault();
+						$('.nav-tab').removeClass('nav-tab-active');
+						$(this).addClass('nav-tab-active');
+						$('#resort-analytics-content').show();
+						$('#resort-optimization-content').hide();
+					});
+					$('#resort-tab-optimization').click(function(e) {
+						e.preventDefault();
+						$('.nav-tab').removeClass('nav-tab-active');
+						$(this).addClass('nav-tab-active');
+						$('#resort-analytics-content').hide();
+						$('#resort-optimization-content').show();
+					});
+				});
+			</script>
 		</div>
 		<?php
+	}
+
+	private function generate_smart_pricing_suggestions() {
+		global $wpdb;
+		$table_availability = $wpdb->prefix . 'resort_availability';
+		$rooms_count = wp_count_posts( 'accommodation' )->publish;
+		if ( $rooms_count <= 0 ) return [];
+
+		$suggestions = [];
+		$periods = [
+			'Next 7 Days'  => 7,
+			'Next 14 Days' => 14,
+			'Next 30 Days' => 30
+		];
+
+		foreach ( $periods as $label => $days ) {
+			$start = date( 'Y-m-d' );
+			$end = date( 'Y-m-d', strtotime( "+$days days" ) );
+
+			$booked_count = $wpdb->get_var( $wpdb->prepare(
+				"SELECT COUNT(*) FROM $table_availability WHERE date >= %s AND date < %s AND status = 'booked'",
+				$start, $end
+			) );
+
+			$total_capacity = $rooms_count * $days;
+			$occupancy = ( $booked_count / $total_capacity ) * 100;
+
+			if ( $occupancy > 80 ) {
+				$suggestions[] = [
+					'period' => $label,
+					'occupancy' => round($occupancy),
+					'type' => 'increase',
+					'suggestion' => sprintf( __( 'High Demand! Increase prices by %d%%', 'resort-manager' ), 20 )
+				];
+			} elseif ( $occupancy < 30 ) {
+				$suggestions[] = [
+					'period' => $label,
+					'occupancy' => round($occupancy),
+					'type' => 'decrease',
+					'suggestion' => sprintf( __( 'Low Demand. Offer a %d%% "Early Escape" discount', 'resort-manager' ), 15 )
+				];
+			} else {
+				$suggestions[] = [
+					'period' => $label,
+					'occupancy' => round($occupancy),
+					'type' => 'stable',
+					'suggestion' => __( 'Healthy demand. Maintain current rates.', 'resort-manager' )
+				];
+			}
+		}
+
+		return $suggestions;
 	}
 }

@@ -14,6 +14,14 @@ class Assets {
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'nonce'    => wp_create_nonce( 'resort_booking_nonce' ),
 			'api_url'  => get_rest_url( null, 'resort/v1' ),
+			'rules'    => [
+				'min_nights' => get_option( 'resort_min_nights', '1' ),
+				'max_nights' => get_option( 'resort_max_nights', '30' ),
+			],
+			'currency' => [
+				'code' => get_option( 'resort_currency', 'USD' ),
+				'pos'  => get_option( 'resort_currency_symbol_pos', 'before' ),
+			]
 		] );
 	}
 }
