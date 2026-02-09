@@ -352,44 +352,42 @@ class Settings {
 		}
 
 		?>
-		<div class="wrap">
+		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'LuxeResort Settings', 'resort-manager' ); ?></h1>
 
-			<div class="resort-settings-form">
+			<div class="resort-admin-card">
 				<form method="post" action="options.php">
 					<?php
 					settings_fields( 'resort_settings_group' );
 					do_settings_sections( 'resort-settings' );
-					submit_button();
+					submit_button( __( 'Save All Settings', 'resort-manager' ), 'primary' );
 					?>
 				</form>
 			</div>
 
-			<hr>
-
-			<div class="resort-maintenance-form">
-				<h2><?php _e( 'Maintenance Tools', 'resort-manager' ); ?></h2>
-				<p><?php _e( 'Caution: These actions cannot be undone.', 'resort-manager' ); ?></p>
-				<form method="post" action="">
+			<div class="resort-admin-card" style="border-top-color: var(--resort-coral);">
+				<h2 style="color: var(--resort-coral);"><?php _e( 'Tropical Maintenance', 'resort-manager' ); ?></h2>
+				<p><?php _e( 'Use these tools to reset or refresh your resort data. Note: These actions are permanent.', 'resort-manager' ); ?></p>
+				<form method="post" action="" style="background: var(--resort-light-teal); padding: 20px; border-radius: 8px;">
 					<?php wp_nonce_field( 'resort_maintenance_nonce' ); ?>
 					<input type="hidden" name="resort_maintenance_action" value="1">
-					<button type="submit" name="resort_reset_data" class="button button-link-delete" onclick="return confirm('Are you sure? This will delete ALL rooms, bookings, and settings.');">
-						<?php _e( 'Reset All Data', 'resort-manager' ); ?>
-					</button>
-					&nbsp;
 					<button type="submit" name="resort_sample_data" class="button button-secondary">
-						<?php _e( 'Install Sample Data', 'resort-manager' ); ?>
+						<?php _e( 'Refresh Demo Content', 'resort-manager' ); ?>
 					</button>
 					&nbsp;
-					<button type="submit" name="resort_create_pages" class="button button-primary">
-						<?php _e( 'Create Default Pages', 'resort-manager' ); ?>
+					<button type="submit" name="resort_create_pages" class="button button-secondary">
+						<?php _e( 'Regenerate Pages', 'resort-manager' ); ?>
+					</button>
+					&nbsp;
+					<button type="submit" name="resort_reset_data" class="button button-link-delete" onclick="return confirm('Are you sure? This will delete ALL rooms, bookings, and settings.');">
+						<?php _e( 'Reset Entire Plugin', 'resort-manager' ); ?>
 					</button>
 				</form>
 
-				<div style="margin-top: 30px; padding: 15px; background: #e7f3ff; border-left: 4px solid #2196F3;">
-					<h3><?php _e( 'Documentation & Help', 'resort-manager' ); ?></h3>
-					<p><?php _e( 'Need help? Check out our comprehensive user manual for instructions on shortcodes, setup, and management.', 'resort-manager' ); ?></p>
-					<a href="<?php echo RESORT_MANAGER_URL . 'MANUAL.md'; ?>" target="_blank" class="button button-secondary"><?php _e( 'View Manual (MD)', 'resort-manager' ); ?></a>
+				<div style="margin-top: 30px; padding: 25px; background: #e7f3ff; border-left: 4px solid var(--resort-teal); border-radius: 4px;">
+					<h3 style="margin-top:0;"><?php _e( 'Need a Guide?', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Our comprehensive manual covers everything from payment setup to developer hooks.', 'resort-manager' ); ?></p>
+					<a href="<?php echo RESORT_MANAGER_URL . 'MANUAL.md'; ?>" target="_blank" class="button button-secondary"><?php _e( 'Explore Manual', 'resort-manager' ); ?></a>
 				</div>
 			</div>
 		</div>

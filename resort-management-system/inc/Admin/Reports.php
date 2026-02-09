@@ -91,7 +91,7 @@ class Reports {
 		$insights = $this->generate_smart_pricing_suggestions();
 
 		?>
-		<div class="wrap">
+		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'Resort Analytics & Reports', 'resort-manager' ); ?></h1>
 
 			<h2 class="nav-tab-wrapper">
@@ -101,20 +101,20 @@ class Reports {
 
 			<div id="resort-analytics-content">
 			<div class="resort-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
-				<div class="stat-card" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+				<div class="stat-card resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-teal);">
 					<h3><?php _e( 'Total Revenue', 'resort-manager' ); ?></h3>
-					<p style="font-size: 24px; font-weight: bold; color: #c5a059;"><?php echo \ResortManager\Core\PricingEngine::format_price( $total_revenue ); ?></p>
-					<p><small><?php _e( 'From confirmed bookings', 'resort-manager' ); ?></small></p>
+					<p style="font-size: 28px; font-weight: 700; color: var(--resort-teal);"><?php echo \ResortManager\Core\PricingEngine::format_price( $total_revenue ); ?></p>
+					<p style="color:var(--resort-muted);"><small><?php _e( 'From confirmed bookings', 'resort-manager' ); ?></small></p>
 				</div>
-				<div class="stat-card" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+				<div class="stat-card resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-sand);">
 					<h3><?php _e( 'Total Bookings', 'resort-manager' ); ?></h3>
-					<p style="font-size: 24px; font-weight: bold;"><?php echo $total_bookings; ?></p>
-					<p><small><?php echo $confirmed_bookings; ?> <?php _e( 'confirmed', 'resort-manager' ); ?></small></p>
+					<p style="font-size: 28px; font-weight: 700; color: var(--resort-sand);"><?php echo $total_bookings; ?></p>
+					<p style="color:var(--resort-muted);"><small><?php echo $confirmed_bookings; ?> <?php _e( 'confirmed', 'resort-manager' ); ?></small></p>
 				</div>
-				<div class="stat-card" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px;">
+				<div class="stat-card resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-coral);">
 					<h3><?php _e( 'Occupancy Rate', 'resort-manager' ); ?></h3>
-					<p style="font-size: 24px; font-weight: bold;"><?php echo round( $occupancy_rate, 1 ); ?>%</p>
-					<p><small><?php _e( 'For today', 'resort-manager' ); ?></small></p>
+					<p style="font-size: 28px; font-weight: 700; color: var(--resort-coral);"><?php echo round( $occupancy_rate, 1 ); ?>%</p>
+					<p style="color:var(--resort-muted);"><small><?php _e( 'For today', 'resort-manager' ); ?></small></p>
 				</div>
 			</div>
 
@@ -124,10 +124,10 @@ class Reports {
 				</a>
 			</div>
 
-			<div style="margin-top: 40px; background: #fff; padding: 20px; border: 1px solid #ccd0d4;">
+			<div class="resort-admin-card" style="margin-top: 40px; border-top-color: var(--resort-sand);">
 				<h3><?php _e( 'Inventory Maintenance', 'resort-manager' ); ?></h3>
 				<p><?php _e( 'Pending bookings older than 30 minutes are considered abandoned. Clean them up to release room availability.', 'resort-manager' ); ?></p>
-				<form method="post">
+				<form method="post" style="background:var(--resort-light-teal); padding:20px; border-radius:8px;">
 					<?php wp_nonce_field( 'resort_cleanup_nonce' ); ?>
 					<button type="submit" name="resort_send_reminders" class="button button-primary"><?php _e( 'Send Abandoned Cart Reminders', 'resort-manager' ); ?></button>
 					&nbsp;

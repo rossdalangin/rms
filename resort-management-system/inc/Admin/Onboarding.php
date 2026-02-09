@@ -18,34 +18,36 @@ class Onboarding {
 		}
 
 		?>
-		<div class="wrap resort-onboarding-wrap" style="max-width: 800px; margin: 40px auto; background: #fff; padding: 40px; border: 1px solid #ccd0d4; border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.05);">
-			<div style="text-align: center; margin-bottom: 40px;">
-				<span class="dashicons dashicons-palmtree" style="font-size: 60px; width: 60px; height: 60px; color: #c5a059;"></span>
-				<h1 style="font-family: 'Playfair Display', serif; font-size: 32px; margin: 20px 0 10px;"><?php _e( 'Welcome to LuxeResort Manager', 'resort-manager' ); ?></h1>
-				<p style="font-size: 18px; color: #636e72;"><?php _e( 'Let’s get your premium resort website up and running in minutes.', 'resort-manager' ); ?></p>
+		<div class="wrap resort-onboarding-wrap resort-admin-card" style="max-width: 900px; margin: 40px auto;">
+			<div style="text-align: center; margin-bottom: 50px;">
+				<div class="tropical-icon" style="display:inline-block; padding:20px; background:var(--resort-light-teal); border-radius:50%; margin-bottom:20px;">
+					<span class="dashicons dashicons-palmtree" style="font-size: 80px; width: 80px; height: 80px; color: var(--resort-teal);"></span>
+				</div>
+				<h1><?php _e( 'Welcome to LuxeResort Manager', 'resort-manager' ); ?></h1>
+				<p style="font-size: 20px; color: var(--resort-muted); max-width: 600px; margin: 0 auto;"><?php _e( 'The definitive 5-star hospitality solution. Let’s get your oasis ready for guests.', 'resort-manager' ); ?></p>
 			</div>
 
-			<div class="onboarding-steps" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
-				<div class="step-card" style="padding: 20px; border: 1px solid #f1f1f1; border-radius: 4px;">
-					<h3 style="margin-top: 0;"><span style="color: #c5a059;">1.</span> <?php _e( 'Configure Settings', 'resort-manager' ); ?></h3>
-					<p><?php _e( 'Set your resort name, currency, and payment keys (Stripe/PayPal) to start accepting bookings.', 'resort-manager' ); ?></p>
-					<a href="<?php echo admin_url('admin.php?page=resort-settings'); ?>" class="button"><?php _e( 'Go to Settings', 'resort-manager' ); ?></a>
+			<div class="onboarding-steps" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px;">
+				<div class="step-card resort-admin-card" style="margin-bottom:0; border-top: 4px solid var(--resort-sand);">
+					<h3 style="margin-top: 0;"><span style="color: var(--resort-sand);">1.</span> <?php _e( 'Paradise Configuration', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Set your currency, timezones, and secure your paradise with Stripe or PayPal.', 'resort-manager' ); ?></p>
+					<a href="<?php echo admin_url('admin.php?page=resort-settings'); ?>" class="button button-primary" style="background:var(--resort-teal);"><?php _e( 'Launch Settings', 'resort-manager' ); ?></a>
 				</div>
-				<div class="step-card" style="padding: 20px; border: 1px solid #f1f1f1; border-radius: 4px;">
-					<h3 style="margin-top: 0;"><span style="color: #c5a059;">2.</span> <?php _e( 'Manage Inventory', 'resort-manager' ); ?></h3>
-					<p><?php _e( 'Add your rooms, suites, and villas. Define capacity, amenities, and seasonal pricing rules.', 'resort-manager' ); ?></p>
-					<a href="<?php echo admin_url('edit.php?post_type=accommodation'); ?>" class="button"><?php _e( 'Manage Rooms', 'resort-manager' ); ?></a>
+				<div class="step-card resort-admin-card" style="margin-bottom:0; border-top: 4px solid var(--resort-coral);">
+					<h3 style="margin-top: 0;"><span style="color: var(--resort-coral);">2.</span> <?php _e( 'Inventory & Suites', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Define your villas and amenities. Create the perfect stay for every guest.', 'resort-manager' ); ?></p>
+					<a href="<?php echo admin_url('edit.php?post_type=accommodation'); ?>" class="button button-primary" style="background:var(--resort-teal);"><?php _e( 'Manage Suites', 'resort-manager' ); ?></a>
 				</div>
 			</div>
 
-			<div style="background: #fdfcfb; padding: 30px; border: 1px solid #c5a059; border-radius: 4px; text-align: center;">
-				<h2 style="margin-top: 0;"><?php _e( 'Quick Start: One-Click Setup', 'resort-manager' ); ?></h2>
-				<p><?php _e( 'New to the plugin? Click below to automatically install sample rooms, services, and create all necessary pages.', 'resort-manager' ); ?></p>
+			<div class="quick-start-box" style="background: var(--resort-light-teal); padding: 40px; border-radius: var(--resort-radius); text-align: center; border: 2px dashed var(--resort-teal);">
+				<h2 style="font-family:'Playfair Display', serif; color: var(--resort-teal);"><?php _e( 'The One-Click Tropical Setup', 'resort-manager' ); ?></h2>
+				<p style="font-size:16px;"><?php _e( 'New to LuxeResort? We can automatically build your rooms, services, and guest pages in seconds.', 'resort-manager' ); ?></p>
 				<form method="post">
 					<?php wp_nonce_field( 'resort_onboarding_nonce' ); ?>
-					<button type="submit" name="resort_one_click_setup" class="button button-primary button-hero" style="background: #c5a059; border-color: #c5a059;"><?php _e( 'Install Demo Content', 'resort-manager' ); ?></button>
+					<button type="submit" name="resort_one_click_setup" class="button button-primary button-hero" style="background: var(--resort-coral); border-color: var(--resort-coral); box-shadow: 0 4px 0 #cc6633;"><?php _e( 'Build My Paradise', 'resort-manager' ); ?></button>
 				</form>
-				<p><small><?php _e( 'Note: This will reset any existing LuxeResort data.', 'resort-manager' ); ?></small></p>
+				<p style="margin-top:15px; color:var(--resort-muted);"><small><?php _e( 'Disclaimer: This replaces current demo content with fresh tropical samples.', 'resort-manager' ); ?></small></p>
 			</div>
 
 			<div style="margin-top: 40px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">

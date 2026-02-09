@@ -4,7 +4,6 @@ namespace ResortManager\Admin;
 class Calendar {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_calendar_page' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 	}
 
 	public function add_calendar_page() {
@@ -16,13 +15,6 @@ class Calendar {
 			'resort-calendar',
 			[ $this, 'render_calendar_page' ]
 		);
-	}
-
-	public function enqueue_assets( $hook ) {
-		if ( 'booking_page_resort-calendar' !== $hook ) {
-			return;
-		}
-		wp_enqueue_style( 'resort-admin-calendar', RESORT_MANAGER_URL . 'assets/css/admin-calendar.css', [], RESORT_MANAGER_VERSION );
 	}
 
 	public function render_calendar_page() {

@@ -42,12 +42,12 @@ class Payments {
 
 		$payments = $wpdb->get_results( "SELECT * FROM $table_payments ORDER BY created_at DESC" );
 		?>
-		<div class="wrap">
+		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'Payment Transaction History', 'resort-manager' ); ?></h1>
 
-			<div class="resort-record-payment" style="background: #fff; padding: 20px; border: 1px solid #ccd0d4; margin-bottom: 30px;">
-				<h3><?php _e( 'Record Manual Payment', 'resort-manager' ); ?></h3>
-				<form method="post" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+			<div class="resort-admin-card" style="border-top-color: var(--resort-green);">
+				<h3><span class="dashicons dashicons-money-alt" style="color:var(--resort-green);"></span> <?php _e( 'Record Manual Payment', 'resort-manager' ); ?></h3>
+				<form method="post" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; background:var(--resort-light-teal); padding:20px; border-radius:8px;">
 					<?php wp_nonce_field( 'resort_payment_action' ); ?>
 					<div>
 						<label><?php _e( 'Booking ID', 'resort-manager' ); ?></label><br>

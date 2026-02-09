@@ -69,6 +69,7 @@ class ResortManager {
 		new ResortManager\Core\Notifications();
 
 		if ( is_admin() ) {
+			new ResortManager\Admin\Assets();
 			new ResortManager\Admin\Onboarding();
 			new ResortManager\Admin\Settings();
 			new ResortManager\Admin\DashboardWidget();
