@@ -12,10 +12,9 @@ Go to **LuxeResort > Settings** to configure:
 - **Resort Name & Currency**: Basic identity and financial settings.
 - **Stripe & PayPal**: Enter your API keys to enable real transactions. You can toggle between Test and Live modes.
 
-### 2.2 Quick Setup (Sample Data)
-In the **Settings** page, use the **Maintenance Tools** to:
-- **Install Sample Data**: Populates rooms and services with placeholder content.
-- **Create Default Pages**: Automatically generates the frontend pages (Booking, Gallery, etc.).
+### 2.2 Quick Setup (Onboarding)
+For the best experience, use the **LuxeResort > Getting Started** page.
+- Click **Install Demo Content** to automatically install sample rooms, services, and create all necessary frontend pages in one step.
 
 ## 3. Inventory & Pricing
 - **Accommodations**: Manage your rooms and villas. Set capacity and base price in the details box.
@@ -29,6 +28,8 @@ In the **Settings** page, use the **Maintenance Tools** to:
 - **Coupons**: Manage promotional discount codes.
 - **Communication Log**: Open any booking to view or add notes regarding guest follow-ups.
 - **Sync External Calendars**: Use the 'Sync' button on the main dashboard to import bookings from Airbnb/VRBO.
+- **Dashboard Widget**: Monitor today's occupancy and pending bookings directly from your main WordPress dashboard.
+- **Export**: Download your reservation data as a CSV file from the **Reports** page.
 
 ## 5. Shortcodes
 Use these shortcodes on any page or post:

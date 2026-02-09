@@ -13,9 +13,18 @@ class Settings {
 			'LuxeResort',
 			'manage_options',
 			'resort-manager',
-			[ $this, 'render_dashboard_overview' ],
+			[ new \ResortManager\Admin\Onboarding(), 'render_onboarding_page' ],
 			'dashicons-palmtree',
 			25
+		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Getting Started', 'resort-manager' ),
+			__( 'Getting Started', 'resort-manager' ),
+			'manage_options',
+			'resort-manager',
+			[ new \ResortManager\Admin\Onboarding(), 'render_onboarding_page' ]
 		);
 
 		add_submenu_page(

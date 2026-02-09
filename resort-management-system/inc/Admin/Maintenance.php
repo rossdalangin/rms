@@ -102,19 +102,51 @@ class Maintenance {
 		$pages = [
 			'resort_booking_page' => [
 				'title'   => 'Book Your Stay',
-				'content' => '[resort_booking]',
+				'content' => '<!-- wp:paragraph -->
+<p>Embark on a journey of luxury and tranquility. Select your dates below to begin your reservation at our world-class resort.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_booking]
+<!-- /wp:shortcode -->',
 			],
 			'resort_rooms_page' => [
 				'title'   => 'Our Accommodations',
-				'content' => 'Explore our world-class villas and suites.' . "\n\n" . '[resort_rooms_grid]',
+				'content' => '<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="has-text-align-center">Choose Your Sanctuary</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"textAlign":"center"} -->
+<p class="has-text-align-center">From intimate garden suites to expansive oceanfront villas, discover the perfect setting for your next escape.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_rooms_grid]
+<!-- /wp:shortcode -->',
 			],
 			'resort_dashboard_page' => [
 				'title'   => 'Guest Dashboard',
-				'content' => '[resort_guest_dashboard]',
+				'content' => '<!-- wp:paragraph -->
+<p>Welcome back! Manage your upcoming stays, view past reservations, and leave feedback on your experiences.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_guest_dashboard]
+<!-- /wp:shortcode -->',
 			],
 			'resort_reviews_page' => [
 				'title'   => 'Guest Experiences',
-				'content' => 'See what our guests have to say about their stay.' . "\n\n" . '[resort_reviews]',
+				'content' => '<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="has-text-align-center">Memories That Last a Lifetime</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"textAlign":"center"} -->
+<p class="has-text-align-center">Read honest reflections from our guests about their time at LuxeResort.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_reviews]
+<!-- /wp:shortcode -->',
 			],
 		];
 

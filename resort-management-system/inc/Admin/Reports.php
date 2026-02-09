@@ -4,6 +4,7 @@ namespace ResortManager\Admin;
 class Reports {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_reports_page' ] );
+		add_action( 'admin_init', [ $this, 'handle_export_csv' ] );
 	}
 
 	public function add_reports_page() {
@@ -15,6 +16,32 @@ class Reports {
 			'resort-reports',
 			[ $this, 'render_reports_page' ]
 		);
+	}
+
+	public function handle_export_csv() {
+		if ( isset( $_GET['resort_export_bookings'] ) && current_user_can( 'manage_options' ) ) {
+			check_admin_referer( 'resort_export_nonce' );
+
+			header( 'Content-Type: text/csv; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename=resort-bookings-' . date('Y-m-d') . '.csv' );
+
+			$output = fopen( 'php://output', 'w' );
+			fputcsv( $output, [ 'Booking ID', 'Guest Name', 'Check-in', 'Check-out', 'Total Price', 'Status' ] );
+
+			$bookings = get_posts( [ 'post_type' => 'booking', 'numberposts' => -1 ] );
+			foreach ( $bookings as $booking ) {
+				fputcsv( $output, [
+					$booking->ID,
+					$booking->post_title,
+					get_post_meta( $booking->ID, '_resort_checkin', true ),
+					get_post_meta( $booking->ID, '_resort_checkout', true ),
+					get_post_meta( $booking->ID, '_resort_total_price', true ),
+					get_post_meta( $booking->ID, '_resort_status', true )
+				] );
+			}
+			fclose( $output );
+			exit;
+		}
 	}
 
 	public function render_reports_page() {
@@ -80,6 +107,12 @@ class Reports {
 					<p style="font-size: 24px; font-weight: bold;"><?php echo round( $occupancy_rate, 1 ); ?>%</p>
 					<p><small><?php _e( 'For today', 'resort-manager' ); ?></small></p>
 				</div>
+			</div>
+
+			<div style="margin-top: 20px; text-align: right;">
+				<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=resort-reports&resort_export_bookings=1'), 'resort_export_nonce' ); ?>" class="button button-secondary">
+					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span> <?php _e( 'Export All Bookings to CSV', 'resort-manager' ); ?>
+				</a>
 			</div>
 
 			<div style="margin-top: 40px; background: #fff; padding: 20px; border: 1px solid #ccd0d4;">

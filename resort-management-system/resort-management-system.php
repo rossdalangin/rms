@@ -69,7 +69,9 @@ class ResortManager {
 		new ResortManager\Core\Notifications();
 
 		if ( is_admin() ) {
+			new ResortManager\Admin\Onboarding();
 			new ResortManager\Admin\Settings();
+			new ResortManager\Admin\DashboardWidget();
 			new ResortManager\Admin\MetaBoxes();
 			new ResortManager\Admin\Calendar();
 			new ResortManager\Admin\Pricing();
