@@ -112,12 +112,36 @@ class Shortcodes {
 							<tr style="border-bottom: 1px solid #eee;">
 								<td style="padding:10px;">#<?php echo $booking->ID; ?></td>
 								<td style="padding:10px;"><?php echo esc_html( $checkin ); ?> - <?php echo esc_html( $checkout ); ?></td>
-								<td style="padding:10px;"><?php echo esc_html( ucfirst( $status ) ); ?></td>
+								<td style="padding:10px;">
+									<?php echo esc_html( ucfirst( $status ) ); ?>
+									<?php if ( 'confirmed' === $status && strtotime( $checkout ) < time() ) : ?>
+										<br><button class="resort-btn-small show-review-form" data-booking="<?php echo $booking->ID; ?>"><?php _e( 'Leave a Review', 'resort-manager' ); ?></button>
+									<?php endif; ?>
+								</td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
 			<?php endif; ?>
+		</div>
+
+		<div id="resort-review-modal" class="resort-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:1000; width:400px;">
+			<h3><?php _e( 'Leave a Review', 'resort-manager' ); ?></h3>
+			<form id="resort-review-form">
+				<input type="hidden" name="booking_id" id="review-booking-id">
+				<div class="resort-field">
+					<label><?php _e( 'Title', 'resort-manager' ); ?></label>
+					<input type="text" name="title" required>
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Your Experience', 'resort-manager' ); ?></label>
+					<textarea name="content" required></textarea>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn"><?php _e( 'Submit Review', 'resort-manager' ); ?></button>
+					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
+				</div>
+			</form>
 		</div>
 		<?php
 		return ob_get_clean();

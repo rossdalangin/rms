@@ -22,6 +22,14 @@
             $(document).on('click', '#resort-services-next', this.handleServicesSelection.bind(this));
             $(document).on('submit', '#resort-guest-form', this.handleGuestForm.bind(this));
             $(document).on('click', '#resort-complete-booking', this.handleCompleteBooking.bind(this));
+
+            // Review Modal
+            $(document).on('click', '.show-review-form', (e) => {
+                $('#review-booking-id').val($(e.currentTarget).data('booking'));
+                $('#resort-review-modal').show();
+            });
+            $(document).on('click', '.close-modal', () => $('#resort-review-modal').hide());
+            $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
         },
 
         goToStep: function(step) {
@@ -220,6 +228,25 @@
             $('#resort-payment-screen').hide();
             $('#resort-confirmation-screen').show();
             $('#resort-conf-id').text(bookingId);
+        },
+
+        handleReviewSubmit: function(e) {
+            e.preventDefault();
+            const data = {
+                action: 'resort_submit_review',
+                nonce: resortData.nonce,
+                booking_id: $('#review-booking-id').val(),
+                title: $('#resort-review-form [name="title"]').val(),
+                content: $('#resort-review-form [name="content"]').val()
+            };
+
+            $.post(resortData.ajax_url, data, (res) => {
+                if (res.success) {
+                    alert('Thank you for your review!');
+                    $('#resort-review-modal').hide();
+                    window.location.reload();
+                }
+            });
         }
     };
 

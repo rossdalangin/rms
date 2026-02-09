@@ -28,6 +28,7 @@ In the **Settings** page, use the **Maintenance Tools** to:
 - **Reports**: Analytics dashboard for revenue and occupancy rates.
 - **Coupons**: Manage promotional discount codes.
 - **Communication Log**: Open any booking to view or add notes regarding guest follow-ups.
+- **Sync External Calendars**: Use the 'Sync' button on the main dashboard to import bookings from Airbnb/VRBO.
 
 ## 5. Shortcodes
 Use these shortcodes on any page or post:

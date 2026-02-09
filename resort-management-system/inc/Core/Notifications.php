@@ -17,4 +17,18 @@ class Notifications {
 
 		wp_mail( $email, $subject, $message, $headers );
 	}
+
+	public static function send_abandoned_reminder( $booking_id ) {
+		$email = get_post_meta( $booking_id, '_resort_guest_email', true );
+		$subject = __( 'Still interested in your stay at LuxeResort?', 'resort-manager' );
+
+		$message = "<h1>" . __( 'We noticed you left something behind...', 'resort-manager' ) . "</h1>";
+		$message .= "<p>" . __( 'You started a booking but didnt complete the payment. We have held your room for a short time, but it will be released soon.', 'resort-manager' ) . "</p>";
+		$message .= "<p><a href='" . home_url('/book-your-stay') . "'>" . __( 'Complete your booking now', 'resort-manager' ) . "</a></p>";
+
+		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+		wp_mail( $email, $subject, $message, $headers );
+
+		update_post_meta( $booking_id, '_resort_reminder_sent', '1' );
+	}
 }

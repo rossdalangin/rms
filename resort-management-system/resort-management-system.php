@@ -57,6 +57,7 @@ class ResortManager {
 
 	private function init() {
 		add_action( 'init', [ $this, 'register_cpts' ] );
+		add_action( 'init', [ $this, 'handle_payment_return' ] );
 		new ResortManager\Frontend\Shortcodes();
 		new ResortManager\Frontend\Assets();
 		new ResortManager\API\Availability();
@@ -80,6 +81,19 @@ class ResortManager {
 
 	public function register_cpts() {
 		ResortManager\PostTypes::register();
+	}
+
+	public function handle_payment_return() {
+		if ( isset( $_GET['resort_payment'] ) || isset( $_GET['resort_paypal_status'] ) ) {
+			$status = $_GET['resort_payment'] ?? $_GET['resort_paypal_status'];
+			$booking_id = intval( $_GET['booking_id'] );
+
+			if ( 'success' === $status ) {
+				update_post_meta( $booking_id, '_resort_status', 'confirmed' );
+				update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
+				do_action( 'resort_booking_confirmed', $booking_id );
+			}
+		}
 	}
 }
 

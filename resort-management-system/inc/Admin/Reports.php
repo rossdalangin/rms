@@ -23,6 +23,11 @@ class Reports {
 			echo '<div class="updated"><p>' . sprintf( __( '%d abandoned bookings have been cleaned up and inventory released.', 'resort-manager' ), $cleaned ) . '</p></div>';
 		}
 
+		if ( isset( $_POST['resort_send_reminders'] ) && check_admin_referer( 'resort_cleanup_nonce' ) ) {
+			$sent = \ResortManager\Admin\Maintenance::send_reminders();
+			echo '<div class="updated"><p>' . sprintf( __( '%d reminder emails sent to potential guests.', 'resort-manager' ), $sent ) . '</p></div>';
+		}
+
 		$bookings = get_posts( [
 			'post_type'   => 'booking',
 			'numberposts' => -1,
@@ -82,6 +87,8 @@ class Reports {
 				<p><?php _e( 'Pending bookings older than 30 minutes are considered abandoned. Clean them up to release room availability.', 'resort-manager' ); ?></p>
 				<form method="post">
 					<?php wp_nonce_field( 'resort_cleanup_nonce' ); ?>
+					<button type="submit" name="resort_send_reminders" class="button button-primary"><?php _e( 'Send Abandoned Cart Reminders', 'resort-manager' ); ?></button>
+					&nbsp;
 					<button type="submit" name="resort_cleanup_abandoned" class="button button-secondary"><?php _e( 'Clean Up Abandoned Bookings', 'resort-manager' ); ?></button>
 				</form>
 			</div>

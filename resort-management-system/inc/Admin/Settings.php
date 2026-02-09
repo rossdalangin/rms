@@ -57,6 +57,64 @@ class Settings {
 			'resort_general_section'
 		);
 
+		add_settings_section(
+			'resort_payments_section',
+			__( 'Payment Gateway Configurations', 'resort-manager' ),
+			[ $this, 'render_payments_section_desc' ],
+			'resort-settings'
+		);
+
+		add_settings_field(
+			'resort_stripe_keys',
+			__( 'Stripe API Keys', 'resort-manager' ),
+			[ $this, 'render_stripe_fields' ],
+			'resort-settings',
+			'resort_payments_section'
+		);
+
+		add_settings_field(
+			'resort_paypal_keys',
+			__( 'PayPal API Keys', 'resort-manager' ),
+			[ $this, 'render_paypal_fields' ],
+			'resort-settings',
+			'resort_payments_section'
+		);
+	}
+
+	public function render_payments_section_desc() {
+		echo '<p>' . __( 'Configure your Stripe and PayPal credentials below to enable live transactions.', 'resort-manager' ) . '</p>';
+	}
+
+	public function render_stripe_fields() {
+		$pk = get_option( 'resort_stripe_publishable_key', '' );
+		$sk = get_option( 'resort_stripe_secret_key', '' );
+		$test = get_option( 'resort_stripe_test_mode', '1' );
+		?>
+		<label><?php _e( 'Publishable Key:', 'resort-manager' ); ?></label><br>
+		<input type="text" name="resort_stripe_publishable_key" value="<?php echo esc_attr( $pk ); ?>" class="regular-text"><br><br>
+		<label><?php _e( 'Secret Key:', 'resort-manager' ); ?></label><br>
+		<input type="password" name="resort_stripe_secret_key" value="<?php echo esc_attr( $sk ); ?>" class="regular-text"><br><br>
+		<label>
+			<input type="checkbox" name="resort_stripe_test_mode" value="1" <?php checked( $test, '1' ); ?>>
+			<?php _e( 'Enable Test Mode', 'resort-manager' ); ?>
+		</label>
+		<?php
+	}
+
+	public function render_paypal_fields() {
+		$cid = get_option( 'resort_paypal_client_id', '' );
+		$secret = get_option( 'resort_paypal_secret', '' );
+		$test = get_option( 'resort_paypal_test_mode', '1' );
+		?>
+		<label><?php _e( 'Client ID:', 'resort-manager' ); ?></label><br>
+		<input type="text" name="resort_paypal_client_id" value="<?php echo esc_attr( $cid ); ?>" class="regular-text"><br><br>
+		<label><?php _e( 'Secret:', 'resort-manager' ); ?></label><br>
+		<input type="password" name="resort_paypal_secret" value="<?php echo esc_attr( $secret ); ?>" class="regular-text"><br><br>
+		<label>
+			<input type="checkbox" name="resort_paypal_test_mode" value="1" <?php checked( $test, '1' ); ?>>
+			<?php _e( 'Enable Sandbox Mode', 'resort-manager' ); ?>
+		</label>
+		<?php
 	}
 
 	public function render_name_field() {

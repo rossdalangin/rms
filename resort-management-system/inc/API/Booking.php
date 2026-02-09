@@ -5,6 +5,7 @@ class Booking {
 	public function __construct() {
 		add_action( 'wp_ajax_resort_submit_booking', [ $this, 'submit_booking' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_booking', [ $this, 'submit_booking' ] );
+		add_action( 'wp_ajax_resort_submit_review', [ $this, 'submit_review' ] );
 	}
 
 	public function submit_booking() {
@@ -58,5 +59,27 @@ class Booking {
 			'booking_id' => $booking_id,
 			'message'    => __( 'Booking created successfully!', 'resort-manager' ),
 		] );
+	}
+
+	public function submit_review() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error();
+		}
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$title = sanitize_text_field( $_POST['title'] );
+		$content = sanitize_textarea_field( $_POST['content'] );
+
+		$review_id = wp_insert_post( [
+			'post_type'    => 'review',
+			'post_title'   => $title,
+			'post_content' => $content,
+			'post_status'  => 'pending', // Moderate by default
+		] );
+
+		update_post_meta( $review_id, '_resort_booking_id', $booking_id );
+		wp_send_json_success();
 	}
 }

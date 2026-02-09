@@ -171,4 +171,25 @@ class Maintenance {
 
 		return $count;
 	}
+
+	public static function send_reminders() {
+		$pending_bookings = get_posts( [
+			'post_type'    => 'booking',
+			'post_status'  => 'publish',
+			'numberposts'  => -1,
+			'meta_query'   => [
+				[ 'key' => '_resort_status', 'value' => 'pending' ],
+				[ 'key' => '_resort_reminder_sent', 'compare' => 'NOT EXISTS' ]
+			],
+			'date_query'   => [
+				[ 'column' => 'post_date_gmt', 'before' => '15 minutes ago' ]
+			]
+		] );
+
+		foreach ( $pending_bookings as $booking ) {
+			\ResortManager\Core\Notifications::send_abandoned_reminder( $booking->ID );
+		}
+
+		return count( $pending_bookings );
+	}
 }
