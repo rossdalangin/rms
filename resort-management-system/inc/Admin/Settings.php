@@ -9,20 +9,38 @@ class Settings {
 
 	public function add_menu_page() {
 		add_menu_page(
-			__( 'LuxeResort Settings', 'resort-manager' ),
-			__( 'Resort Settings', 'resort-manager' ),
+			__( 'LuxeResort Manager', 'resort-manager' ),
+			'LuxeResort',
+			'manage_options',
+			'resort-manager',
+			[ $this, 'render_dashboard_overview' ],
+			'dashicons-palmtree',
+			25
+		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Settings', 'resort-manager' ),
+			__( 'Settings', 'resort-manager' ),
 			'manage_options',
 			'resort-settings',
-			[ $this, 'render_settings_page' ],
-			'dashicons-admin-settings',
-			30
+			[ $this, 'render_settings_page' ]
 		);
 	}
 
 	public function register_settings() {
 		register_setting( 'resort_settings_group', 'resort_name' );
 		register_setting( 'resort_settings_group', 'resort_currency' );
-		register_setting( 'resort_settings_group', 'stripe_api_key' );
+
+		// Stripe Settings
+		register_setting( 'resort_settings_group', 'resort_stripe_publishable_key' );
+		register_setting( 'resort_settings_group', 'resort_stripe_secret_key' );
+		register_setting( 'resort_settings_group', 'resort_stripe_test_mode' );
+
+		// PayPal Settings
+		register_setting( 'resort_settings_group', 'resort_paypal_client_id' );
+		register_setting( 'resort_settings_group', 'resort_paypal_secret' );
+		register_setting( 'resort_settings_group', 'resort_paypal_test_mode' );
 
 		add_settings_section(
 			'resort_general_section',

@@ -8,7 +8,7 @@ class Coupons {
 
 	public function add_coupons_page() {
 		add_submenu_page(
-			'resort-settings',
+			'resort-manager',
 			__( 'Coupons', 'resort-manager' ),
 			__( 'Coupons', 'resort-manager' ),
 			'manage_options',

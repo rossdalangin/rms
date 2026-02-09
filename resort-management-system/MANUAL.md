@@ -5,23 +5,29 @@
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 
 ## 2. Getting Started
-Go to **Resort Settings** to configure your resort name, currency, and payment keys.
+Navigate to the **LuxeResort** menu in your WordPress dashboard. This is your central hub for all resort management tasks.
 
-### Pro Tip: Sample Data
-In the **Resort Settings** page, click **Install Sample Data** to quickly populate your site with pre-configured rooms and images to see how the system looks.
+### 2.1 Configuration
+Go to **LuxeResort > Settings** to configure:
+- **Resort Name & Currency**: Basic identity and financial settings.
+- **Stripe & PayPal**: Enter your API keys to enable real transactions. You can toggle between Test and Live modes.
 
-## 3. Managing Accommodations
-- Navigate to **Accommodations > Add New**.
-- Set the title, description, and featured image.
-- Use the **Accommodation Details** meta box to set the base price and guest capacity.
-- Go to **Accommodations > Pricing Rules** to set seasonal rates (e.g., higher prices for holidays).
-- Go to **Accommodations > Services/Extras** to add amenities like Spa or Breakfast.
+### 2.2 Quick Setup (Sample Data)
+In the **Settings** page, use the **Maintenance Tools** to:
+- **Install Sample Data**: Populates rooms and services with placeholder content.
+- **Create Default Pages**: Automatically generates the frontend pages (Booking, Gallery, etc.).
 
-## 4. Bookings & Reports
-- All guest reservations appear under **Bookings**.
-- Use the **Bookings > Calendar** to see a visual timeline of all reservations and room availability.
-- Use the **Bookings > Reports** to view revenue analytics and perform inventory cleanup for abandoned bookings.
-- Click on a booking to see guest details and record **Communication Log** notes for follow-up.
+## 3. Inventory & Pricing
+- **Accommodations**: Manage your rooms and villas. Set capacity and base price in the details box.
+- **Services/Extras**: Add add-on services like Spa, Airport Transfer, or Meal Plans.
+- **Pricing Rules**: Create dynamic modifiers (seasonal, weekend) to automatically adjust rates.
+
+## 4. Reservations & Management
+- **Bookings**: Central list of all guest reservations.
+- **Calendar**: Visual timeline of occupancy.
+- **Reports**: Analytics dashboard for revenue and occupancy rates.
+- **Coupons**: Manage promotional discount codes.
+- **Communication Log**: Open any booking to view or add notes regarding guest follow-ups.
 
 ## 5. Shortcodes
 Use these shortcodes on any page or post:

@@ -8,7 +8,7 @@ class Pricing {
 
 	public function add_pricing_page() {
 		add_submenu_page(
-			'edit.php?post_type=accommodation',
+			'resort-manager',
 			__( 'Pricing Rules', 'resort-manager' ),
 			__( 'Pricing Rules', 'resort-manager' ),
 			'manage_options',

@@ -31,7 +31,7 @@ class PostTypes {
 			'public'             => true,
 			'publicly_queryable' => true,
 			'show_ui'            => true,
-			'show_in_menu'       => true,
+			'show_in_menu'       => 'resort-manager',
 			'query_var'          => true,
 			'rewrite'            => [ 'slug' => 'accommodation' ],
 			'capability_type'    => 'post',
@@ -46,6 +46,9 @@ class PostTypes {
 	}
 
 	private static function register_booking() {
+		add_filter( 'manage_booking_posts_columns', [ self::class, 'booking_columns' ] );
+		add_action( 'manage_booking_posts_custom_column', [ self::class, 'booking_column_data' ], 10, 2 );
+
 		$labels = [
 			'name'               => _x( 'Bookings', 'post type general name', 'resort-manager' ),
 			'singular_name'      => _x( 'Booking', 'post type singular name', 'resort-manager' ),
@@ -66,7 +69,7 @@ class PostTypes {
 			'labels'             => $labels,
 			'public'             => false,
 			'show_ui'            => true,
-			'show_in_menu'       => true,
+			'show_in_menu'       => 'resort-manager',
 			'query_var'          => true,
 			'rewrite'            => [ 'slug' => 'booking' ],
 			'capability_type'    => 'post',
@@ -78,6 +81,36 @@ class PostTypes {
 		];
 
 		register_post_type( 'booking', $args );
+	}
+
+	public static function booking_columns( $columns ) {
+		$new_columns = [
+			'cb'         => $columns['cb'],
+			'title'      => $columns['title'],
+			'dates'      => __( 'Stay Dates', 'resort-manager' ),
+			'total'      => __( 'Total Price', 'resort-manager' ),
+			'status'     => __( 'Status', 'resort-manager' ),
+			'date'       => $columns['date'],
+		];
+		return $new_columns;
+	}
+
+	public static function booking_column_data( $column, $post_id ) {
+		switch ( $column ) {
+			case 'dates':
+				$checkin = get_post_meta( $post_id, '_resort_checkin', true );
+				$checkout = get_post_meta( $post_id, '_resort_checkout', true );
+				echo esc_html( "$checkin to $checkout" );
+				break;
+			case 'total':
+				$total = get_post_meta( $post_id, '_resort_total_price', true );
+				echo '$' . number_format( floatval($total), 2 );
+				break;
+			case 'status':
+				$status = get_post_meta( $post_id, '_resort_status', true );
+				echo '<span class="status-badge status-' . esc_attr($status) . '">' . esc_html( ucfirst($status) ) . '</span>';
+				break;
+		}
 	}
 
 	private static function register_review() {
@@ -95,7 +128,7 @@ class PostTypes {
 			'labels'             => $labels,
 			'public'             => true,
 			'show_ui'            => true,
-			'show_in_menu'       => true,
+			'show_in_menu'       => 'resort-manager',
 			'supports'           => [ 'title', 'editor' ],
 			'show_in_rest'       => true,
 		];
@@ -118,7 +151,7 @@ class PostTypes {
 			'labels'             => $labels,
 			'public'             => true,
 			'show_ui'            => true,
-			'show_in_menu'       => 'edit.php?post_type=accommodation',
+			'show_in_menu'       => 'resort-manager',
 			'supports'           => [ 'title', 'excerpt' ],
 			'show_in_rest'       => true,
 		];

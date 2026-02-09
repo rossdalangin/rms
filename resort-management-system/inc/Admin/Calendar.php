@@ -9,7 +9,7 @@ class Calendar {
 
 	public function add_calendar_page() {
 		add_submenu_page(
-			'edit.php?post_type=booking',
+			'resort-manager',
 			__( 'Reservation Calendar', 'resort-manager' ),
 			__( 'Calendar', 'resort-manager' ),
 			'manage_options',

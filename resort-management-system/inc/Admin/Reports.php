@@ -8,7 +8,7 @@ class Reports {
 
 	public function add_reports_page() {
 		add_submenu_page(
-			'edit.php?post_type=booking',
+			'resort-manager',
 			__( 'Revenue Reports', 'resort-manager' ),
 			__( 'Reports', 'resort-manager' ),
 			'manage_options',

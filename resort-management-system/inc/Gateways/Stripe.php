@@ -11,22 +11,54 @@ class Stripe {
 		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
 
 		$booking_id = intval( $_POST['booking_id'] );
-		$api_key = get_option( 'stripe_api_key' );
+		$secret_key = get_option( 'resort_stripe_secret_key' );
 
-		if ( empty( $api_key ) ) {
-			// In a real scenario, we would use the Stripe SDK here.
-			// For this demo, we'll simulate a successful payment if no key is provided (for testing).
+		if ( empty( $secret_key ) ) {
+			// Fallback to simulation if no key is set
+			update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
+			update_post_meta( $booking_id, '_resort_payment_method', 'stripe' );
+			update_post_meta( $booking_id, '_resort_status', 'confirmed' );
+			do_action( 'resort_booking_confirmed', $booking_id );
+			wp_send_json_success( [ 'message' => __( 'Stripe simulation successful.', 'resort-manager' ) ] );
+			return;
 		}
 
-		// Simulate payment processing
-		update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
-		update_post_meta( $booking_id, '_resort_payment_method', 'stripe' );
-		update_post_meta( $booking_id, '_resort_status', 'confirmed' );
+		$total_price = get_post_meta( $booking_id, '_resort_total_price', true );
+		$currency = get_option( 'resort_currency', 'USD' );
 
-		do_action( 'resort_booking_confirmed', $booking_id );
-
-		wp_send_json_success( [
-			'message' => __( 'Stripe payment processed successfully (simulated).', 'resort-manager' ),
+		// Create Stripe Checkout Session via REST API
+		$response = wp_remote_post( 'https://api.stripe.com/v1/checkout/sessions', [
+			'headers' => [
+				'Authorization' => 'Bearer ' . $secret_key,
+				'Content-Type'  => 'application/x-www-form-urlencoded',
+			],
+			'body' => [
+				'payment_method_types' => ['card'],
+				'line_items' => [[
+					'price_data' => [
+						'currency' => strtolower($currency),
+						'product_data' => [
+							'name' => sprintf( __( 'Resort Booking #%d', 'resort-manager' ), $booking_id ),
+						],
+						'unit_amount' => round( floatval($total_price) * 100 ),
+					],
+					'quantity' => 1,
+				]],
+				'mode' => 'payment',
+				'success_url' => home_url( '/?resort_payment=success&booking_id=' . $booking_id ),
+				'cancel_url'  => home_url( '/?resort_payment=cancel&booking_id=' . $booking_id ),
+			],
 		] );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( [ 'message' => $response->get_error_message() ] );
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		if ( isset( $body['url'] ) ) {
+			wp_send_json_success( [ 'checkout_url' => $body['url'] ] );
+		} else {
+			wp_send_json_error( [ 'message' => $body['error']['message'] ?? __( 'Stripe Error', 'resort-manager' ) ] );
+		}
 	}
 }

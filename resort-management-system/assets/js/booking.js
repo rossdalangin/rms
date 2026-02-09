@@ -204,9 +204,13 @@
                 },
                 success: (res) => {
                     if (res.success) {
-                        this.showConfirmation(bookingId);
+                        if (res.data && res.data.checkout_url) {
+                            window.location.href = res.data.checkout_url;
+                        } else {
+                            this.showConfirmation(bookingId);
+                        }
                     } else {
-                        alert('Payment failed.');
+                        alert(res.data.message || 'Payment failed.');
                     }
                 }
             });
