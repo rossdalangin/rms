@@ -22,6 +22,11 @@ class Assets {
 			'currency' => [
 				'code' => get_option( 'resort_currency', 'USD' ),
 				'pos'  => get_option( 'resort_currency_symbol_pos', 'before' ),
+			],
+			'payments' => [
+				'stripe'  => get_option( 'resort_payment_stripe_enabled', '1' ),
+				'paypal'  => get_option( 'resort_payment_paypal_enabled', '1' ),
+				'offline' => get_option( 'resort_payment_offline_enabled', '1' ),
 			]
 		] );
 	}

@@ -9,19 +9,39 @@
 		<button type="button" id="resort-apply-coupon" class="resort-btn">Apply</button>
 		<div id="coupon-message"></div>
 	</div>
-	<div class="payment-methods">
+	<?php
+	$stripe_enabled  = get_option( 'resort_payment_stripe_enabled', '1' ) === '1';
+	$paypal_enabled  = get_option( 'resort_payment_paypal_enabled', '1' ) === '1';
+	$offline_enabled = get_option( 'resort_payment_offline_enabled', '1' ) === '1';
+
+	// Count enabled methods
+	$enabled_count = ( $stripe_enabled ? 1 : 0 ) + ( $paypal_enabled ? 1 : 0 ) + ( $offline_enabled ? 1 : 0 );
+
+	// If only offline or none are enabled, we might skip the UI but still need a default radio for the JS to pick up
+	$hide_payment_ui = ($enabled_count <= 1);
+	?>
+	<div class="payment-methods" <?php echo $hide_payment_ui ? 'style="display:none;"' : ''; ?>>
+		<h4><?php _e( 'Select Payment Method', 'resort-manager' ); ?></h4>
+		<?php if ( $stripe_enabled ) : ?>
 		<label>
 			<input type="radio" name="payment_method" value="stripe" checked>
 			Stripe
 		</label>
+		<?php endif; ?>
+
+		<?php if ( $paypal_enabled ) : ?>
 		<label>
-			<input type="radio" name="payment_method" value="paypal">
+			<input type="radio" name="payment_method" value="paypal" <?php echo !$stripe_enabled ? 'checked' : ''; ?>>
 			PayPal
 		</label>
+		<?php endif; ?>
+
+		<?php if ( $offline_enabled || $enabled_count === 0 ) : ?>
 		<label>
-			<input type="radio" name="payment_method" value="offline">
+			<input type="radio" name="payment_method" value="offline" <?php echo $enabled_count === 0 || (!$stripe_enabled && !$paypal_enabled) ? 'checked' : ''; ?>>
 			Pay at Resort (Offline)
 		</label>
+		<?php endif; ?>
 	</div>
 	<button type="button" id="resort-complete-booking" class="resort-btn"><?php _e( 'Confirm & Pay', 'resort-manager' ); ?></button>
 </div>

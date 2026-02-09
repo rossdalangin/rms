@@ -71,6 +71,11 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_twilio_token' );
 		register_setting( 'resort_settings_group', 'resort_twilio_number' );
 
+		// Payment Gateways Enable/Disable
+		register_setting( 'resort_settings_group', 'resort_payment_stripe_enabled' );
+		register_setting( 'resort_settings_group', 'resort_payment_paypal_enabled' );
+		register_setting( 'resort_settings_group', 'resort_payment_offline_enabled' );
+
 		// Stripe Settings
 		register_setting( 'resort_settings_group', 'resort_stripe_publishable_key' );
 		register_setting( 'resort_settings_group', 'resort_stripe_secret_key' );
@@ -128,6 +133,14 @@ class Settings {
 		);
 
 		add_settings_field(
+			'resort_payment_methods',
+			__( 'Enabled Payment Methods', 'resort-manager' ),
+			[ $this, 'render_payment_method_toggles' ],
+			'resort-settings',
+			'resort_payments_section'
+		);
+
+		add_settings_field(
 			'resort_stripe_keys',
 			__( 'Stripe API Keys', 'resort-manager' ),
 			[ $this, 'render_stripe_fields' ],
@@ -168,7 +181,27 @@ class Settings {
 	}
 
 	public function render_payments_section_desc() {
-		echo '<p>' . __( 'Configure your Stripe and PayPal credentials below to enable live transactions.', 'resort-manager' ) . '</p>';
+		echo '<p>' . __( 'Configure your payment methods and API credentials below. If only Offline is enabled, the payment selection will be skipped during booking.', 'resort-manager' ) . '</p>';
+	}
+
+	public function render_payment_method_toggles() {
+		$stripe = get_option( 'resort_payment_stripe_enabled', '1' );
+		$paypal = get_option( 'resort_payment_paypal_enabled', '1' );
+		$offline = get_option( 'resort_payment_offline_enabled', '1' );
+		?>
+		<label>
+			<input type="checkbox" name="resort_payment_stripe_enabled" value="1" <?php checked( $stripe, '1' ); ?>>
+			<?php _e( 'Enable Stripe', 'resort-manager' ); ?>
+		</label><br>
+		<label>
+			<input type="checkbox" name="resort_payment_paypal_enabled" value="1" <?php checked( $paypal, '1' ); ?>>
+			<?php _e( 'Enable PayPal', 'resort-manager' ); ?>
+		</label><br>
+		<label>
+			<input type="checkbox" name="resort_payment_offline_enabled" value="1" <?php checked( $offline, '1' ); ?>>
+			<?php _e( 'Enable Offline (Pay at Resort)', 'resort-manager' ); ?>
+		</label>
+		<?php
 	}
 
 	public function render_stripe_fields() {

@@ -10,6 +10,10 @@ class Stripe {
 	public function process_payment() {
 		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
 
+		if ( get_option( 'resort_payment_stripe_enabled', '1' ) !== '1' ) {
+			wp_send_json_error( [ 'message' => __( 'Stripe payment is currently disabled.', 'resort-manager' ) ] );
+		}
+
 		$booking_id = intval( $_POST['booking_id'] );
 		$secret_key = get_option( 'resort_stripe_secret_key' );
 

@@ -10,6 +10,10 @@ class PayPal {
 	public function process_payment() {
 		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
 
+		if ( get_option( 'resort_payment_paypal_enabled', '1' ) !== '1' ) {
+			wp_send_json_error( [ 'message' => __( 'PayPal payment is currently disabled.', 'resort-manager' ) ] );
+		}
+
 		$booking_id = intval( $_POST['booking_id'] );
 		$client_id = get_option( 'resort_paypal_client_id' );
 		$secret = get_option( 'resort_paypal_secret' );

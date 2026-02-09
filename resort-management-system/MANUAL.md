@@ -59,6 +59,11 @@ LuxeResort supports real-world transactions via Stripe and PayPal. Configure the
 3. Paste them into the LuxeResort Settings.
 4. Toggle **Sandbox Mode** for testing.
 
+### 5.3 Managing Enabled Methods
+In **LuxeResort > Settings**, you can enable or disable specific payment gateways (Stripe, PayPal, or Offline).
+- **Auto-Skip Selection**: If you only enable **Offline Payment**, the guest will not be asked to choose a method; the system will automatically proceed with an offline reservation for a smoother checkout experience.
+- **Multi-Gateway**: If multiple methods are enabled, the guest will see a selection list at the final step.
+
 ---
 
 ## 6. Managing Reservations

@@ -208,6 +208,14 @@
             `);
             $('#grand-total-display-container').text(this.formatPrice(grandTotal));
             this.state.finalTotal = grandTotal;
+
+            // Adjust button text if only offline is available
+            const enabledMethods = Object.values(resortData.payments).filter(v => v === '1').length;
+            if (enabledMethods <= 1 && resortData.payments.offline === '1') {
+                $('#resort-complete-booking').text('Confirm Reservation');
+            } else {
+                $('#resort-complete-booking').text('Confirm & Pay');
+            }
         },
 
         handleCouponApply: function() {

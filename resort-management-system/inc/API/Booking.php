@@ -93,8 +93,21 @@ class Booking {
 		// Mark as booked in availability table
 		\ResortManager\Core\AvailabilityEngine::mark_as_booked( $room_id, $checkin, $checkout, $booking_id );
 
+		// Validate Payment Method
+		$payment_method = sanitize_text_field( $_POST['payment_method'] ?? 'offline' );
+		$is_stripe_enabled = get_option( 'resort_payment_stripe_enabled', '1' ) === '1';
+		$is_paypal_enabled = get_option( 'resort_payment_paypal_enabled', '1' ) === '1';
+		$is_offline_enabled = get_option( 'resort_payment_offline_enabled', '1' ) === '1';
+
+		if ( 'stripe' === $payment_method && ! $is_stripe_enabled ) $payment_method = 'offline';
+		if ( 'paypal' === $payment_method && ! $is_paypal_enabled ) $payment_method = 'offline';
+		if ( 'offline' === $payment_method && ! $is_offline_enabled && ($is_stripe_enabled || $is_paypal_enabled) ) {
+			// If offline is disabled but others are on, default to first enabled
+			$payment_method = $is_stripe_enabled ? 'stripe' : 'paypal';
+		}
+
 		// If it's an offline booking, log it to the payments table immediately as pending
-		if ( isset($_POST['payment_method']) && 'offline' === $_POST['payment_method'] ) {
+		if ( 'offline' === $payment_method ) {
 			global $wpdb;
 			$wpdb->insert( $wpdb->prefix . 'resort_payments', [
 				'booking_id' => $booking_id,
