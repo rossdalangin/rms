@@ -13,12 +13,18 @@ class Booking {
 		$room_id = intval( $_POST['room_id'] );
 		$checkin = sanitize_text_field( $_POST['checkin'] );
 		$checkout = sanitize_text_field( $_POST['checkout'] );
-		$guest_data = $_POST['guest_data'];
+
+		$guest_data = [];
+		if ( isset( $_POST['guest_data'] ) && is_array( $_POST['guest_data'] ) ) {
+			foreach ( $_POST['guest_data'] as $key => $value ) {
+				$guest_data[$key] = sanitize_text_field( $value );
+			}
+		}
 
 		// Create Booking Post
 		$booking_id = wp_insert_post( [
 			'post_type'   => 'booking',
-			'post_title'  => sprintf( 'Booking for %s %s', $guest_data['first_name'], $guest_data['last_name'] ),
+			'post_title'  => sprintf( 'Booking for %s %s', $guest_data['first_name'] ?? '', $guest_data['last_name'] ?? '' ),
 			'post_status' => 'publish',
 		] );
 

@@ -27,13 +27,14 @@ class Availability {
 
 		$response = [];
 		foreach ( $rooms as $room ) {
+			$total_price = \ResortManager\Core\PricingEngine::calculate_total( $room->ID, $checkin, $checkout );
 			$response[] = [
 				'id'          => $room->ID,
 				'title'       => $room->post_title,
 				'description' => $room->post_excerpt,
-				'price'       => get_post_meta( $room->ID, '_resort_price', true ),
+				'price'       => $total_price,
 				'capacity'    => get_post_meta( $room->ID, '_resort_capacity', true ),
-				'image'       => get_the_post_thumbnail_url( $room->ID, 'medium' ),
+				'image'       => get_the_post_thumbnail_url( $room->ID, 'medium' ) ?: get_post_meta( $room->ID, '_resort_sample_image', true ),
 			];
 		}
 

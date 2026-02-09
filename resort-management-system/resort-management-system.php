@@ -72,6 +72,7 @@ class ResortManager {
 			new ResortManager\Admin\Calendar();
 			new ResortManager\Admin\Pricing();
 			new ResortManager\Admin\Coupons();
+			new ResortManager\Admin\BookingCommunication();
 		}
 	}
 

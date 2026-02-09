@@ -48,6 +48,20 @@ class Calendar {
 							$table_availability = $wpdb->prefix . 'resort_availability';
 							$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
 
+							$start_date = date( 'Y-m-d' );
+							$end_date   = date( 'Y-m-d', strtotime( '+6 days' ) );
+
+							// Fetch all availability for the range in one query
+							$availabilities = $wpdb->get_results( $wpdb->prepare(
+								"SELECT room_id, date, status FROM $table_availability WHERE date >= %s AND date <= %s",
+								$start_date, $end_date
+							) );
+
+							$availability_map = [];
+							foreach ( $availabilities as $av ) {
+								$availability_map[$av->room_id][$av->date] = $av->status;
+							}
+
 							foreach ( $rooms as $room ) :
 								?>
 								<tr>
@@ -55,10 +69,7 @@ class Calendar {
 									<?php
 									for ( $i = 0; $i < 7; $i++ ) :
 										$date = date( 'Y-m-d', strtotime( "+$i days" ) );
-										$status = $wpdb->get_var( $wpdb->prepare(
-											"SELECT status FROM $table_availability WHERE room_id = %d AND date = %s",
-											$room->ID, $date
-										) );
+										$status = isset( $availability_map[$room->ID][$date] ) ? $availability_map[$room->ID][$date] : 'available';
 
 										$class = $status === 'booked' ? 'status-booked' : 'status-available';
 										$label = $status === 'booked' ? __( 'Booked', 'resort-manager' ) : __( 'Available', 'resort-manager' );

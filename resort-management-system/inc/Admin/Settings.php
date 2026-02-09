@@ -38,6 +38,7 @@ class Settings {
 			'resort-settings',
 			'resort_general_section'
 		);
+
 	}
 
 	public function render_name_field() {
@@ -46,16 +47,49 @@ class Settings {
 	}
 
 	public function render_settings_page() {
+		if ( isset( $_POST['resort_maintenance_action'] ) && check_admin_referer( 'resort_maintenance_nonce' ) ) {
+			if ( isset( $_POST['resort_reset_data'] ) ) {
+				\ResortManager\Admin\Maintenance::reset_data();
+				echo '<div class="updated"><p>' . __( 'All data has been reset.', 'resort-manager' ) . '</p></div>';
+			}
+
+			if ( isset( $_POST['resort_sample_data'] ) ) {
+				\ResortManager\Admin\Maintenance::install_sample_data();
+				echo '<div class="updated"><p>' . __( 'Sample data has been installed.', 'resort-manager' ) . '</p></div>';
+			}
+		}
+
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'LuxeResort Settings', 'resort-manager' ); ?></h1>
-			<form method="post" action="options.php">
-				<?php
-				settings_fields( 'resort_settings_group' );
-				do_settings_sections( 'resort-settings' );
-				submit_button();
-				?>
-			</form>
+
+			<div class="resort-settings-form">
+				<form method="post" action="options.php">
+					<?php
+					settings_fields( 'resort_settings_group' );
+					do_settings_sections( 'resort-settings' );
+					submit_button();
+					?>
+				</form>
+			</div>
+
+			<hr>
+
+			<div class="resort-maintenance-form">
+				<h2><?php _e( 'Maintenance Tools', 'resort-manager' ); ?></h2>
+				<p><?php _e( 'Caution: These actions cannot be undone.', 'resort-manager' ); ?></p>
+				<form method="post" action="">
+					<?php wp_nonce_field( 'resort_maintenance_nonce' ); ?>
+					<input type="hidden" name="resort_maintenance_action" value="1">
+					<button type="submit" name="resort_reset_data" class="button button-link-delete" onclick="return confirm('Are you sure? This will delete ALL rooms, bookings, and settings.');">
+						<?php _e( 'Reset All Data', 'resort-manager' ); ?>
+					</button>
+					&nbsp;
+					<button type="submit" name="resort_sample_data" class="button button-secondary">
+						<?php _e( 'Install Sample Data', 'resort-manager' ); ?>
+					</button>
+				</form>
+			</div>
 		</div>
 		<?php
 	}

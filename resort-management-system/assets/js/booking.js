@@ -74,7 +74,7 @@
                 $(clone).find('.room-title').text(room.title);
                 $(clone).find('.room-description').text(room.description);
                 $(clone).find('.room-capacity').text(`Capacity: ${room.capacity}`);
-                $(clone).find('.room-price').text(`$${room.price} / night`);
+                $(clone).find('.room-price').text(`Total: $${room.price}`);
                 $(clone).find('img').attr('src', room.image || '');
                 $(clone).find('.select-room-btn').data('room', room);
                 $grid.append(clone);
@@ -101,6 +101,7 @@
             $summary.html(`
                 <p><strong>Room:</strong> ${this.state.selectedRoom.title}</p>
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
+                <p><strong>Total Price:</strong> $${this.state.selectedRoom.price}</p>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name}</p>
             `);
         },
