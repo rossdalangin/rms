@@ -57,6 +57,11 @@ class Settings {
 				\ResortManager\Admin\Maintenance::install_sample_data();
 				echo '<div class="updated"><p>' . __( 'Sample data has been installed.', 'resort-manager' ) . '</p></div>';
 			}
+
+			if ( isset( $_POST['resort_create_pages'] ) ) {
+				\ResortManager\Admin\Maintenance::create_default_pages();
+				echo '<div class="updated"><p>' . __( 'Default pages created successfully.', 'resort-manager' ) . '</p></div>';
+			}
 		}
 
 		?>
@@ -88,7 +93,17 @@ class Settings {
 					<button type="submit" name="resort_sample_data" class="button button-secondary">
 						<?php _e( 'Install Sample Data', 'resort-manager' ); ?>
 					</button>
+					&nbsp;
+					<button type="submit" name="resort_create_pages" class="button button-primary">
+						<?php _e( 'Create Default Pages', 'resort-manager' ); ?>
+					</button>
 				</form>
+
+				<div style="margin-top: 30px; padding: 15px; background: #e7f3ff; border-left: 4px solid #2196F3;">
+					<h3><?php _e( 'Documentation & Help', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Need help? Check out our comprehensive user manual for instructions on shortcodes, setup, and management.', 'resort-manager' ); ?></p>
+					<a href="<?php echo RESORT_MANAGER_URL . 'MANUAL.md'; ?>" target="_blank" class="button button-secondary"><?php _e( 'View Manual (MD)', 'resort-manager' ); ?></a>
+				</div>
 			</div>
 		</div>
 		<?php

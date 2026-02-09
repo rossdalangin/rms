@@ -80,4 +80,44 @@ class Maintenance {
 		update_option( 'resort_name', 'LuxeResort & Spa' );
 		update_option( 'resort_currency', 'USD' );
 	}
+
+	public static function create_default_pages() {
+		$pages = [
+			'resort_booking_page' => [
+				'title'   => 'Book Your Stay',
+				'content' => '[resort_booking]',
+			],
+			'resort_rooms_page' => [
+				'title'   => 'Our Accommodations',
+				'content' => 'Explore our world-class villas and suites.' . "\n\n" . '[resort_rooms_grid]',
+			],
+			'resort_dashboard_page' => [
+				'title'   => 'Guest Dashboard',
+				'content' => '[resort_guest_dashboard]',
+			],
+			'resort_reviews_page' => [
+				'title'   => 'Guest Experiences',
+				'content' => 'See what our guests have to say about their stay.' . "\n\n" . '[resort_reviews]',
+			],
+		];
+
+		foreach ( $pages as $option_key => $page_data ) {
+			// Check if page already exists via option
+			$existing_id = get_option( $option_key );
+			if ( $existing_id && get_post( $existing_id ) ) {
+				continue;
+			}
+
+			$page_id = wp_insert_post( [
+				'post_title'   => $page_data['title'],
+				'post_content' => $page_data['content'],
+				'post_status'  => 'publish',
+				'post_type'    => 'page',
+			] );
+
+			if ( $page_id ) {
+				update_option( $option_key, $page_id );
+			}
+		}
+	}
 }

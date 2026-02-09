@@ -1,5 +1,6 @@
 <div class="resort-room-results">
-	<h3><?php _e( 'Available Accommodations', 'resort-manager' ); ?></h3>
+	<h3><?php _e( 'Choose Your Sanctuary', 'resort-manager' ); ?></h3>
+	<p><?php _e( 'Explore our curated selection of suites and villas, each designed for ultimate comfort and elegance.', 'resort-manager' ); ?></p>
 	<div id="resort-rooms-grid" class="resort-grid">
 		<!-- Dynamic content -->
 	</div>

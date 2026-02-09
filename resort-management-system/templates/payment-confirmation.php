@@ -1,5 +1,6 @@
 <div id="resort-payment-screen" class="resort-payment">
-	<h3><?php _e( 'Payment', 'resort-manager' ); ?></h3>
+	<h3><?php _e( 'Secure Your Reservation', 'resort-manager' ); ?></h3>
+	<p><?php _e( 'Review your selection and choose a payment method to finalize your booking.', 'resort-manager' ); ?></p>
 	<div class="booking-summary">
 		<!-- Summary content -->
 	</div>

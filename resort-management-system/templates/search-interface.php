@@ -1,10 +1,14 @@
+<div class="resort-intro">
+	<h2><?php _e( 'Plan Your Perfect Escape', 'resort-manager' ); ?></h2>
+	<p><?php _e( 'Select your preferred dates to discover our exclusive accommodations and seasonal offers.', 'resort-manager' ); ?></p>
+</div>
 <div class="resort-search-form">
 	<div class="resort-field">
-		<label for="checkin"><?php _e( 'Check-in Date', 'resort-manager' ); ?></label>
+		<label for="checkin"><?php _e( 'Arrival', 'resort-manager' ); ?></label>
 		<input type="date" id="resort-checkin" name="checkin" min="<?php echo date( 'Y-m-d' ); ?>">
 	</div>
 	<div class="resort-field">
-		<label for="checkout"><?php _e( 'Check-out Date', 'resort-manager' ); ?></label>
+		<label for="checkout"><?php _e( 'Departure', 'resort-manager' ); ?></label>
 		<input type="date" id="resort-checkout" name="checkout">
 	</div>
 	<div class="resort-field">

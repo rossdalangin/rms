@@ -4,6 +4,7 @@ namespace ResortManager\Gateways;
 class PayPal {
 	public function __construct() {
 		add_action( 'wp_ajax_resort_paypal_checkout', [ $this, 'process_payment' ] );
+		add_action( 'wp_ajax_nopriv_resort_paypal_checkout', [ $this, 'process_payment' ] );
 	}
 
 	public function process_payment() {

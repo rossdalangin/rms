@@ -1,5 +1,6 @@
 <div class="resort-guest-info">
-	<h3><?php _e( 'Guest Details', 'resort-manager' ); ?></h3>
+	<h3><?php _e( 'Personalize Your Stay', 'resort-manager' ); ?></h3>
+	<p><?php _e( 'Please provide your details so we can prepare for your arrival.', 'resort-manager' ); ?></p>
 	<form id="resort-guest-form">
 		<div class="resort-field">
 			<label for="first_name"><?php _e( 'First Name', 'resort-manager' ); ?></label>
