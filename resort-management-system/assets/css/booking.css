@@ -117,6 +117,8 @@
     cursor: pointer;
     border-radius: 8px;
     transition: all 0.3s ease;
+    display: inline-block;
+    margin: 20px 0;
 }
 
 .resort-btn:hover {

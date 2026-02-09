@@ -13,18 +13,19 @@ class Settings {
 			'LuxeResort',
 			'manage_options',
 			'resort-manager',
-			[ new \ResortManager\Admin\Onboarding(), 'render_onboarding_page' ],
+			[ $this, 'render_onboarding_proxy' ],
 			'dashicons-palmtree',
 			25
 		);
 
+		// The first submenu is the same as the parent, we can rename it.
 		add_submenu_page(
 			'resort-manager',
 			__( 'Getting Started', 'resort-manager' ),
 			__( 'Getting Started', 'resort-manager' ),
 			'manage_options',
 			'resort-manager',
-			[ new \ResortManager\Admin\Onboarding(), 'render_onboarding_page' ]
+			[ $this, 'render_onboarding_proxy' ]
 		);
 
 		add_submenu_page(
@@ -61,6 +62,7 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_currency_symbol_pos' );
 		register_setting( 'resort_settings_group', 'resort_min_nights' );
 		register_setting( 'resort_settings_group', 'resort_max_nights' );
+		register_setting( 'resort_settings_group', 'resort_book_ahead_days' );
 		register_setting( 'resort_settings_group', 'resort_deposit_percentage' );
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
@@ -249,11 +251,15 @@ class Settings {
 	public function render_duration_rules() {
 		$min = get_option( 'resort_min_nights', '1' );
 		$max = get_option( 'resort_max_nights', '30' );
+		$ahead = get_option( 'resort_book_ahead_days', '0' );
 		?>
 		<label><?php _e( 'Min Nights:', 'resort-manager' ); ?></label>
 		<input type="number" name="resort_min_nights" value="<?php echo esc_attr( $min ); ?>" style="width: 60px;">
 		<label style="margin-left: 20px;"><?php _e( 'Max Nights:', 'resort-manager' ); ?></label>
 		<input type="number" name="resort_max_nights" value="<?php echo esc_attr( $max ); ?>" style="width: 60px;">
+		<label style="margin-left: 20px;"><?php _e( 'Book Ahead (Days):', 'resort-manager' ); ?></label>
+		<input type="number" name="resort_book_ahead_days" value="<?php echo esc_attr( $ahead ); ?>" style="width: 60px;">
+		<p class="description"><?php _e( 'Book Ahead defines the minimum days in advance a guest can book.', 'resort-manager' ); ?></p>
 		<?php
 	}
 
@@ -263,6 +269,11 @@ class Settings {
 		<input type="number" name="resort_deposit_percentage" value="<?php echo esc_attr( $value ); ?>" style="width: 80px;"> %
 		<p class="description"><?php _e( 'Set to 100 for full payment at booking.', 'resort-manager' ); ?></p>
 		<?php
+	}
+
+	public function render_onboarding_proxy() {
+		$onboarding = new \ResortManager\Admin\Onboarding();
+		$onboarding->render_onboarding_page();
 	}
 
 	public function render_logs_page() {

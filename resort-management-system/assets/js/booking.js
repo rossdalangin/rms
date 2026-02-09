@@ -63,6 +63,18 @@
 
             // Enforce Min/Max Nights (passed via localized data)
             const start = new Date(checkin);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            if (resortData.rules && resortData.rules.book_ahead > 0) {
+                const minStartDate = new Date(today);
+                minStartDate.setDate(today.getDate() + parseInt(resortData.rules.book_ahead));
+                if (start < minStartDate) {
+                    alert(`Reservations must be made at least ${resortData.rules.book_ahead} days in advance.`);
+                    return;
+                }
+            }
+
             const end = new Date(checkout);
             const diffTime = Math.abs(end - start);
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

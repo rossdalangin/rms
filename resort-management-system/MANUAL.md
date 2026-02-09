@@ -1,18 +1,21 @@
-# LuxeResort Manager - Professional User Manual
+# LuxeResort Manager - Elite Hospitality Suite
+## Professional User Manual
 
 ## 1. Introduction
-Welcome to **LuxeResort Manager**, the definitive hospitality solution for WordPress. Featuring a modern **Tropical Modern** UI, this plugin handles everything from real-time availability and dynamic pricing to secure online payments and guest loyalty management.
+Welcome to **LuxeResort Manager**, the definitive hospitality solution for WordPress. Featuring a modern **Tropical Modern** UI, this plugin provides a 5-star experience for both guests and resort operators.
+
+From real-time availability and demand-based "Smart Pricing" to integrated marketing with Mailchimp and Twilio, LuxeResort Manager is built to scale with your paradise.
 
 ---
 
-## 2. Installation & Quick Start
+## 2. Getting Started & Onboarding
 ### 2.1 Installation
 1. Upload the `resort-management-system` folder to `/wp-content/plugins/`.
 2. Activate via the **Plugins** menu in WordPress.
 
 ### 2.2 Onboarding Wizard
 Navigate to **LuxeResort > Getting Started**.
-- **One-Click Demo Setup**: Click "Install Demo Content" to automatically populate your site with sample accommodations, services, and create all necessary pages (Booking, Gallery, Dashboard).
+- **The One-Click Tropical Setup**: Click "Build My Paradise" to automatically populate your site with sample luxury villas, essential services, and pre-configured pages. This is the fastest way to see the plugin in action.
 
 ---
 
@@ -23,6 +26,7 @@ Manage your inventory under **LuxeResort > Accommodations**.
 - **Capacity**: Maximum number of guests allowed.
 - **Amenities**: List features like "Private Pool" or "Free WiFi".
 - **iCal Sync**: Enter an external iCal URL (from Airbnb/Booking.com) to automatically block dates on your site.
+- **Rules**: Use the **Settings** to define **Min/Max Stay** and **Lead Time** (e.g., must book 48 hours in advance).
 
 ### 3.2 Services & Extras
 Add value to your stays under **LuxeResort > Services/Extras**.
@@ -120,7 +124,7 @@ Guests automatically earn **1 point for every $10 spent**.
 
 ---
 
-## 10. Enterprise Strategy & Revenue Management
+## 10. Advanced Enterprise Features
 LuxeResort Manager provides high-level tools for optimizing your operations.
 
 ### 10.1 Revenue Optimization
@@ -146,4 +150,5 @@ Extend LuxeResort Manager with custom code.
 ### 11.2 REST API Endpoints
 - `GET /wp-json/resort/v1/availability`: Fetch real-time room availability.
 - `GET /wp-json/resort/v1/services`: List all available extras.
+- `POST /wp-json/resort/v1/validate_coupon`: Validate promotional codes.
 - `GET /wp-json/resort/v1/sync/ical/{id}`: Export iCal feed.

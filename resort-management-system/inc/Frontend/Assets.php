@@ -17,6 +17,7 @@ class Assets {
 			'rules'    => [
 				'min_nights' => get_option( 'resort_min_nights', '1' ),
 				'max_nights' => get_option( 'resort_max_nights', '30' ),
+				'book_ahead' => get_option( 'resort_book_ahead_days', '0' ),
 			],
 			'currency' => [
 				'code' => get_option( 'resort_currency', 'USD' ),

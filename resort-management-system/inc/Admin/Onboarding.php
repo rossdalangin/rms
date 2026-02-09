@@ -3,11 +3,6 @@ namespace ResortManager\Admin;
 
 class Onboarding {
 	public function __construct() {
-		add_action( 'admin_menu', [ $this, 'add_onboarding_page' ], 10 );
-	}
-
-	public function add_onboarding_page() {
-		// This will be handled as the main landing page by Settings.php registration
 	}
 
 	public function render_onboarding_page() {
