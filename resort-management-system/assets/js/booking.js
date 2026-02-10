@@ -204,7 +204,8 @@
                 <p><strong>Subtotal:</strong> ${this.formatPrice(grandTotal)}</p>
                 <div id="discount-display" style="color: #d63638; display:none;"></div>
                 <p><strong>Total Price:</strong> <span id="grand-total-display-container"></span></p>
-                <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name}</p>
+                <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name} (${this.state.guestData.phone || 'No phone'})</p>
+                ${this.state.guestData.special_requests ? `<p><strong>Requests:</strong> ${this.state.guestData.special_requests}</p>` : ''}
             `);
             $('#grand-total-display-container').text(this.formatPrice(grandTotal));
             this.state.finalTotal = grandTotal;

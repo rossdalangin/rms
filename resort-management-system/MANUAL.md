@@ -134,7 +134,7 @@ The system maintains a direct link between transactions and reservations:
 To view the full details of a reservation:
 1. Go to **LuxeResort > Bookings**.
 2. Click on a specific booking.
-3. Find the **Reservation Information** meta box. This provides a complete breakdown of the Accommodation, Guest details, Stay Dates, Guest Count, and selected Extras.
+3. Find the **Reservation Information** meta box. This provides a complete breakdown of the Accommodation, Guest details (including Phone and Marketing status), Stay Dates, Guest Count, Meal Preferences, Special Requests, and selected Extras.
 
 ### 9.3 Loyalty Points Logic
 Guests earn points automatically to encourage repeat business:

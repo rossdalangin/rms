@@ -38,6 +38,11 @@ class MetaBoxes {
 		$checkout = get_post_meta( $post->ID, '_resort_checkout', true );
 		$guests_count = get_post_meta( $post->ID, '_resort_guests', true );
 		$guest_id = get_post_meta( $post->ID, '_resort_guest_id', true );
+		$guest_phone = get_post_meta( $post->ID, '_resort_guest_phone', true );
+		$meal_pref = get_post_meta( $post->ID, '_resort_meal_preference', true );
+		$special_req = get_post_meta( $post->ID, '_resort_special_requests', true );
+		$marketing = get_post_meta( $post->ID, '_resort_marketing_optin', true );
+		$waiver = get_post_meta( $post->ID, '_resort_digital_waiver', true );
 		$total_price = get_post_meta( $post->ID, '_resort_total_price', true );
 		$services = get_post_meta( $post->ID, '_resort_services', true ) ?: [];
 		$coupon = get_post_meta( $post->ID, '_resort_coupon_used', true );
@@ -79,22 +84,46 @@ class MetaBoxes {
 						<th><?php _e( 'Email:', 'resort-manager' ); ?></th>
 						<td><?php echo $guest ? esc_html( $guest->user_email ) : 'N/A'; ?></td>
 					</tr>
+					<tr>
+						<th><?php _e( 'Phone:', 'resort-manager' ); ?></th>
+						<td><?php echo esc_html( $guest_phone ?: 'N/A' ); ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Marketing:', 'resort-manager' ); ?></th>
+						<td><?php echo 'yes' === $marketing ? '<span style="color:green;">✔ Subscribed</span>' : 'No'; ?></td>
+					</tr>
+					<tr>
+						<th><?php _e( 'Waiver:', 'resort-manager' ); ?></th>
+						<td><?php echo 'accepted' === $waiver ? '<span style="color:green;">✔ Accepted</span>' : '<span style="color:red;">✘ Not Accepted</span>'; ?></td>
+					</tr>
 				</table>
 			</div>
 		</div>
 		<hr>
-		<h4><?php _e( 'Extras & Services', 'resort-manager' ); ?></h4>
-		<ul>
-			<?php if ( empty( $services ) ) : ?>
-				<li><em><?php _e( 'No extras selected.', 'resort-manager' ); ?></em></li>
-			<?php else : ?>
-				<?php foreach ( $services as $s_id ) :
-					$s_post = get_post( $s_id );
-					?>
-					<li><?php echo $s_post ? esc_html( $s_post->post_title ) : 'Unknown Service'; ?></li>
-				<?php endforeach; ?>
-			<?php endif; ?>
-		</ul>
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+			<div>
+				<h4><?php _e( 'Preferences & Requests', 'resort-manager' ); ?></h4>
+				<p><strong><?php _e( 'Meal Preference:', 'resort-manager' ); ?></strong> <?php echo esc_html( ucfirst( $meal_pref ) ?: 'Standard' ); ?></p>
+				<p><strong><?php _e( 'Special Requests:', 'resort-manager' ); ?></strong></p>
+				<div style="background: #f9f9f9; padding: 10px; border-left: 4px solid #ddd;">
+					<?php echo nl2br( esc_html( $special_req ?: 'No special requests.' ) ); ?>
+				</div>
+			</div>
+			<div>
+				<h4><?php _e( 'Extras & Services', 'resort-manager' ); ?></h4>
+				<ul>
+					<?php if ( empty( $services ) ) : ?>
+						<li><em><?php _e( 'No extras selected.', 'resort-manager' ); ?></em></li>
+					<?php else : ?>
+						<?php foreach ( $services as $s_id ) :
+							$s_post = get_post( $s_id );
+							?>
+							<li><?php echo $s_post ? esc_html( $s_post->post_title ) : 'Unknown Service'; ?></li>
+						<?php endforeach; ?>
+					<?php endif; ?>
+				</ul>
+			</div>
+		</div>
 		<hr>
 		<div style="font-size: 1.2em; font-weight: bold; color: var(--resort-teal);">
 			<?php _e( 'Final Price:', 'resort-manager' ); ?> <?php echo \ResortManager\Core\PricingEngine::format_price( $total_price ); ?>

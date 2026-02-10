@@ -74,10 +74,29 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_guest_id', $user_id );
 		update_post_meta( $booking_id, '_resort_guest_email', sanitize_email( $guest_data['email'] ) );
 		update_post_meta( $booking_id, '_resort_guest_phone', sanitize_text_field( $guest_data['phone'] ?? '' ) );
+		update_post_meta( $booking_id, '_resort_meal_preference', sanitize_text_field( $guest_data['meal_preference'] ?? 'none' ) );
+		update_post_meta( $booking_id, '_resort_special_requests', sanitize_textarea_field( $guest_data['special_requests'] ?? '' ) );
+		update_post_meta( $booking_id, '_resort_marketing_optin', isset( $guest_data['marketing_optin'] ) ? 'yes' : 'no' );
+		update_post_meta( $booking_id, '_resort_digital_waiver', isset( $guest_data['digital_waiver'] ) ? 'accepted' : 'declined' );
 
-		// If a final total was passed from JS (after coupons), use it, but validate it
-		if ( isset($_POST['final_total']) ) {
-			$total_price = floatval($_POST['final_total']);
+		// Server-side Price Re-validation (Security Fix)
+		$coupon_code = sanitize_text_field($_POST['coupon'] ?? '');
+		if ( ! empty( $coupon_code ) ) {
+			global $wpdb;
+			$table_coupons = $wpdb->prefix . 'resort_coupons';
+			$coupon = $wpdb->get_row( $wpdb->prepare(
+				"SELECT * FROM $table_coupons WHERE code = %s AND (expiry_date >= %s OR expiry_date IS NULL OR expiry_date = '0000-00-00')",
+				$coupon_code, date('Y-m-d')
+			) );
+
+			if ( $coupon ) {
+				if ( $coupon->discount_type === 'fixed' ) {
+					$total_price -= floatval( $coupon->discount_amount );
+				} else {
+					$total_price -= ( $total_price * floatval( $coupon->discount_amount ) ) / 100;
+				}
+				$total_price = max( 0, $total_price );
+			}
 		}
 
 		update_post_meta( $booking_id, '_resort_total_price', $total_price );
