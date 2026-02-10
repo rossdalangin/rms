@@ -191,14 +191,8 @@ class Maintenance {
 		] );
 
 		$count = 0;
-		global $wpdb;
-		$table_availability = $wpdb->prefix . 'resort_availability';
-
 		foreach ( $abandoned_bookings as $booking ) {
-			// Release availability
-			$wpdb->delete( $table_availability, [ 'booking_id' => $booking->ID ] );
-			// Mark as abandoned
-			update_post_meta( $booking->ID, '_resort_status', 'abandoned' );
+			\ResortManager\Core\BookingManager::sync_status( $booking->ID, 'abandoned' );
 			$count++;
 		}
 

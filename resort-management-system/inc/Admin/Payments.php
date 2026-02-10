@@ -52,11 +52,13 @@ class Payments {
 				'status'         => $new_status
 			], [ 'id' => $payment_id ] );
 
-			// If status is updated to completed, ensure booking is confirmed
-			if ( 'completed' === $new_status ) {
-				$payment_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_payments WHERE id = %d", $payment_id ) );
-				if ( $payment_data && ! empty( $payment_data->booking_id ) ) {
+			// Sync booking status with new payment status
+			$payment_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_payments WHERE id = %d", $payment_id ) );
+			if ( $payment_data && ! empty( $payment_data->booking_id ) ) {
+				if ( 'completed' === $new_status ) {
 					\ResortManager\Core\BookingManager::confirm_booking( $payment_data->booking_id, $transaction_id, $payment_data->method );
+				} else {
+					\ResortManager\Core\BookingManager::sync_status( $payment_data->booking_id, $new_status );
 				}
 			}
 
