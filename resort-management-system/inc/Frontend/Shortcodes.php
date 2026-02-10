@@ -138,7 +138,10 @@ class Shortcodes {
 									<?php if ( 'confirmed' === $status ) : ?>
 										<div style="margin-top:10px;">
 											<a href="<?php echo home_url('/?resort_invoice=' . $booking->ID); ?>" target="_blank" class="resort-btn-small" style="background:var(--resort-teal); text-decoration:none; margin-right:5px;">📄 Invoice</a>
-											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none;">🗓️ Add to Calendar</a>
+											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none; margin-right:5px;">🗓️ Calendar</a>
+											<?php if ( strtotime( $checkin ) > time() ) : ?>
+												<button class="resort-btn-small show-modify-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-secondary);"><?php _e( 'Modify Stay', 'resort-manager' ); ?></button>
+											<?php endif; ?>
 										</div>
 									<?php endif; ?>
 									<?php if ( 'confirmed' === $status && strtotime( $checkout ) < time() ) : ?>
@@ -166,6 +169,22 @@ class Shortcodes {
 				</div>
 				<div style="margin-top:20px;">
 					<button type="submit" class="resort-btn"><?php _e( 'Submit Review', 'resort-manager' ); ?></button>
+					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
+				</div>
+			</form>
+		</div>
+
+		<div id="resort-modify-modal" class="resort-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:1000; width:400px;">
+			<h3><?php _e( 'Modify Your Stay', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'Please describe the changes you would like to make to your reservation.', 'resort-manager' ); ?></p>
+			<form id="resort-modify-form">
+				<input type="hidden" name="booking_id" id="modify-booking-id">
+				<div class="resort-field">
+					<label><?php _e( 'Requested Changes', 'resort-manager' ); ?></label>
+					<textarea name="request_details" placeholder="e.g. Change dates to Aug 12-15..." required></textarea>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn"><?php _e( 'Send Request', 'resort-manager' ); ?></button>
 					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
 				</div>
 			</form>

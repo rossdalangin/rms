@@ -41,8 +41,16 @@
                 $('#review-booking-id').val($(e.currentTarget).data('booking'));
                 $('#resort-review-modal').show();
             });
-            $(document).on('click', '.close-modal', () => $('#resort-review-modal').hide());
+			$(document).on('click', '.show-modify-form', (e) => {
+				$('#modify-booking-id').val($(e.currentTarget).data('booking'));
+				$('#resort-modify-modal').show();
+			});
+            $(document).on('click', '.close-modal', () => {
+				$('#resort-review-modal').hide();
+				$('#resort-modify-modal').hide();
+			});
             $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
+			$(document).on('submit', '#resort-modify-form', this.handleModifySubmit.bind(this));
         },
 
         goToStep: function(step) {
@@ -430,6 +438,30 @@
             $('#resort-confirmation-screen').show();
             $('#resort-conf-id').text(bookingId);
         },
+
+		handleModifySubmit: function(e) {
+			e.preventDefault();
+			const form = $(e.currentTarget);
+			const btn = form.find('button');
+			const data = {
+				action: 'resort_modify_request',
+				nonce: resortData.nonce,
+				booking_id: $('#modify-booking-id').val(),
+				details: form.find('[name="request_details"]').val()
+			};
+
+			btn.prop('disabled', true).text('Sending...');
+
+			$.post(resortData.ajax_url, data, function(res) {
+				if (res.success) {
+					alert(res.data.message);
+					$('#resort-modify-modal').hide();
+				} else {
+					alert('Error sending request.');
+					btn.prop('disabled', false).text('Send Request');
+				}
+			});
+		},
 
         handleReviewSubmit: function(e) {
             e.preventDefault();

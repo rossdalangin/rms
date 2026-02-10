@@ -10,6 +10,7 @@ class Booking {
 		add_action( 'wp_ajax_nopriv_resort_validate_coupon', [ $this, 'validate_coupon' ] );
 		add_action( 'wp_ajax_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
+		add_action( 'wp_ajax_resort_modify_request', [ $this, 'handle_modify_request' ] );
 	}
 
 	public function submit_booking() {
@@ -244,6 +245,31 @@ class Booking {
 		$this->sync_to_mailchimp( $email, $name, '' );
 
 		wp_send_json_success( [ 'message' => __( 'Welcome to the club! Check your inbox for your first gift.', 'resort-manager' ) ] );
+	}
+
+	public function handle_modify_request() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$details = sanitize_textarea_field( $_POST['details'] );
+
+		// Verify this booking belongs to the user
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		// Record the request in the communication log
+		$log = get_post_meta( $booking_id, '_resort_communication_log', true ) ?: [];
+		$log[] = [
+			'date'    => date( 'Y-m-d H:i' ),
+			'message' => 'GUEST MODIFICATION REQUEST: ' . $details
+		];
+		update_post_meta( $booking_id, '_resort_communication_log', $log );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest requested modification for Booking #%d.', 'resort-manager' ), $booking_id ) );
+
+		wp_send_json_success( [ 'message' => __( 'Your request has been sent to our staff. We will contact you shortly.', 'resort-manager' ) ] );
 	}
 
 	public function validate_coupon() {

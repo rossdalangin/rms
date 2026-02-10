@@ -58,7 +58,12 @@ Create discounts under **LuxeResort > Coupons**.
 - **Example**: Create code `ISLAND2024` for a **15% discount** to celebrate your resort's anniversary.
 - **Usage**: Guests enter the code at the final payment step to see their savings instantly.
 
-### 4.3 Loyalty Points Redemption
+### 4.3 Elementor & Gutenberg Integration
+LuxeResort Manager is fully compatible with modern page builders.
+- **Gutenberg**: Find the "Booking Engine", "Accommodations Grid", and "Guest Reviews" blocks in the editor.
+- **Elementor**: Three custom widgets are available under the "General" category for easy drag-and-drop design.
+
+### 4.4 Loyalty Points Redemption
 Guests can redeem their accumulated points for real discounts during Step 5 (Payment).
 - **Rate**: 10 points = 1 PHP discount.
 - **Usage**: Logged-in guests will see a "Redeem Points" section where they can enter the amount of points to use.
@@ -100,6 +105,7 @@ In **LuxeResort > Settings**, you can enable or disable specific payment gateway
 
 ### 6.2 Reservation Calendar
 View a visual timeline of your resort's occupancy under **LuxeResort > Calendar**.
+- **Manual Blocking**: To block a room for maintenance, go to the individual **Accommodation** edit screen and use the **Maintenance & Manual Date Blocking** sidebar box. These dates will appear greyed out in the calendar.
 - **Visual Overview**: The calendar shows rooms on the vertical axis and dates on the horizontal.
 - **Controls**: Adjust the **Start Date** and **Timeline Range** (7, 14, or 30 days) to navigate through your schedule.
 - **Status Indicators**:
@@ -115,6 +121,7 @@ Track all financial activity under **LuxeResort > Payments**.
 
 ### 6.4 Analytics & Reports
 Monitor your performance under **LuxeResort > Reports**.
+- **Visual Trends**: View a real-time revenue chart showing your income over the last 7 days.
 - **Revenue Stats**: High-level overview of your total earnings and booking counts.
 - **Occupancy Rate**: Real-time metric showing how much of your resort is currently occupied.
 - **Inventory Maintenance**:
@@ -162,6 +169,7 @@ The system maintains a direct link between transactions and reservations:
 
 ### 9.2 Booking Management (Admin)
 To view and manage a reservation:
+- **Modification Requests**: If a guest uses the "Modify Stay" button in their dashboard, their request will appear automatically in the **Guest Communication Log** for that booking.
 1. Go to **LuxeResort > Bookings**.
 2. Click on a specific booking to edit.
 3. **Reservation Information**: See the complete breakdown of the stay, guest preferences (meal, special requests), and total price.

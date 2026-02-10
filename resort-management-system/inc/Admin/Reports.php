@@ -142,6 +142,14 @@ class Reports {
 			</h2>
 
 			<div id="resort-analytics-content">
+
+			<div class="resort-admin-card" style="margin-top:20px;">
+				<h3><?php _e( 'Revenue Trend', 'resort-manager' ); ?></h3>
+				<div style="height: 300px;">
+					<canvas id="resortRevenueChart"></canvas>
+				</div>
+			</div>
+
 			<div class="resort-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
 				<div class="stat-card resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-teal);">
 					<h3><?php _e( 'Total Revenue', 'resort-manager' ); ?></h3>
@@ -277,6 +285,51 @@ class Reports {
 						$(this).addClass('nav-tab-active');
 						$('#resort-analytics-content').hide();
 						$('#resort-optimization-content').show();
+					});
+
+					// Revenue Chart Implementation
+					const ctx = document.getElementById('resortRevenueChart').getContext('2d');
+					const revenueData = <?php
+						// Get revenue for last 7 days
+						$days_data = [];
+						for ($i = 6; $i >= 0; $i--) {
+							$date = date('Y-m-d', strtotime("-$i days"));
+							$rev = 0;
+							// Find confirmed bookings for this day
+							$day_bookings = get_posts([
+								'post_type' => 'booking',
+								'numberposts' => -1,
+								'meta_query' => [
+									['key' => '_resort_status', 'value' => 'confirmed'],
+									['key' => '_resort_checkin', 'value' => $date] // Simple attribution
+								]
+							]);
+							foreach($day_bookings as $db) $rev += floatval(get_post_meta($db->ID, '_resort_total_price', true));
+							$days_data[$date] = $rev;
+						}
+						echo json_encode(array_values($days_data));
+					?>;
+					const labels = <?php echo json_encode(array_map(function($d){ return date('M j', strtotime($d)); }, array_keys($days_data))); ?>;
+
+					new Chart(ctx, {
+						type: 'line',
+						data: {
+							labels: labels,
+							datasets: [{
+								label: 'Daily Revenue (PHP)',
+								data: revenueData,
+								borderColor: '#008080',
+								backgroundColor: 'rgba(0, 128, 128, 0.1)',
+								fill: true,
+								tension: 0.4
+							}]
+						},
+						options: {
+							responsive: true,
+							maintainAspectRatio: false,
+							plugins: { legend: { display: false } },
+							scales: { y: { beginAtZero: true } }
+						}
 					});
 
 					$('.apply-smart-pricing').click(function() {

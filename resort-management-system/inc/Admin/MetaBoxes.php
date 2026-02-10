@@ -9,6 +9,8 @@ class MetaBoxes {
 		add_action( 'save_post_service', [ $this, 'save_service_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_package_meta_boxes' ] );
 		add_action( 'save_post_resort_package', [ $this, 'save_package_meta' ] );
+		add_action( 'add_meta_boxes', [ $this, 'add_accommodation_maintenance_meta_box' ] );
+		add_action( 'admin_init', [ $this, 'handle_manual_block' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_booking_meta_boxes' ] );
 	}
 
@@ -21,6 +23,81 @@ class MetaBoxes {
 			'normal',
 			'high'
 		);
+	}
+
+	public function add_accommodation_maintenance_meta_box() {
+		add_meta_box(
+			'accommodation_maintenance',
+			__( 'Maintenance & Manual Date Blocking', 'resort-manager' ),
+			[ $this, 'render_maintenance_box' ],
+			'accommodation',
+			'side',
+			'default'
+		);
+	}
+
+	public function render_maintenance_box( $post ) {
+		global $wpdb;
+		$table = $wpdb->prefix . 'resort_availability';
+		$blocks = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table WHERE room_id = %d AND status = 'blocked' AND date >= %s ORDER BY date ASC", $post->ID, date('Y-m-d') ) );
+		?>
+		<p class="description"><?php _e( 'Manually block dates for maintenance or renovations.', 'resort-manager' ); ?></p>
+		<div style="margin-bottom:15px;">
+			<label><?php _e( 'Start Date:', 'resort-manager' ); ?></label>
+			<input type="date" name="block_start" class="widefat">
+			<label><?php _e( 'End Date:', 'resort-manager' ); ?></label>
+			<input type="date" name="block_end" class="widefat">
+			<button type="submit" name="resort_add_block" class="button button-secondary" style="margin-top:10px; width:100%;"><?php _e( 'Block These Dates', 'resort-manager' ); ?></button>
+		</div>
+
+		<?php if ( ! empty( $blocks ) ) : ?>
+			<hr>
+			<strong><?php _e( 'Currently Blocked:', 'resort-manager' ); ?></strong>
+			<ul style="max-height:150px; overflow-y:auto; font-size:11px;">
+				<?php foreach ( $blocks as $block ) : ?>
+					<li>
+						<?php echo $block->date; ?>
+						<a href="<?php echo wp_nonce_url( admin_url('post.php?post=' . $post->ID . '&action=edit&resort_remove_block=' . $block->id), 'resort_remove_block' ); ?>" style="color:#d63638; text-decoration:none; float:right;">&times;</a>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		<?php endif; ?>
+		<?php
+	}
+
+	public function handle_manual_block() {
+		if ( ! isset( $_POST['resort_add_block'] ) ) {
+			if ( isset( $_GET['resort_remove_block'] ) ) {
+				check_admin_referer( 'resort_remove_block' );
+				global $wpdb;
+				$wpdb->delete( $wpdb->prefix . 'resort_availability', [ 'id' => intval($_GET['resort_remove_block']) ] );
+			}
+			return;
+		}
+
+		$post_id = intval( $_POST['post_ID'] );
+		$start = sanitize_text_field( $_POST['block_start'] );
+		$end = sanitize_text_field( $_POST['block_end'] );
+
+		if ( empty($start) || empty($end) ) return;
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'resort_availability';
+
+		$current = strtotime($start);
+		$last = strtotime($end);
+
+		while ( $current <= $last ) {
+			$date = date('Y-m-d', $current);
+			$wpdb->insert( $table, [
+				'room_id' => $post_id,
+				'date'    => $date,
+				'status'  => 'blocked'
+			] );
+			$current = strtotime('+1 day', $current);
+		}
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Manual block added for Room ID %d: %s to %s', 'resort-manager' ), $post_id, $start, $end ) );
 	}
 
 	public function add_package_meta_boxes() {
