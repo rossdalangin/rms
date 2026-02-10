@@ -19,10 +19,7 @@ class Stripe {
 
 		if ( empty( $secret_key ) ) {
 			// Fallback to simulation if no key is set
-			update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
-			update_post_meta( $booking_id, '_resort_payment_method', 'stripe' );
-			update_post_meta( $booking_id, '_resort_status', 'confirmed' );
-			do_action( 'resort_booking_confirmed', $booking_id );
+			\ResortManager\Core\BookingManager::confirm_booking( $booking_id, 'SIM-STRIPE-' . time(), 'stripe' );
 			wp_send_json_success( [ 'message' => __( 'Stripe simulation successful.', 'resort-manager' ) ] );
 			return;
 		}

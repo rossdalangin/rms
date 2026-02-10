@@ -20,10 +20,7 @@ class PayPal {
 
 		if ( empty( $client_id ) || empty( $secret ) ) {
 			// Fallback simulation
-			update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
-			update_post_meta( $booking_id, '_resort_payment_method', 'paypal' );
-			update_post_meta( $booking_id, '_resort_status', 'confirmed' );
-			do_action( 'resort_booking_confirmed', $booking_id );
+			\ResortManager\Core\BookingManager::confirm_booking( $booking_id, 'SIM-PAYPAL-' . time(), 'paypal' );
 			wp_send_json_success( [ 'message' => __( 'PayPal simulation successful.', 'resort-manager' ) ] );
 			return;
 		}

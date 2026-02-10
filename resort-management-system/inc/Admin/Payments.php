@@ -22,21 +22,44 @@ class Payments {
 		$table_payments = $wpdb->prefix . 'resort_payments';
 
 		if ( isset( $_POST['resort_record_payment'] ) && check_admin_referer( 'resort_payment_action' ) ) {
+			$booking_id = intval( $_POST['booking_id'] );
+			$transaction_id = sanitize_text_field( $_POST['transaction_id'] );
+			$method = sanitize_text_field( $_POST['method'] );
+			$status = sanitize_text_field( $_POST['status'] );
+
 			$wpdb->insert( $table_payments, [
-				'booking_id'     => intval( $_POST['booking_id'] ),
-				'transaction_id' => sanitize_text_field( $_POST['transaction_id'] ),
+				'booking_id'     => $booking_id,
+				'transaction_id' => $transaction_id,
 				'amount'         => floatval( $_POST['amount'] ),
-				'method'         => sanitize_text_field( $_POST['method'] ),
-				'status'         => sanitize_text_field( $_POST['status'] )
+				'method'         => $method,
+				'status'         => $status
 			] );
+
+			if ( 'completed' === $status ) {
+				\ResortManager\Core\BookingManager::confirm_booking( $booking_id, $transaction_id, $method );
+			}
+
 			echo '<div class="updated"><p>' . __( 'Payment record added.', 'resort-manager' ) . '</p></div>';
 		}
 
 		if ( isset( $_POST['resort_update_payment'] ) && check_admin_referer( 'resort_payment_action' ) ) {
+			$payment_id = intval( $_POST['resort_update_payment'] );
+			$new_status = sanitize_text_field( $_POST['status_' . $payment_id] );
+			$transaction_id = sanitize_text_field( $_POST['transaction_id_' . $payment_id] );
+
 			$wpdb->update( $table_payments, [
-				'transaction_id' => sanitize_text_field( $_POST['transaction_id'] ),
-				'status'         => sanitize_text_field( $_POST['status'] )
-			], [ 'id' => intval( $_POST['payment_id'] ) ] );
+				'transaction_id' => $transaction_id,
+				'status'         => $new_status
+			], [ 'id' => $payment_id ] );
+
+			// If status is updated to completed, ensure booking is confirmed
+			if ( 'completed' === $new_status ) {
+				$payment_data = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table_payments WHERE id = %d", $payment_id ) );
+				if ( $payment_data && ! empty( $payment_data->booking_id ) ) {
+					\ResortManager\Core\BookingManager::confirm_booking( $payment_data->booking_id, $transaction_id, $payment_data->method );
+				}
+			}
+
 			echo '<div class="updated"><p>' . __( 'Payment record updated.', 'resort-manager' ) . '</p></div>';
 		}
 
@@ -81,42 +104,41 @@ class Payments {
 				</form>
 			</div>
 
-			<table class="wp-list-table widefat fixed striped">
-				<thead>
-					<tr>
-						<th><?php _e( 'ID', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Booking', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Reference', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Details', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Amount', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Method', 'resort-manager' ); ?></th>
-						<th><?php _e( 'Status', 'resort-manager' ); ?></th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php if ( empty( $payments ) ) : ?>
+			<form method="post">
+				<?php wp_nonce_field( 'resort_payment_action' ); ?>
+				<table class="wp-list-table widefat fixed striped">
+					<thead>
 						<tr>
-							<td colspan="8"><?php _e( 'No payment records found.', 'resort-manager' ); ?></td>
+							<th><?php _e( 'ID', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Booking', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Reference', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Details', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Amount', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Method', 'resort-manager' ); ?></th>
+							<th><?php _e( 'Status', 'resort-manager' ); ?></th>
+							<th></th>
 						</tr>
-					<?php else : ?>
-						<?php foreach ( $payments as $payment ) :
-							$booking_title = get_the_title( $payment->booking_id );
-							$room_id = get_post_meta( $payment->booking_id, '_resort_room_id', true );
-							$room_title = get_the_title( $room_id );
-							$checkin = get_post_meta( $payment->booking_id, '_resort_checkin', true );
-							?>
+					</thead>
+					<tbody>
+						<?php if ( empty( $payments ) ) : ?>
 							<tr>
-								<form method="post">
-									<?php wp_nonce_field( 'resort_payment_action' ); ?>
-									<input type="hidden" name="payment_id" value="<?php echo $payment->id; ?>">
+								<td colspan="8"><?php _e( 'No payment records found.', 'resort-manager' ); ?></td>
+							</tr>
+						<?php else : ?>
+							<?php foreach ( $payments as $payment ) :
+								$booking_title = get_the_title( $payment->booking_id );
+								$room_id = get_post_meta( $payment->booking_id, '_resort_room_id', true );
+								$room_title = get_the_title( $room_id );
+								$checkin = get_post_meta( $payment->booking_id, '_resort_checkin', true );
+								?>
+								<tr>
 									<td><?php echo $payment->id; ?></td>
 									<td>
 										<a href="<?php echo get_edit_post_link( $payment->booking_id ); ?>"><strong>#<?php echo $payment->booking_id; ?></strong></a><br>
 										<small><?php echo esc_html( $booking_title ); ?></small>
 									</td>
 									<td>
-										<input type="text" name="transaction_id" value="<?php echo esc_attr( $payment->transaction_id ); ?>" style="width: 100%;">
+										<input type="text" name="transaction_id_<?php echo $payment->id; ?>" value="<?php echo esc_attr( $payment->transaction_id ); ?>" style="width: 100%;">
 									</td>
 									<td>
 										<small><?php echo esc_html( $room_title ); ?></small><br>
@@ -125,21 +147,23 @@ class Payments {
 									<td><strong><?php echo \ResortManager\Core\PricingEngine::format_price( $payment->amount ); ?></strong></td>
 									<td><?php echo esc_html( ucfirst( $payment->method ) ); ?></td>
 									<td>
-										<select name="status">
+										<select name="status_<?php echo $payment->id; ?>">
 											<option value="completed" <?php selected($payment->status, 'completed'); ?>>Completed</option>
 											<option value="pending" <?php selected($payment->status, 'pending'); ?>>Pending</option>
 											<option value="failed" <?php selected($payment->status, 'failed'); ?>>Failed</option>
 										</select>
 									</td>
 									<td>
-										<input type="submit" name="resort_update_payment" class="button button-small" value="Update">
+										<button type="submit" name="resort_update_payment" class="button button-small" value="<?php echo $payment->id; ?>">
+											<?php _e( 'Update', 'resort-manager' ); ?>
+										</button>
 									</td>
-								</form>
-							</tr>
-						<?php endforeach; ?>
-					<?php endif; ?>
-				</tbody>
-			</table>
+								</tr>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</tbody>
+				</table>
+			</form>
 		</div>
 		<?php
 	}
