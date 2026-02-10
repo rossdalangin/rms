@@ -24,30 +24,39 @@ Navigate to **LuxeResort > Getting Started**.
 
 ## 3. Inventory Management
 ### 3.1 Accommodations (Rooms/Villas)
-Manage your inventory under **LuxeResort > Accommodations**. Each accommodation represents a bookable unit (e.g., "Luxury Ocean Villa", "Garden Suite").
+Manage your inventory under **LuxeResort > Accommodations**. Each accommodation represents a bookable unit.
 
-- **Base Price**: The standard nightly rate that applies when no dynamic pricing rules match.
-- **Capacity**: Maximum number of guests allowed in this unit.
-- **Amenities**: List features like "Private Pool" or "Free WiFi" for guest information.
-- **iCal Sync**: Provide an **External iCal URL** (e.g., from Airbnb or VRBO) to import existing bookings. The system syncs daily to ensure you never double-book.
-- **Exporting**: Use the **Export URL** provided in the accommodation details to sync your LuxeResort availability to other platforms.
-- **Rules**: Global rules like **Min/Max Stay** and **Lead Time** (Book Ahead) are configured in the main **Settings**.
+- **Base Price**: The standard nightly rate.
+- **Capacity**: Maximum number of guests allowed.
+- **Amenities**: Features like "WiFi" or "Ocean View".
+- **iCal Synchronization (2-Way)**:
+    - **Import**: Paste a URL from Airbnb/Booking.com into the **External iCal URL** field to block those dates locally.
+    - **Export**: Copy the unique **Export URL** found on the room's edit page and paste it into your other booking platforms.
+- **Rules (Min/Max Stay)**: Global duration rules are set in **Settings**.
 
 ### 3.2 Services & Extras
-Add value to your stays under **LuxeResort > Services/Extras**. These are optional items guests can add to their reservation.
+Add optional perks under **LuxeResort > Services/Extras**.
 
-- **Creating Extras**: Add items like "Airport Transfer", "Spa Treatment", or "Breakfast Buffet".
-- **Pricing**: Each extra has its own fixed price which is added to the total stay cost.
-- **Booking Flow**: These appear as optional checkboxes after a guest selects their room.
+- **Examples**: "Airport Transfer ($50)", "Daily Breakfast ($30)", "Spa Treatment ($120)".
+- **Guest Experience**: These appear as simple checkboxes in Step 3 of the booking flow, making it easy for guests to upgrade their stay.
 
 ---
 
-## 4. Pricing Strategies
-### 4.1 Dynamic Pricing Rules
-Go to **LuxeResort > Pricing Rules** to manage seasonal rates.
-- **Fixed Modifiers**: Add/subtract a specific amount (e.g., +$50 for weekends).
-- **Percentage Modifiers**: Adjust rates by a percentage (e.g., +20% for Peak Season).
-- **Priority**: Higher priority rules override lower ones for overlapping dates.
+## 4. Pricing & Promotions
+### 4.1 Dynamic Pricing (Seasonality)
+Manage seasonal rates under **LuxeResort > Pricing Rules**.
+
+- **Modifier Types**:
+    - **Percentage**: Good for seasonal peaks (e.g., `+20%` for Christmas).
+    - **Fixed**: Good for flat surcharges (e.g., `+$50` for weekends).
+- **Priority Logic**: If multiple rules overlap, the system chooses the one with the highest priority.
+    - *Example*: A "Holiday" rule (Priority 10) will override a standard "Weekend" rule (Priority 0).
+
+### 4.2 Coupons & Promo Codes
+Create discounts under **LuxeResort > Coupons**.
+
+- **Example**: Create code `ISLAND2024` for a **15% discount** to celebrate your resort's anniversary.
+- **Usage**: Guests enter the code at the final payment step to see their savings instantly.
 
 ---
 

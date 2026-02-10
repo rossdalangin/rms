@@ -182,14 +182,17 @@ class Settings {
 
 	public function render_general_section_desc() {
 		echo '<p>' . __( 'Basic identification and operational rules for your resort. These settings affect the primary display and booking constraints across the site.', 'resort-manager' ) . '</p>';
+		echo '<p><strong>' . __( 'Example:', 'resort-manager' ) . '</strong> ' . __( 'Setting "Min Nights" to 3 ensures that all bookings must be at least 3 nights long, which is common for luxury villas during peak season.', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_payments_section_desc() {
 		echo '<p>' . __( 'Configure how you accept money. You can enable multiple gateways to give guests choice, or just one to simplify the flow. If only "Offline" is enabled, the system automatically skips the payment choice step for a faster checkout.', 'resort-manager' ) . '</p>';
+		echo '<p><strong>' . __( 'Pro Tip:', 'resort-manager' ) . '</strong> ' . __( 'Enable "Simulation Mode" by leaving the Secret Key empty if you want to test the checkout process without making real transactions.', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_notifications_section_desc() {
 		echo '<p>' . __( 'Manage guest communications and marketing integrations. Customize the confirmation email and connect your resort to Mailchimp or Twilio for automated engagement.', 'resort-manager' ) . '</p>';
+		echo '<p><strong>' . __( 'Integration Example:', 'resort-manager' ) . '</strong> ' . __( 'Connect Twilio to send an instant "Aloha!" SMS to guests as soon as their booking is confirmed.', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_payment_method_toggles() {
@@ -294,13 +297,21 @@ class Settings {
 		$max = get_option( 'resort_max_nights', '30' );
 		$ahead = get_option( 'resort_book_ahead_days', '0' );
 		?>
-		<label><?php _e( 'Min Nights:', 'resort-manager' ); ?></label>
-		<input type="number" name="resort_min_nights" value="<?php echo esc_attr( $min ); ?>" style="width: 60px;">
-		<label style="margin-left: 20px;"><?php _e( 'Max Nights:', 'resort-manager' ); ?></label>
-		<input type="number" name="resort_max_nights" value="<?php echo esc_attr( $max ); ?>" style="width: 60px;">
-		<label style="margin-left: 20px;"><?php _e( 'Book Ahead (Days):', 'resort-manager' ); ?></label>
-		<input type="number" name="resort_book_ahead_days" value="<?php echo esc_attr( $ahead ); ?>" style="width: 60px;">
-		<p class="description"><?php _e( 'Book Ahead defines the minimum days in advance a guest can book.', 'resort-manager' ); ?></p>
+		<div style="margin-bottom: 10px;">
+			<label><strong><?php _e( 'Min Nights:', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_min_nights" value="<?php echo esc_attr( $min ); ?>" style="width: 60px;">
+			<span class="description"><?php _e( '(e.g., 2 nights minimum)', 'resort-manager' ); ?></span>
+		</div>
+		<div style="margin-bottom: 10px;">
+			<label><strong><?php _e( 'Max Nights:', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_max_nights" value="<?php echo esc_attr( $max ); ?>" style="width: 60px;">
+			<span class="description"><?php _e( '(e.g., limit stays to 14 days)', 'resort-manager' ); ?></span>
+		</div>
+		<div>
+			<label><strong><?php _e( 'Book Ahead (Days):', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_book_ahead_days" value="<?php echo esc_attr( $ahead ); ?>" style="width: 60px;">
+			<span class="description"><?php _e( '(e.g., "2" means guests must book at least 48 hours before arrival)', 'resort-manager' ); ?></span>
+		</div>
 		<?php
 	}
 
@@ -308,7 +319,10 @@ class Settings {
 		$value = get_option( 'resort_deposit_percentage', '100' );
 		?>
 		<input type="number" name="resort_deposit_percentage" value="<?php echo esc_attr( $value ); ?>" style="width: 80px;"> %
-		<p class="description"><?php _e( 'Set to 100 for full payment at booking.', 'resort-manager' ); ?></p>
+		<p class="description">
+			<?php _e( 'Define how much the guest pays immediately. 100% means full payment is required to confirm. 25% means they pay a quarter now and the rest later.', 'resort-manager' ); ?>
+			<br><strong><?php _e( 'Example:', 'resort-manager' ); ?></strong> <?php _e( 'On a $1000 booking with a 50% policy, the guest pays $500 to secure the room.', 'resort-manager' ); ?>
+		</p>
 		<?php
 	}
 

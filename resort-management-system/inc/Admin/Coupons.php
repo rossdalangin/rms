@@ -36,6 +36,15 @@ class Coupons {
 			<h1><?php _e( 'Coupons & Promo Codes', 'resort-manager' ); ?></h1>
 			<p class="description"><?php _e( 'Create promotional codes to encourage bookings during slow seasons or to reward loyal guests. Coupons can be a fixed amount or a percentage of the total stay price.', 'resort-manager' ); ?></p>
 
+			<div style="background: #fff8e5; border-left: 4px solid #ffb900; padding: 15px; margin: 20px 0;">
+				<h4 style="margin-top:0;"><?php _e( 'Coupon Examples:', 'resort-manager' ); ?></h4>
+				<ul style="margin-bottom:0;">
+					<li><strong><?php _e( 'SUMMER20:', 'resort-manager' ); ?></strong> <?php _e( 'A 20% discount on the total booking price.', 'resort-manager' ); ?></li>
+					<li><strong><?php _e( 'ALOHA100:', 'resort-manager' ); ?></strong> <?php _e( 'A flat $100 off the final bill.', 'resort-manager' ); ?></li>
+					<li><strong><?php _e( 'Expiry:', 'resort-manager' ); ?></strong> <?php _e( 'If you set an expiry date, the coupon will automatically stop working at midnight on that day.', 'resort-manager' ); ?></li>
+				</ul>
+			</div>
+
 			<div class="resort-admin-card" style="margin-top: 20px;">
 			<h3><?php _e( 'Add New Coupon', 'resort-manager' ); ?></h3>
 			<form method="post">

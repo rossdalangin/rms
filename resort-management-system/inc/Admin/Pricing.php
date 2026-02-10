@@ -38,7 +38,16 @@ class Pricing {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Dynamic Pricing Rules', 'resort-manager' ); ?></h1>
-			<p class="description"><?php _e( 'Set up seasonal rates or weekend surcharges to maximize your revenue. Pricing rules override the base accommodation price for the specified date range. Rules with higher priority take precedence in case of overlaps.', 'resort-manager' ); ?></p>
+			<p class="description"><?php _e( 'Set up seasonal rates or weekend surcharges to maximize your revenue. Pricing rules override the base accommodation price for the specified date range.', 'resort-manager' ); ?></p>
+
+			<div style="background: #f0f6fb; border-left: 4px solid #11a0d2; padding: 15px; margin: 20px 0;">
+				<h4 style="margin-top:0;"><?php _e( 'How Priority & Modifiers Work:', 'resort-manager' ); ?></h4>
+				<ul style="margin-bottom:0;">
+					<li><strong><?php _e( 'Percentage Example:', 'resort-manager' ); ?></strong> <?php _e( 'A +20% rule for Christmas will turn a $100 room into $120.', 'resort-manager' ); ?></li>
+					<li><strong><?php _e( 'Fixed Example:', 'resort-manager' ); ?></strong> <?php _e( 'A +$50 rule for Weekends will add $50 to every night booked on Friday or Saturday.', 'resort-manager' ); ?></li>
+					<li><strong><?php _e( 'Priority:', 'resort-manager' ); ?></strong> <?php _e( 'If two rules overlap on the same date, the one with the higher Priority number is applied. (e.g., Priority 10 beats Priority 0).', 'resort-manager' ); ?></li>
+				</ul>
+			</div>
 
 			<div class="postbox" style="padding: 20px;">
 				<h3><?php _e( 'Add New Pricing Rule', 'resort-manager' ); ?></h3>

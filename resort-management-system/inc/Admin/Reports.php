@@ -126,8 +126,20 @@ class Reports {
 			</div>
 
 			<div class="resort-admin-card" style="margin-top: 40px; border-top-color: var(--resort-sand);">
-				<h3><?php _e( 'Inventory Maintenance', 'resort-manager' ); ?></h3>
-				<p><?php _e( 'Pending bookings older than 30 minutes are considered abandoned. Clean them up to release room availability.', 'resort-manager' ); ?></p>
+				<h3><?php _e( 'Inventory Maintenance & Automation', 'resort-manager' ); ?></h3>
+				<p><?php _e( 'Pending bookings older than 30 minutes are considered abandoned. While the system cleans these up automatically every hour, you can use the manual tools below to take immediate action.', 'resort-manager' ); ?></p>
+
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+					<div>
+						<strong><?php _e( '1. Send Abandoned Cart Reminders:', 'resort-manager' ); ?></strong>
+						<p><small><?php _e( 'Sends a friendly "Still interested?" email to any guest who reached Step 4 but didn\'t pay. This can significantly improve your conversion rates.', 'resort-manager' ); ?></small></p>
+					</div>
+					<div>
+						<strong><?php _e( '2. Clean Up Abandoned Bookings:', 'resort-manager' ); ?></strong>
+						<p><small><?php _e( 'Instantly releases dates held by incomplete bookings, making those rooms available for other guests to search and book.', 'resort-manager' ); ?></small></p>
+					</div>
+				</div>
+
 				<form method="post" style="background:var(--resort-light-teal); padding:20px; border-radius:8px;">
 					<?php wp_nonce_field( 'resort_cleanup_nonce' ); ?>
 					<button type="submit" name="resort_send_reminders" class="button button-primary"><?php _e( 'Send Abandoned Cart Reminders', 'resort-manager' ); ?></button>

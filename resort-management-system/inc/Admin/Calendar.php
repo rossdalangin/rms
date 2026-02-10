@@ -26,8 +26,15 @@ class Calendar {
 		<div class="wrap">
 			<h1><?php _e( 'Reservation Calendar', 'resort-manager' ); ?></h1>
 			<p class="description">
-				<?php _e( 'Manage your resort\'s daily inventory and occupancy at a glance. You can use the controls below to navigate through time and adjust the timeline density. Confirmed bookings are shown in green, while external iCal blocks (e.g., from Airbnb) are marked as "Sync".', 'resort-manager' ); ?>
+				<?php _e( 'Manage your resort\'s daily inventory and occupancy at a glance. You can use the controls below to navigate through time and adjust the timeline density.', 'resort-manager' ); ?>
 			</p>
+
+			<div style="background: #fff; border: 1px solid #ccd0d4; padding: 10px; margin-bottom: 20px; display: inline-block;">
+				<span style="margin-right: 20px;"><strong><?php _e( 'Key:', 'resort-manager' ); ?></strong></span>
+				<span style="display:inline-block; width:15px; height:15px; background:#46b450; vertical-align:middle;"></span> <?php _e( 'Booked (Confirmed/Pending)', 'resort-manager' ); ?> &nbsp;&nbsp;
+				<span style="display:inline-block; width:15px; height:15px; background:#636e72; vertical-align:middle;"></span> <?php _e( 'Sync (External iCal Block)', 'resort-manager' ); ?> &nbsp;&nbsp;
+				<span style="display:inline-block; width:15px; height:15px; background:#fff; border:1px solid #ddd; vertical-align:middle;"></span> <?php _e( 'Free (Available)', 'resort-manager' ); ?>
+			</div>
 
 			<div class="calendar-controls" style="background: #fff; padding: 15px; border: 1px solid #ccd0d4; margin-bottom: 20px;">
 				<form method="get" action="">
