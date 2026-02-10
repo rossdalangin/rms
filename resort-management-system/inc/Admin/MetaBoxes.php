@@ -33,7 +33,10 @@ class MetaBoxes {
 	}
 
 	public function render_booking_details( $post ) {
-		$room_id = get_post_meta( $post->ID, '_resort_room_id', true );
+		$room_ids = get_post_meta( $post->ID, '_resort_room_ids', true );
+		if ( empty( $room_ids ) ) {
+			$room_ids = [ get_post_meta( $post->ID, '_resort_room_id', true ) ];
+		}
 		$checkin = get_post_meta( $post->ID, '_resort_checkin', true );
 		$checkout = get_post_meta( $post->ID, '_resort_checkout', true );
 		$guests_count = get_post_meta( $post->ID, '_resort_guests', true );
@@ -47,7 +50,6 @@ class MetaBoxes {
 		$services = get_post_meta( $post->ID, '_resort_services', true ) ?: [];
 		$coupon = get_post_meta( $post->ID, '_resort_coupon_used', true );
 
-		$room = get_post( $room_id );
 		$guest = get_userdata( $guest_id );
 		$fname = get_post_meta( $post->ID, '_resort_first_name', true );
 		$lname = get_post_meta( $post->ID, '_resort_last_name', true );
@@ -59,8 +61,17 @@ class MetaBoxes {
 				<h4><?php _e( 'Stay Information', 'resort-manager' ); ?></h4>
 				<table class="form-table">
 					<tr>
-						<th><?php _e( 'Accommodation:', 'resort-manager' ); ?></th>
-						<td><?php echo $room ? '<a href="'.get_edit_post_link($room->ID).'">'.esc_html($room->post_title).'</a>' : 'N/A'; ?></td>
+						<th><?php _e( 'Accommodation(s):', 'resort-manager' ); ?></th>
+						<td>
+							<?php
+							foreach ( $room_ids as $r_id ) {
+								$room = get_post( $r_id );
+								if ( $room ) {
+									echo '<a href="'.get_edit_post_link($room->ID).'">'.esc_html($room->post_title).'</a><br>';
+								}
+							}
+							?>
+						</td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Check-in:', 'resort-manager' ); ?></th>

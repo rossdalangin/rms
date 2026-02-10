@@ -64,6 +64,8 @@ class ResortManager {
 		new ResortManager\API\Booking();
 		new ResortManager\API\Services();
 		new ResortManager\Core\ICalSync();
+		new ResortManager\Core\Blocks();
+		new ResortManager\Core\InvoiceEngine();
 		new ResortManager\Gateways\Stripe();
 		new ResortManager\Gateways\PayPal();
 		new ResortManager\Core\Notifications();

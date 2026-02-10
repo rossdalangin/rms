@@ -202,6 +202,24 @@
     to { opacity: 1; transform: translateX(0); }
 }
 
+/* Dashboard Specific */
+.resort-btn-small {
+    padding: 8px 15px;
+    background: var(--resort-primary);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+}
+
+.resort-btn-small:hover {
+    background: var(--resort-secondary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .resort-booking-container {
@@ -210,5 +228,13 @@
     .resort-search-form {
         flex-direction: column;
         align-items: stretch;
+    }
+    .resort-grid {
+        grid-template-columns: 1fr;
+    }
+    .resort-step-indicator {
+        gap: 15px;
+        flex-direction: column;
+        align-items: center;
     }
 }

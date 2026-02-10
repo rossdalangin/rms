@@ -58,6 +58,7 @@ class Settings {
 
 	public function register_settings() {
 		register_setting( 'resort_settings_group', 'resort_name' );
+		register_setting( 'resort_settings_group', 'resort_logo' );
 		register_setting( 'resort_settings_group', 'resort_currency' );
 		register_setting( 'resort_settings_group', 'resort_currency_symbol_pos' );
 		register_setting( 'resort_settings_group', 'resort_min_nights' );
@@ -97,6 +98,14 @@ class Settings {
 			'resort_name',
 			__( 'Resort Name', 'resort-manager' ),
 			[ $this, 'render_name_field' ],
+			'resort-settings',
+			'resort_general_section'
+		);
+
+		add_settings_field(
+			'resort_logo',
+			__( 'Resort Logo URL', 'resort-manager' ),
+			[ $this, 'render_logo_field' ],
 			'resort-settings',
 			'resort_general_section'
 		);
@@ -278,6 +287,14 @@ class Settings {
 	public function render_name_field() {
 		$value = get_option( 'resort_name', '' );
 		echo '<input type="text" name="resort_name" value="' . esc_attr( $value ) . '" class="regular-text">';
+	}
+
+	public function render_logo_field() {
+		$value = get_option( 'resort_logo', '' );
+		echo '<input type="url" name="resort_logo" value="' . esc_attr( $value ) . '" class="regular-text" placeholder="https://example.com/logo.png">';
+		if ( $value ) {
+			echo '<br><img src="' . esc_url($value) . '" style="max-height: 50px; margin-top: 10px;">';
+		}
 	}
 
 	public function render_currency_settings() {

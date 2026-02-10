@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "resort-manager/booking",
+	"title": "Booking Engine",
+	"category": "widgets",
+	"icon": "palmtree",
+	"description": "Inserts the 5-step LuxeResort booking engine.",
+	"textdomain": "resort-manager",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"render": "file:./render.php"
+}

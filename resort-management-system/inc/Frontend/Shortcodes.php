@@ -10,9 +10,15 @@ class Shortcodes {
 	}
 
 	public function render_booking_engine( $atts ) {
+		$logo = get_option( 'resort_logo' );
 		ob_start();
 		?>
 		<div id="resort-booking-app" class="resort-booking-container">
+			<?php if ( $logo ) : ?>
+				<div class="resort-booking-logo" style="text-align:center; margin-bottom:30px;">
+					<img src="<?php echo esc_url($logo); ?>" style="max-height: 80px;">
+				</div>
+			<?php endif; ?>
 			<div class="resort-step-indicator">
 				<span class="step active" data-step="1">1. Search</span>
 				<span class="step" data-step="2">2. Room</span>
@@ -78,6 +84,7 @@ class Shortcodes {
 
 		$current_user = wp_get_current_user();
 		$loyalty_points = get_user_meta( $current_user->ID, '_resort_loyalty_points', true ) ?: 0;
+		$display_name = $current_user->first_name ?: $current_user->display_name;
 
 		$bookings = get_posts( [
 			'post_type'  => 'booking',
@@ -95,7 +102,7 @@ class Shortcodes {
 		<div class="resort-guest-dashboard resort-booking-container">
 			<div class="guest-welcome" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;">
 				<div>
-					<h2 style="margin:0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $current_user->first_name ); ?></h2>
+					<h2 style="margin:0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $display_name ); ?></h2>
 					<p><?php _e( 'Welcome to your private guest portal.', 'resort-manager' ); ?></p>
 				</div>
 				<div class="loyalty-badge" style="background:var(--resort-primary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
@@ -127,11 +134,14 @@ class Shortcodes {
 								<td style="padding:10px;"><?php echo esc_html( $checkin ); ?> - <?php echo esc_html( $checkout ); ?></td>
 								<td style="padding:10px;">
 									<?php echo esc_html( ucfirst( $status ) ); ?>
+									<?php if ( 'confirmed' === $status ) : ?>
+										<div style="margin-top:10px;">
+											<a href="<?php echo home_url('/?resort_invoice=' . $booking->ID); ?>" target="_blank" class="resort-btn-small" style="background:var(--resort-teal); text-decoration:none; margin-right:5px;">📄 Invoice</a>
+											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none;">🗓️ Add to Calendar</a>
+										</div>
+									<?php endif; ?>
 									<?php if ( 'confirmed' === $status && strtotime( $checkout ) < time() ) : ?>
 										<br><button class="resort-btn-small show-review-form" data-booking="<?php echo $booking->ID; ?>"><?php _e( 'Leave a Review', 'resort-manager' ); ?></button>
-									<?php endif; ?>
-									<?php if ( 'confirmed' === $status && strtotime( $checkin ) > time() ) : ?>
-										<br><a href="#" class="resort-btn-small" style="background:#636e72;"><?php _e( 'Modify Stay', 'resort-manager' ); ?></a>
 									<?php endif; ?>
 								</td>
 							</tr>

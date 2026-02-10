@@ -149,7 +149,7 @@ class PostTypes {
 			'public'             => true,
 			'show_ui'            => true,
 			'show_in_menu'       => 'resort-manager',
-			'supports'           => [ 'title', 'editor' ],
+			'supports'           => [ 'title', 'editor', 'comments' ],
 			'show_in_rest'       => true,
 		];
 

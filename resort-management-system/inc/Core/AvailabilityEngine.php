@@ -25,22 +25,28 @@ class AvailabilityEngine {
 		return get_posts( $args );
 	}
 
-	public static function mark_as_booked( $room_id, $checkin, $checkout, $booking_id ) {
+	public static function mark_as_booked( $room_ids, $checkin, $checkout, $booking_id ) {
 		global $wpdb;
 		$table_availability = $wpdb->prefix . 'resort_availability';
+
+		if ( ! is_array( $room_ids ) ) {
+			$room_ids = [ $room_ids ];
+		}
 
 		$start = new \DateTime( $checkin );
 		$end = new \DateTime( $checkout );
 		$interval = new \DateInterval( 'P1D' );
 		$period = new \DatePeriod( $start, $interval, $end );
 
-		foreach ( $period as $date ) {
-			$wpdb->insert( $table_availability, [
-				'room_id'    => $room_id,
-				'booking_id' => $booking_id,
-				'date'       => $date->format( 'Y-m-d' ),
-				'status'     => 'booked',
-			] );
+		foreach ( $room_ids as $room_id ) {
+			foreach ( $period as $date ) {
+				$wpdb->insert( $table_availability, [
+					'room_id'    => intval($room_id),
+					'booking_id' => intval($booking_id),
+					'date'       => $date->format( 'Y-m-d' ),
+					'status'     => 'booked',
+				] );
+			}
 		}
 	}
 }

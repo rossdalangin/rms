@@ -13,7 +13,8 @@ class Booking {
 	public function submit_booking() {
 		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
 
-		$room_id = intval( $_POST['room_id'] );
+		$room_id = $_POST['room_id'];
+		$room_ids = is_array($room_id) ? array_map('intval', $room_id) : [ intval($room_id) ];
 		$checkin = sanitize_text_field( $_POST['checkin'] );
 		$checkout = sanitize_text_field( $_POST['checkout'] );
 		$guests_count = intval( $_POST['guests'] ?? 1 );
@@ -57,7 +58,10 @@ class Booking {
 		}
 
 		// Calculate Total Price
-		$total_price = \ResortManager\Core\PricingEngine::calculate_total( $room_id, $checkin, $checkout );
+		$total_price = 0;
+		foreach ( $room_ids as $r_id ) {
+			$total_price += \ResortManager\Core\PricingEngine::calculate_total( $r_id, $checkin, $checkout );
+		}
 
 		// Add services prices
 		$services = isset( $_POST['services'] ) ? (array) $_POST['services'] : [];
@@ -67,7 +71,8 @@ class Booking {
 		}
 
 		// Save Meta
-		update_post_meta( $booking_id, '_resort_room_id', $room_id );
+		update_post_meta( $booking_id, '_resort_room_id', $room_ids[0] ); // Fallback for old code
+		update_post_meta( $booking_id, '_resort_room_ids', $room_ids );
 		update_post_meta( $booking_id, '_resort_checkin', $checkin );
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
 		update_post_meta( $booking_id, '_resort_guests', $guests_count );
@@ -112,7 +117,7 @@ class Booking {
 		}
 
 		// Mark as booked in availability table
-		\ResortManager\Core\AvailabilityEngine::mark_as_booked( $room_id, $checkin, $checkout, $booking_id );
+		\ResortManager\Core\AvailabilityEngine::mark_as_booked( $room_ids, $checkin, $checkout, $booking_id );
 
 		// Validate Payment Method
 		$payment_method = sanitize_text_field( $_POST['payment_method'] ?? 'offline' );

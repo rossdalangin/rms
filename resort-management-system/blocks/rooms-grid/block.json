@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "resort-manager/rooms-grid",
+	"title": "Accommodations Grid",
+	"category": "widgets",
+	"icon": "grid-view",
+	"description": "Displays a beautiful grid of your resort suites and villas.",
+	"textdomain": "resort-manager",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"render": "file:./render.php"
+}

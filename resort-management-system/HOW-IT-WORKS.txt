@@ -25,6 +25,7 @@ The "LuxeResort" menu in your WordPress dashboard is your central command center
 * Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
 * Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
 * Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends for the next 30 days.
+* Content Management: Use built-in Gutenberg blocks to easily add the booking engine, room grids, or reviews to any page.
 
 ---
 

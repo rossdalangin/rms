@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "resort-manager/reviews",
+	"title": "Guest Reviews",
+	"category": "widgets",
+	"icon": "star-filled",
+	"description": "Showcases verified guest memories and star ratings.",
+	"textdomain": "resort-manager",
+	"attributes": {},
+	"supports": {
+		"html": false
+	},
+	"render": "file:./render.php"
+}
