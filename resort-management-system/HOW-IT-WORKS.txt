@@ -1,0 +1,42 @@
+LUXERESORT MANAGER - HOW IT WORKS
+
+LuxeResort Manager is a complete "Paradise-in-a-Box" solution for WordPress. Here is a simple breakdown of how the system operates for both your guests and your staff.
+
+---
+
+1. FOR THE GUEST (The Booking Journey)
+--------------------------------------
+The guest experience is a smooth, 5-step process designed to maximize conversions:
+
+Step 1: Search - Guests enter their stay dates and number of people. The system checks real-time availability across all your villas.
+Step 2: Selection - Guests see available rooms with high-quality images and total prices (calculated including seasonal rates).
+Step 3: Extras - Guests can add luxury services like "Spa Treatments" or "Airport Transfers" to their stay.
+Step 4: Guest Info - A clean form collects contact details, meal preferences, and special requests. The system automatically creates a private guest account.
+Step 5: Payment - Guests pay securely via Stripe, PayPal, or choose "Pay at Resort." Once confirmed, their dates are instantly blocked across all platforms (iCal sync).
+
+---
+
+2. FOR THE ADMIN (The Management Hub)
+-------------------------------------
+The "LuxeResort" menu in your WordPress dashboard is your central command center:
+
+* Onboarding: Use the "One-Click Tropical Setup" to instantly generate demo rooms and professional pages.
+* Reservation Calendar: A beautiful, interactive timeline where you can see who is arriving, who is staying, and which rooms are blocked by external sites like Airbnb.
+* Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
+* Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
+* Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends for the next 30 days.
+
+---
+
+3. UNDER THE HOOD (The Automation)
+----------------------------------
+The plugin works in the background so you don't have to:
+
+* Daily iCal Sync: Every day, the system fetches bookings from your other channels (Airbnb, VRBO) to prevent double-bookings.
+* Abandoned Cart Recovery: If a guest stops halfway through a booking, the system sends them a friendly reminder email 15 minutes later.
+* Inventory Maintenance: Every hour, the system releases rooms held by "pending" bookings that never finished, keeping your calendar accurate.
+* Secure Finance: All payments are processed through encrypted REST APIs, and every transaction is logged for your accounting.
+
+---
+
+LuxeResort Manager: Helping you spend less time on software, and more time on hospitality.
