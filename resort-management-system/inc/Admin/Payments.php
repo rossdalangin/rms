@@ -128,7 +128,9 @@ class Payments {
 							</tr>
 						<?php else : ?>
 							<?php foreach ( $payments as $payment ) :
-								$booking_title = get_the_title( $payment->booking_id );
+								$fname = get_post_meta( $payment->booking_id, '_resort_first_name', true );
+								$lname = get_post_meta( $payment->booking_id, '_resort_last_name', true );
+								$booking_title = ( ! empty( $fname ) || ! empty( $lname ) ) ? "$fname $lname" : str_replace( 'Booking for ', '', get_the_title( $payment->booking_id ) );
 								$room_id = get_post_meta( $payment->booking_id, '_resort_room_id', true );
 								$room_title = get_the_title( $room_id );
 								$checkin = get_post_meta( $payment->booking_id, '_resort_checkin', true );

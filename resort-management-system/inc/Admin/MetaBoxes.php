@@ -49,6 +49,9 @@ class MetaBoxes {
 
 		$room = get_post( $room_id );
 		$guest = get_userdata( $guest_id );
+		$fname = get_post_meta( $post->ID, '_resort_first_name', true );
+		$lname = get_post_meta( $post->ID, '_resort_last_name', true );
+		$display_name = ( ! empty( $fname ) || ! empty( $lname ) ) ? "$fname $lname" : ( $guest ? $guest->display_name : 'N/A' );
 
 		?>
 		<div class="booking-details-admin" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
@@ -78,7 +81,7 @@ class MetaBoxes {
 				<table class="form-table">
 					<tr>
 						<th><?php _e( 'Name:', 'resort-manager' ); ?></th>
-						<td><?php echo $guest ? esc_html( $guest->display_name ) : 'N/A'; ?></td>
+						<td><?php echo esc_html( $display_name ); ?></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Email:', 'resort-manager' ); ?></th>

@@ -72,6 +72,8 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
 		update_post_meta( $booking_id, '_resort_guests', $guests_count );
 		update_post_meta( $booking_id, '_resort_guest_id', $user_id );
+		update_post_meta( $booking_id, '_resort_first_name', sanitize_text_field( $guest_data['first_name'] ?? '' ) );
+		update_post_meta( $booking_id, '_resort_last_name', sanitize_text_field( $guest_data['last_name'] ?? '' ) );
 		update_post_meta( $booking_id, '_resort_guest_email', sanitize_email( $guest_data['email'] ) );
 		update_post_meta( $booking_id, '_resort_guest_phone', sanitize_text_field( $guest_data['phone'] ?? '' ) );
 		update_post_meta( $booking_id, '_resort_meal_preference', sanitize_text_field( $guest_data['meal_preference'] ?? 'none' ) );

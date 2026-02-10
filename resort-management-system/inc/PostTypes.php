@@ -87,6 +87,7 @@ class PostTypes {
 		$new_columns = [
 			'cb'         => $columns['cb'],
 			'title'      => $columns['title'],
+			'guest'      => __( 'Guest Details', 'resort-manager' ),
 			'dates'      => __( 'Stay Dates', 'resort-manager' ),
 			'total'      => __( 'Total Price', 'resort-manager' ),
 			'status'     => __( 'Status', 'resort-manager' ),
@@ -98,6 +99,20 @@ class PostTypes {
 
 	public static function booking_column_data( $column, $post_id ) {
 		switch ( $column ) {
+			case 'guest':
+				$fname = get_post_meta( $post_id, '_resort_first_name', true );
+				$lname = get_post_meta( $post_id, '_resort_last_name', true );
+				$email = get_post_meta( $post_id, '_resort_guest_email', true );
+
+				if ( ! empty( $fname ) || ! empty( $lname ) ) {
+					echo '<strong>' . esc_html( "$fname $lname" ) . '</strong><br>';
+				} else {
+					// Fallback to title if names aren't in meta yet
+					$title = get_the_title( $post_id );
+					echo '<strong>' . esc_html( str_replace( 'Booking for ', '', $title ) ) . '</strong><br>';
+				}
+				echo '<small>' . esc_html( $email ) . '</small>';
+				break;
 			case 'dates':
 				$checkin = get_post_meta( $post_id, '_resort_checkin', true );
 				$checkout = get_post_meta( $post_id, '_resort_checkout', true );

@@ -26,13 +26,19 @@ class Reports {
 			header( 'Content-Disposition: attachment; filename=resort-bookings-' . date('Y-m-d') . '.csv' );
 
 			$output = fopen( 'php://output', 'w' );
-			fputcsv( $output, [ 'Booking ID', 'Guest Name', 'Check-in', 'Check-out', 'Total Price', 'Status' ] );
+			fputcsv( $output, [ 'Booking ID', 'First Name', 'Last Name', 'Email', 'Check-in', 'Check-out', 'Total Price', 'Status' ] );
 
 			$bookings = get_posts( [ 'post_type' => 'booking', 'numberposts' => -1 ] );
 			foreach ( $bookings as $booking ) {
+				$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
+				$lname = get_post_meta( $booking->ID, '_resort_last_name', true );
+				$email = get_post_meta( $booking->ID, '_resort_guest_email', true );
+
 				fputcsv( $output, [
 					$booking->ID,
-					$booking->post_title,
+					$fname ?: '-',
+					$lname ?: '-',
+					$email ?: '-',
 					get_post_meta( $booking->ID, '_resort_checkin', true ),
 					get_post_meta( $booking->ID, '_resort_checkout', true ),
 					get_post_meta( $booking->ID, '_resort_total_price', true ),
@@ -164,9 +170,12 @@ class Reports {
 						$status = get_post_meta( $booking->ID, '_resort_status', true );
 						$checkin = get_post_meta( $booking->ID, '_resort_checkin', true );
 						$checkout = get_post_meta( $booking->ID, '_resort_checkout', true );
+						$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
+						$lname = get_post_meta( $booking->ID, '_resort_last_name', true );
+						$guest_name = ( ! empty( $fname ) || ! empty( $lname ) ) ? "$fname $lname" : str_replace( 'Booking for ', '', $booking->post_title );
 						?>
 						<tr>
-							<td><strong><?php echo esc_html( $booking->post_title ); ?></strong></td>
+							<td><strong><?php echo esc_html( $guest_name ); ?></strong></td>
 							<td><?php echo esc_html( $checkin ); ?> to <?php echo esc_html( $checkout ); ?></td>
 							<td><?php echo \ResortManager\Core\PricingEngine::format_price( floatval($price) ); ?></td>
 							<td><?php echo esc_html( ucfirst( $status ) ); ?></td>
