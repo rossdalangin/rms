@@ -28,6 +28,7 @@ class Coupons {
 				'discount_type'   => sanitize_text_field( $_POST['discount_type'] ),
 				'expiry_date'     => sanitize_text_field( $_POST['expiry_date'] ),
 			] );
+			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Coupon "%s" created.', 'resort-manager' ), $_POST['code'] ) );
 		}
 
 		$coupons = $wpdb->get_results( "SELECT * FROM $table_coupons" );

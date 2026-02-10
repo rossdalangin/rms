@@ -422,18 +422,25 @@ class Settings {
 		if ( isset( $_POST['resort_maintenance_action'] ) && check_admin_referer( 'resort_maintenance_nonce' ) ) {
 			if ( isset( $_POST['resort_reset_data'] ) ) {
 				\ResortManager\Admin\Maintenance::reset_data();
+				\ResortManager\Core\ActivityLogger::log( __( 'Entire plugin data reset.', 'resort-manager' ) );
 				echo '<div class="updated"><p>' . __( 'All data has been reset.', 'resort-manager' ) . '</p></div>';
 			}
 
 			if ( isset( $_POST['resort_sample_data'] ) ) {
 				\ResortManager\Admin\Maintenance::install_sample_data();
+				\ResortManager\Core\ActivityLogger::log( __( 'Sample data re-installed.', 'resort-manager' ) );
 				echo '<div class="updated"><p>' . __( 'Sample data has been installed.', 'resort-manager' ) . '</p></div>';
 			}
 
 			if ( isset( $_POST['resort_create_pages'] ) ) {
 				\ResortManager\Admin\Maintenance::create_default_pages();
+				\ResortManager\Core\ActivityLogger::log( __( 'Default pages regenerated.', 'resort-manager' ) );
 				echo '<div class="updated"><p>' . __( 'Default pages created successfully.', 'resort-manager' ) . '</p></div>';
 			}
+		}
+
+		if ( isset($_GET['settings-updated']) ) {
+			\ResortManager\Core\ActivityLogger::log( __( 'General settings updated.', 'resort-manager' ) );
 		}
 
 		?>

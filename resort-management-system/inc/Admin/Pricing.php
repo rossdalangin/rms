@@ -30,6 +30,7 @@ class Pricing {
 				'modifier_type'  => sanitize_text_field( $_POST['modifier_type'] ),
 				'priority'       => intval( $_POST['priority'] ),
 			] );
+			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'New pricing rule added for Room ID %d.', 'resort-manager' ), $_POST['room_id'] ) );
 			echo '<div class="updated"><p>Rule added!</p></div>';
 		}
 

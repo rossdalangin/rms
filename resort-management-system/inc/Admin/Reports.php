@@ -5,6 +5,7 @@ class Reports {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_reports_page' ] );
 		add_action( 'admin_init', [ $this, 'handle_export_csv' ] );
+		add_action( 'wp_ajax_resort_apply_smart_pricing', [ $this, 'apply_smart_pricing' ] );
 	}
 
 	public function add_reports_page() {
@@ -48,6 +49,40 @@ class Reports {
 			fclose( $output );
 			exit;
 		}
+	}
+
+	public function apply_smart_pricing() {
+		check_ajax_referer( 'resort_cleanup_nonce', 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error();
+		}
+
+		$modifier = floatval( $_POST['modifier'] );
+		$type = sanitize_text_field( $_POST['type'] );
+		$days = intval( $_POST['days'] );
+
+		global $wpdb;
+		$table_pricing = $wpdb->prefix . 'resort_pricing';
+		$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
+
+		$start_date = date( 'Y-m-d' );
+		$end_date = date( 'Y-m-d', strtotime( "+$days days" ) );
+
+		foreach ( $rooms as $room ) {
+			$wpdb->insert( $table_pricing, [
+				'room_id'        => $room->ID,
+				'start_date'     => $start_date,
+				'end_date'       => $end_date,
+				'price_modifier' => $modifier,
+				'modifier_type'  => 'percentage',
+				'priority'       => 10, // Higher priority for smart pricing
+			] );
+		}
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Smart Pricing applied: %s%% for %d days.', 'resort-manager' ), ($modifier > 0 ? '+' : '') . $modifier, $days ) );
+
+		wp_send_json_success( [ 'message' => __( 'Pricing rules applied successfully!', 'resort-manager' ) ] );
 	}
 
 	public function render_reports_page() {
@@ -209,7 +244,17 @@ class Reports {
 											<?php echo esc_html( $insight['suggestion'] ); ?>
 										</span>
 									</td>
-									<td><a href="<?php echo admin_url('edit.php?post_type=accommodation&page=resort-pricing'); ?>" class="button button-small"><?php _e( 'Apply Rule', 'resort-manager' ); ?></a></td>
+									<td>
+										<?php if ( $insight['type'] !== 'stable' ) : ?>
+											<button type="button" class="button button-small apply-smart-pricing"
+												data-modifier="<?php echo $insight['type'] === 'increase' ? '20' : '-15'; ?>"
+												data-days="<?php echo $insight['days']; ?>">
+												<?php _e( 'One-Click Apply', 'resort-manager' ); ?>
+											</button>
+										<?php else : ?>
+											-
+										<?php endif; ?>
+									</td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -232,6 +277,28 @@ class Reports {
 						$(this).addClass('nav-tab-active');
 						$('#resort-analytics-content').hide();
 						$('#resort-optimization-content').show();
+					});
+
+					$('.apply-smart-pricing').click(function() {
+						const btn = $(this);
+						const data = {
+							action: 'resort_apply_smart_pricing',
+							nonce: '<?php echo wp_create_nonce("resort_cleanup_nonce"); ?>',
+							modifier: btn.data('modifier'),
+							days: btn.data('days')
+						};
+
+						btn.prop('disabled', true).text('Applying...');
+
+						$.post(ajaxurl, data, function(res) {
+							if (res.success) {
+								alert(res.data.message);
+								location.reload();
+							} else {
+								alert('Error applying rule.');
+								btn.prop('disabled', false).text('One-Click Apply');
+							}
+						});
 					});
 				});
 			</script>
@@ -267,6 +334,7 @@ class Reports {
 			if ( $occupancy > 80 ) {
 				$suggestions[] = [
 					'period' => $label,
+					'days'   => $days,
 					'occupancy' => round($occupancy),
 					'type' => 'increase',
 					'suggestion' => sprintf( __( 'High Demand! Increase prices by %d%%', 'resort-manager' ), 20 )
@@ -274,6 +342,7 @@ class Reports {
 			} elseif ( $occupancy < 30 ) {
 				$suggestions[] = [
 					'period' => $label,
+					'days'   => $days,
 					'occupancy' => round($occupancy),
 					'type' => 'decrease',
 					'suggestion' => sprintf( __( 'Low Demand. Offer a %d%% "Early Escape" discount', 'resort-manager' ), 15 )
@@ -281,6 +350,7 @@ class Reports {
 			} else {
 				$suggestions[] = [
 					'period' => $label,
+					'days'   => $days,
 					'occupancy' => round($occupancy),
 					'type' => 'stable',
 					'suggestion' => __( 'Healthy demand. Maintain current rates.', 'resort-manager' )

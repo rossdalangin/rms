@@ -7,7 +7,7 @@
             checkin: '',
             checkout: '',
             guests: 1,
-            selectedRoom: null,
+            selectedRooms: [],
             selectedServices: [],
             guestData: {}
         },
@@ -28,6 +28,8 @@
         bindEvents: function() {
             $(document).on('click', '#resort-search-btn', this.handleSearch.bind(this));
             $(document).on('click', '.select-room-btn', this.handleRoomSelection.bind(this));
+            $(document).on('click', '.remove-room-btn', this.handleRoomRemoval.bind(this));
+            $(document).on('click', '#resort-rooms-next', this.handleRoomsNext.bind(this));
             $(document).on('click', '#resort-services-next', this.handleServicesSelection.bind(this));
             $(document).on('submit', '#resort-guest-form', this.handleGuestForm.bind(this));
             $(document).on('click', '#resort-apply-coupon', this.handleCouponApply.bind(this));
@@ -131,7 +133,47 @@
         },
 
         handleRoomSelection: function(e) {
-            this.state.selectedRoom = $(e.currentTarget).data('room');
+            const room = $(e.currentTarget).data('room');
+            // Check if already selected
+            if (this.state.selectedRooms.find(r => r.id === room.id)) {
+                alert('This room is already in your selection.');
+                return;
+            }
+            this.state.selectedRooms.push(room);
+            this.updateSelectedRoomsUI();
+        },
+
+        handleRoomRemoval: function(e) {
+            const roomId = $(e.currentTarget).data('id');
+            this.state.selectedRooms = this.state.selectedRooms.filter(r => r.id !== roomId);
+            this.updateSelectedRoomsUI();
+        },
+
+        updateSelectedRoomsUI: function() {
+            const $container = $('#resort-selected-rooms-container');
+            const $list = $('#resort-selected-list');
+            $list.empty();
+
+            if (this.state.selectedRooms.length > 0) {
+                $container.show();
+                this.state.selectedRooms.forEach(room => {
+                    $list.append(`
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#fff; padding:10px 15px; border-radius:8px; margin-bottom:10px;">
+                            <span><strong>${room.title}</strong> - ${this.formatPrice(room.price)}</span>
+                            <button type="button" class="remove-room-btn" data-id="${room.id}" style="background:none; border:none; color:#d63638; cursor:pointer;">&times; Remove</button>
+                        </div>
+                    `);
+                });
+            } else {
+                $container.hide();
+            }
+        },
+
+        handleRoomsNext: function() {
+            if (this.state.selectedRooms.length === 0) {
+                alert('Please select at least one room.');
+                return;
+            }
             this.fetchServices();
         },
 
@@ -189,16 +231,22 @@
 
         renderSummary: function() {
             const $summary = $('.booking-summary');
+            let roomsHtml = '<p><strong>Accommodations:</strong><br>' + this.state.selectedRooms.map(r => `&bull; ${r.title} (${this.formatPrice(r.price)})`).join('<br>') + '</p>';
+
             let servicesHtml = '';
             let servicesTotal = 0;
             if (this.state.selectedServices.length > 0) {
                 servicesHtml = '<p><strong>Extras:</strong> ' + this.state.selectedServices.map(s => s.title).join(', ') + '</p>';
                 this.state.selectedServices.forEach(s => servicesTotal += parseFloat(s.price));
             }
-            const grandTotal = parseFloat(this.state.selectedRoom.price) + servicesTotal;
+
+            let roomsTotal = 0;
+            this.state.selectedRooms.forEach(r => roomsTotal += parseFloat(r.price));
+
+            const grandTotal = roomsTotal + servicesTotal;
 
             $summary.html(`
-                <p><strong>Room:</strong> ${this.state.selectedRoom.title}</p>
+                ${roomsHtml}
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
                 ${servicesHtml}
                 <p><strong>Subtotal:</strong> ${this.formatPrice(grandTotal)}</p>
@@ -260,7 +308,7 @@
                 data: {
                     action: 'resort_submit_booking',
                     nonce: resortData.nonce,
-                    room_id: this.state.selectedRoom.id,
+                    room_id: this.state.selectedRooms.map(r => r.id),
                     checkin: this.state.checkin,
                     checkout: this.state.checkout,
                     guests: this.state.guests,

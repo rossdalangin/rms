@@ -48,6 +48,8 @@ class PostTypes {
 	private static function register_booking() {
 		add_filter( 'manage_booking_posts_columns', [ self::class, 'booking_columns' ] );
 		add_action( 'manage_booking_posts_custom_column', [ self::class, 'booking_column_data' ], 10, 2 );
+		add_filter( 'post_row_actions', [ self::class, 'booking_row_actions' ], 10, 2 );
+		add_action( 'admin_init', [ self::class, 'handle_booking_actions' ] );
 
 		$labels = [
 			'name'               => _x( 'Bookings', 'post type general name', 'resort-manager' ),
@@ -131,6 +133,39 @@ class PostTypes {
 				echo '<span class="status-badge status-' . esc_attr($check_status) . '">' . esc_html( ucfirst($check_status) ) . '</span>';
 				break;
 		}
+	}
+
+	public static function booking_row_actions( $actions, $post ) {
+		if ( 'booking' !== $post->post_type ) return $actions;
+
+		$check_status = get_post_meta( $post->ID, '_resort_check_status', true ) ?: 'pending';
+
+		if ( 'pending' === $check_status ) {
+			$actions['checkin'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=booking&resort_action=checkin&booking_id=' . $post->ID ), 'resort_booking_action' ) . '" style="color:green;">' . __( 'Mark Checked In', 'resort-manager' ) . '</a>';
+		} elseif ( 'checked_in' === $check_status ) {
+			$actions['checkout'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=booking&resort_action=checkout&booking_id=' . $post->ID ), 'resort_booking_action' ) . '" style="color:orange;">' . __( 'Mark Checked Out', 'resort-manager' ) . '</a>';
+		}
+
+		return $actions;
+	}
+
+	public static function handle_booking_actions() {
+		if ( ! isset( $_GET['resort_action'] ) || ! current_user_can( 'manage_options' ) ) return;
+		check_admin_referer( 'resort_booking_action' );
+
+		$booking_id = intval( $_GET['booking_id'] );
+		$action = $_GET['resort_action'];
+
+		if ( 'checkin' === $action ) {
+			update_post_meta( $booking_id, '_resort_check_status', 'checked_in' );
+			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Booking #%d marked as Checked In.', 'resort-manager' ), $booking_id ) );
+		} elseif ( 'checkout' === $action ) {
+			update_post_meta( $booking_id, '_resort_check_status', 'checked_out' );
+			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Booking #%d marked as Checked Out.', 'resort-manager' ), $booking_id ) );
+		}
+
+		wp_redirect( remove_query_arg( [ 'resort_action', 'booking_id', '_wpnonce' ] ) );
+		exit;
 	}
 
 	private static function register_review() {

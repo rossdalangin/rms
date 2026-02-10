@@ -9,7 +9,7 @@ LuxeResort Manager is a complete "Paradise-in-a-Box" solution for WordPress. Her
 The guest experience is a smooth, 5-step process designed to maximize conversions:
 
 Step 1: Search - Guests enter their stay dates and number of people. The system checks real-time availability across all your villas.
-Step 2: Selection - Guests see available rooms with high-quality images and total prices (calculated including seasonal rates).
+Step 2: Selection - Guests see available rooms with high-quality images and total prices. They can select multiple rooms for their stay.
 Step 3: Extras - Guests can add luxury services like "Spa Treatments" or "Airport Transfers" to their stay.
 Step 4: Guest Info - A clean form collects contact details, meal preferences, and special requests. The system automatically creates a private guest account.
 Step 5: Payment - Guests pay securely via Stripe, PayPal, or choose "Pay at Resort." Once confirmed, their dates are instantly blocked across all platforms (iCal sync).
