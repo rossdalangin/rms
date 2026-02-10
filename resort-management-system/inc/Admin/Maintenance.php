@@ -96,7 +96,7 @@ class Maintenance {
 
 		// Update settings
 		update_option( 'resort_name', 'LuxeResort & Spa' );
-		update_option( 'resort_currency', 'USD' );
+		update_option( 'resort_currency', 'PHP' );
 	}
 
 	public static function create_default_pages() {

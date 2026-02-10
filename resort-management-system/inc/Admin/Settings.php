@@ -281,10 +281,10 @@ class Settings {
 	}
 
 	public function render_currency_settings() {
-		$currency = get_option( 'resort_currency', 'USD' );
+		$currency = get_option( 'resort_currency', 'PHP' );
 		$pos = get_option( 'resort_currency_symbol_pos', 'before' );
 		?>
-		<input type="text" name="resort_currency" value="<?php echo esc_attr($currency); ?>" placeholder="USD" style="width: 80px;">
+		<input type="text" name="resort_currency" value="<?php echo esc_attr($currency); ?>" placeholder="PHP" style="width: 80px;">
 		<select name="resort_currency_symbol_pos">
 			<option value="before" <?php selected($pos, 'before'); ?>><?php _e( 'Symbol Before ($100)', 'resort-manager' ); ?></option>
 			<option value="after" <?php selected($pos, 'after'); ?>><?php _e( 'Symbol After (100 €)', 'resort-manager' ); ?></option>

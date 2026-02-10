@@ -43,7 +43,7 @@ class PricingEngine {
 	}
 
 	public static function format_price( $amount ) {
-		$currency = get_option( 'resort_currency', 'USD' );
+		$currency = get_option( 'resort_currency', 'PHP' );
 		$pos = get_option( 'resort_currency_symbol_pos', 'before' );
 		$formatted = number_format( $amount, 2 );
 
