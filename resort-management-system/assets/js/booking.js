@@ -33,6 +33,7 @@
             $(document).on('click', '#resort-services-next', this.handleServicesSelection.bind(this));
             $(document).on('submit', '#resort-guest-form', this.handleGuestForm.bind(this));
             $(document).on('click', '#resort-apply-coupon', this.handleCouponApply.bind(this));
+            $(document).on('click', '#resort-apply-points', this.handlePointsApply.bind(this));
             $(document).on('click', '#resort-complete-booking', this.handleCompleteBooking.bind(this));
 
             // Review Modal
@@ -133,13 +134,45 @@
         },
 
         handleRoomSelection: function(e) {
-            const room = $(e.currentTarget).data('room');
-            // Check if already selected
-            if (this.state.selectedRooms.find(r => r.id === room.id)) {
-                alert('This room is already in your selection.');
-                return;
+            const item = $(e.currentTarget).data('room');
+
+            if (item.type === 'package') {
+                // Packages are special: they might represent multiple things but for now we treat as one choice that clears others if desired
+                // Or just add it as a "Room" with pre-selected services.
+                // Requirement said "Allow multiple rooms per booking".
+                // If they select a package, we'll add the base room and pre-fill services.
+
+                const room = {
+                    id: item.room_id,
+                    title: item.title,
+                    price: item.price, // Use package price for this "room"
+                    is_package: true,
+                    package_id: item.id
+                };
+
+                if (this.state.selectedRooms.find(r => r.id === room.id)) {
+                    alert('The base room for this package is already in your selection.');
+                    return;
+                }
+
+                this.state.selectedRooms.push(room);
+
+                // Pre-select services from package
+                if (item.services) {
+                    item.services.forEach(s_id => {
+                        if (!this.state.selectedServices.find(s => s.id == s_id)) {
+                            this.state.selectedServices.push({ id: s_id, price: 0, title: 'Included in Package' });
+                        }
+                    });
+                }
+            } else {
+                if (this.state.selectedRooms.find(r => r.id === item.id)) {
+                    alert('This room is already in your selection.');
+                    return;
+                }
+                this.state.selectedRooms.push(item);
             }
-            this.state.selectedRooms.push(room);
+
             this.updateSelectedRoomsUI();
         },
 
@@ -200,16 +233,28 @@
 
             services.forEach(service => {
                 const clone = template.content.cloneNode(true);
+                const isPreSelected = this.state.selectedServices.find(s => s.id == service.id);
+
                 $(clone).find('.service-title').text(service.title);
-                $(clone).find('.service-price').text(this.formatPrice(service.price));
-                $(clone).find('.resort-service-checkbox').val(service.id).data('price', service.price).data('title', service.title);
+                $(clone).find('.service-price').text(isPreSelected ? 'Included' : this.formatPrice(service.price));
+
+                const $cb = $(clone).find('.resort-service-checkbox');
+                $cb.val(service.id).data('price', service.price).data('title', service.title);
+
+                if (isPreSelected) {
+                    $cb.prop('checked', true).prop('disabled', true);
+                }
+
                 $list.append(clone);
             });
         },
 
         handleServicesSelection: function() {
-            this.state.selectedServices = [];
-            $('.resort-service-checkbox:checked').each((i, el) => {
+            // Keep pre-selected services (from packages)
+            const packageServices = this.state.selectedServices.filter(s => s.price === 0);
+            this.state.selectedServices = [...packageServices];
+
+            $('.resort-service-checkbox:checked:not(:disabled)').each((i, el) => {
                 this.state.selectedServices.push({
                     id: $(el).val(),
                     price: $(el).data('price'),
@@ -267,6 +312,27 @@
             }
         },
 
+        handlePointsApply: function() {
+            const points = parseInt($('#resort-redeem-points').val());
+            if (!points || points <= 0) return;
+
+            const discount = points / 10; // 10 points = 1 PHP
+            if (discount > this.state.finalTotal) {
+                alert('Points discount cannot exceed the total amount.');
+                return;
+            }
+
+            const newTotal = this.state.finalTotal - discount;
+            $('#discount-display').append(`<br>Loyalty Discount: -${this.formatPrice(discount)}`).show();
+            $('#grand-total-display-container').text(this.formatPrice(newTotal));
+
+            this.state.pointsRedeemed = points;
+            this.state.finalTotal = newTotal;
+            $('#points-message').text('Points applied!').css('color', 'green');
+            $('#resort-apply-points').prop('disabled', true);
+            $('#resort-redeem-points').prop('disabled', true);
+        },
+
         handleCouponApply: function() {
             const code = $('#resort-coupon-code').val();
             if (!code) return;
@@ -309,6 +375,7 @@
                     action: 'resort_submit_booking',
                     nonce: resortData.nonce,
                     room_id: this.state.selectedRooms.map(r => r.id),
+                    package_id: this.state.selectedRooms.find(r => r.is_package)?.package_id || '',
                     checkin: this.state.checkin,
                     checkout: this.state.checkout,
                     guests: this.state.guests,
@@ -316,6 +383,7 @@
                     services: this.state.selectedServices.map(s => s.id),
                     payment_method: paymentMethod,
                     coupon: this.state.couponCode || '',
+                    points_redeemed: this.state.pointsRedeemed || 0,
                     final_total: this.state.finalTotal
                 },
                 success: (res) => {

@@ -7,6 +7,7 @@ class Shortcodes {
 		add_shortcode( 'resort_rooms_grid', [ $this, 'render_rooms_grid' ] );
 		add_shortcode( 'resort_guest_dashboard', [ $this, 'render_guest_dashboard' ] );
 		add_shortcode( 'resort_reviews', [ $this, 'render_reviews' ] );
+		add_shortcode( 'resort_lead_form', [ $this, 'render_lead_form' ] );
 	}
 
 	public function render_booking_engine( $atts ) {
@@ -169,6 +170,57 @@ class Shortcodes {
 				</div>
 			</form>
 		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	public function render_lead_form( $atts ) {
+		ob_start();
+		?>
+		<div class="resort-lead-form-container resort-booking-container" style="max-width:600px;">
+			<h3><?php _e( 'Unlock Exclusive Offers', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'Join our elite guest list to receive seasonal discounts and resort news directly in your inbox.', 'resort-manager' ); ?></p>
+			<form id="resort-lead-form">
+				<div class="resort-field">
+					<label><?php _e( 'Your Name', 'resort-manager' ); ?></label>
+					<input type="text" name="guest_name" required>
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Email Address', 'resort-manager' ); ?></label>
+					<input type="email" name="guest_email" required>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn" style="width:100%;"><?php _e( 'Get My Invites', 'resort-manager' ); ?></button>
+				</div>
+				<div id="lead-form-message" style="margin-top:15px; text-align:center;"></div>
+			</form>
+		</div>
+		<script>
+		jQuery(document).ready(function($) {
+			$('#resort-lead-form').on('submit', function(e) {
+				e.preventDefault();
+				const form = $(this);
+				const btn = form.find('button');
+				const data = {
+					action: 'resort_submit_lead',
+					nonce: '<?php echo wp_create_nonce("resort_booking_nonce"); ?>',
+					guest_name: form.find('[name="guest_name"]').val(),
+					guest_email: form.find('[name="guest_email"]').val()
+				};
+
+				btn.prop('disabled', true).text('Submitting...');
+
+				$.post('<?php echo admin_url("admin-ajax.php"); ?>', data, function(res) {
+					if (res.success) {
+						form.html('<div style="color:green; padding:20px;">' + res.data.message + '</div>');
+					} else {
+						$('#lead-form-message').text(res.data.message).css('color', 'red');
+						btn.prop('disabled', false).text('Get My Invites');
+					}
+				});
+			});
+		});
+		</script>
 		<?php
 		return ob_get_clean();
 	}

@@ -7,6 +7,8 @@ class PostTypes {
 		self::register_booking();
 		self::register_review();
 		self::register_service();
+		self::register_lead();
+		self::register_package();
 	}
 
 	private static function register_accommodation() {
@@ -189,6 +191,46 @@ class PostTypes {
 		];
 
 		register_post_type( 'review', $args );
+	}
+
+	private static function register_lead() {
+		$labels = [
+			'name'               => _x( 'Leads', 'post type general name', 'resort-manager' ),
+			'singular_name'      => _x( 'Lead', 'post type singular name', 'resort-manager' ),
+			'menu_name'          => _x( 'Leads', 'admin menu', 'resort-manager' ),
+			'all_items'          => __( 'All Leads', 'resort-manager' ),
+		];
+
+		$args = [
+			'labels'             => $labels,
+			'public'             => false,
+			'show_ui'            => true,
+			'show_in_menu'       => 'resort-manager',
+			'supports'           => [ 'title' ],
+		];
+
+		register_post_type( 'resort_lead', $args );
+	}
+
+	private static function register_package() {
+		$labels = [
+			'name'               => _x( 'Packages', 'post type general name', 'resort-manager' ),
+			'singular_name'      => _x( 'Package', 'post type singular name', 'resort-manager' ),
+			'menu_name'          => _x( 'Packages', 'admin menu', 'resort-manager' ),
+			'add_new'            => _x( 'Add New', 'package', 'resort-manager' ),
+			'all_items'          => __( 'All Packages', 'resort-manager' ),
+		];
+
+		$args = [
+			'labels'             => $labels,
+			'public'             => true,
+			'show_ui'            => true,
+			'show_in_menu'       => 'resort-manager',
+			'supports'           => [ 'title', 'editor', 'thumbnail' ],
+			'show_in_rest'       => true,
+		];
+
+		register_post_type( 'resort_package', $args );
 	}
 
 	private static function register_service() {

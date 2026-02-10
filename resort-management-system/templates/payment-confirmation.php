@@ -4,11 +4,27 @@
 	<div class="booking-summary">
 		<!-- Summary content -->
 	</div>
-	<div class="resort-coupon-section">
+	<div class="resort-coupon-section" style="margin-bottom: 20px;">
 		<input type="text" id="resort-coupon-code" placeholder="Coupon Code">
 		<button type="button" id="resort-apply-coupon" class="resort-btn">Apply</button>
 		<div id="coupon-message"></div>
 	</div>
+
+	<?php if ( is_user_logged_in() ) :
+		$points = get_user_meta( get_current_user_id(), '_resort_loyalty_points', true ) ?: 0;
+		if ( $points > 0 ) :
+	?>
+	<div class="resort-loyalty-redemption" style="background: #fff8e5; padding: 20px; border-radius: 12px; border: 1px solid #ffb900; margin-bottom: 20px;">
+		<h4><?php _e( 'Redeem Loyalty Points', 'resort-manager' ); ?></h4>
+		<p><?php printf( __( 'You have %d points available.', 'resort-manager' ), $points ); ?></p>
+		<p><small><?php _e( '10 points = 1 PHP discount', 'resort-manager' ); ?></small></p>
+		<div style="display:flex; gap:10px; align-items:center;">
+			<input type="number" id="resort-redeem-points" max="<?php echo $points; ?>" min="0" placeholder="Points to use" style="width: 120px;">
+			<button type="button" id="resort-apply-points" class="resort-btn" style="margin:0;"><?php _e( 'Redeem', 'resort-manager' ); ?></button>
+		</div>
+		<div id="points-message"></div>
+	</div>
+	<?php endif; endif; ?>
 	<?php
 	$stripe_enabled  = get_option( 'resort_payment_stripe_enabled', '1' ) === '1';
 	$paypal_enabled  = get_option( 'resort_payment_paypal_enabled', '1' ) === '1';

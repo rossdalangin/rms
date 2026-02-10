@@ -7,6 +7,8 @@ class MetaBoxes {
 		add_action( 'save_post_accommodation', [ $this, 'save_accommodation_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_service_meta_boxes' ] );
 		add_action( 'save_post_service', [ $this, 'save_service_meta' ] );
+		add_action( 'add_meta_boxes', [ $this, 'add_package_meta_boxes' ] );
+		add_action( 'save_post_resort_package', [ $this, 'save_package_meta' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_booking_meta_boxes' ] );
 	}
 
@@ -19,6 +21,61 @@ class MetaBoxes {
 			'normal',
 			'high'
 		);
+	}
+
+	public function add_package_meta_boxes() {
+		add_meta_box(
+			'package_details',
+			__( 'Package Configuration', 'resort-manager' ),
+			[ $this, 'render_package_details' ],
+			'resort_package',
+			'normal',
+			'high'
+		);
+	}
+
+	public function render_package_details( $post ) {
+		wp_nonce_field( 'package_meta_box', 'package_meta_box_nonce' );
+		$room_id = get_post_meta( $post->ID, '_resort_package_room_id', true );
+		$package_price = get_post_meta( $post->ID, '_resort_package_price', true );
+		$included_services = get_post_meta( $post->ID, '_resort_package_services', true ) ?: [];
+
+		$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
+		$services = get_posts( [ 'post_type' => 'service', 'numberposts' => -1 ] );
+		?>
+		<p>
+			<label><strong><?php _e( 'Base Accommodation:', 'resort-manager' ); ?></strong></label><br>
+			<select name="resort_package_room_id" class="widefat">
+				<option value=""><?php _e( '-- Select Room --', 'resort-manager' ); ?></option>
+				<?php foreach ( $rooms as $room ) : ?>
+					<option value="<?php echo $room->ID; ?>" <?php selected( $room_id, $room->ID ); ?>><?php echo esc_html( $room->post_title ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p>
+			<label><strong><?php _e( 'Included Services/Extras:', 'resort-manager' ); ?></strong></label><br>
+			<?php foreach ( $services as $service ) : ?>
+				<label style="display:block; margin-bottom:5px;">
+					<input type="checkbox" name="resort_package_services[]" value="<?php echo $service->ID; ?>" <?php checked( in_array( $service->ID, $included_services ) ); ?>>
+					<?php echo esc_html( $service->post_title ); ?>
+				</label>
+			<?php endforeach; ?>
+		</p>
+		<p>
+			<label><strong><?php _e( 'Package Price (Total per night):', 'resort-manager' ); ?></strong></label><br>
+			<input type="number" name="resort_package_price" value="<?php echo esc_attr( $package_price ); ?>" step="0.01" class="regular-text">
+			<p class="description"><?php _e( 'This price will override the standard room + extras sum.', 'resort-manager' ); ?></p>
+		</p>
+		<?php
+	}
+
+	public function save_package_meta( $post_id ) {
+		if ( ! isset( $_POST['package_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['package_meta_box_nonce'], 'package_meta_box' ) ) {
+			return;
+		}
+		update_post_meta( $post_id, '_resort_package_room_id', intval( $_POST['resort_package_room_id'] ) );
+		update_post_meta( $post_id, '_resort_package_price', floatval( $_POST['resort_package_price'] ) );
+		update_post_meta( $post_id, '_resort_package_services', isset( $_POST['resort_package_services'] ) ? array_map( 'intval', $_POST['resort_package_services'] ) : [] );
 	}
 
 	public function add_booking_meta_boxes() {

@@ -25,6 +25,7 @@ The "LuxeResort" menu in your WordPress dashboard is your central command center
 * Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
 * Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
 * Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends for the next 30 days.
+* Marketing & Leads: Capture inquiries with the Lead Form and automatically sync them to Mailchimp.
 * Content Management: Use built-in Gutenberg blocks to easily add the booking engine, room grids, or reviews to any page.
 
 ---
@@ -34,6 +35,7 @@ The "LuxeResort" menu in your WordPress dashboard is your central command center
 The plugin works in the background so you don't have to:
 
 * Daily iCal Sync: Every day, the system fetches bookings from your other channels (Airbnb, VRBO) to prevent double-bookings.
+* Loyalty Rewards: Guests earn 1 point for every $10 spent and can redeem them for discounts on future stays.
 * Abandoned Cart Recovery: If a guest stops halfway through a booking, the system sends them a friendly reminder email 15 minutes later.
 * Inventory Maintenance: Every hour, the system releases rooms held by "pending" bookings that never finished, keeping your calendar accurate.
 * Secure Finance: All payments are processed through encrypted REST APIs, and every transaction is logged for your accounting.

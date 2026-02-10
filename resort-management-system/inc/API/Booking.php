@@ -8,6 +8,8 @@ class Booking {
 		add_action( 'wp_ajax_resort_submit_review', [ $this, 'submit_review' ] );
 		add_action( 'wp_ajax_resort_validate_coupon', [ $this, 'validate_coupon' ] );
 		add_action( 'wp_ajax_nopriv_resort_validate_coupon', [ $this, 'validate_coupon' ] );
+		add_action( 'wp_ajax_resort_submit_lead', [ $this, 'submit_lead' ] );
+		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
 	}
 
 	public function submit_booking() {
@@ -73,6 +75,11 @@ class Booking {
 		// Save Meta
 		update_post_meta( $booking_id, '_resort_room_id', $room_ids[0] ); // Fallback for old code
 		update_post_meta( $booking_id, '_resort_room_ids', $room_ids );
+
+		if ( isset($_POST['package_id']) ) {
+			update_post_meta( $booking_id, '_resort_package_id', intval($_POST['package_id']) );
+		}
+
 		update_post_meta( $booking_id, '_resort_checkin', $checkin );
 		update_post_meta( $booking_id, '_resort_checkout', $checkout );
 		update_post_meta( $booking_id, '_resort_guests', $guests_count );
@@ -109,6 +116,23 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_total_price', $total_price );
 		update_post_meta( $booking_id, '_resort_services', $services );
 		update_post_meta( $booking_id, '_resort_coupon_used', sanitize_text_field($_POST['coupon'] ?? '') );
+
+		// Handle Loyalty Points Redemption
+		$points_redeemed = intval($_POST['points_redeemed'] ?? 0);
+		if ( $points_redeemed > 0 && is_user_logged_in() ) {
+			$available_points = get_user_meta( get_current_user_id(), '_resort_loyalty_points', true ) ?: 0;
+			if ( $points_redeemed <= $available_points ) {
+				$points_discount = $points_redeemed / 10;
+				$total_price = max(0, $total_price - $points_discount);
+				update_post_meta( $booking_id, '_resort_points_redeemed', $points_redeemed );
+
+				// Deduct points immediately
+				update_user_meta( get_current_user_id(), '_resort_loyalty_points', $available_points - $points_redeemed );
+				\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest #%d redeemed %d loyalty points.', 'resort-manager' ), get_current_user_id(), $points_redeemed ) );
+			}
+		}
+
+		update_post_meta( $booking_id, '_resort_total_price', $total_price );
 		update_post_meta( $booking_id, '_resort_status', 'pending' );
 
 		// 2. Mailchimp Sync
@@ -195,6 +219,31 @@ class Booking {
 				],
 			] ),
 		] );
+	}
+
+	public function submit_lead() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		$name = sanitize_text_field( $_POST['guest_name'] );
+		$email = sanitize_email( $_POST['guest_email'] );
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( [ 'message' => __( 'Please enter a valid email address.', 'resort-manager' ) ] );
+		}
+
+		$lead_id = wp_insert_post( [
+			'post_type'   => 'resort_lead',
+			'post_title'  => $name . ' (' . $email . ')',
+			'post_status' => 'publish',
+		] );
+
+		update_post_meta( $lead_id, '_resort_guest_name', $name );
+		update_post_meta( $lead_id, '_resort_guest_email', $email );
+
+		// Sync to Mailchimp
+		$this->sync_to_mailchimp( $email, $name, '' );
+
+		wp_send_json_success( [ 'message' => __( 'Welcome to the club! Check your inbox for your first gift.', 'resort-manager' ) ] );
 	}
 
 	public function validate_coupon() {

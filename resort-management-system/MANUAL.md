@@ -58,6 +58,16 @@ Create discounts under **LuxeResort > Coupons**.
 - **Example**: Create code `ISLAND2024` for a **15% discount** to celebrate your resort's anniversary.
 - **Usage**: Guests enter the code at the final payment step to see their savings instantly.
 
+### 4.3 Loyalty Points Redemption
+Guests can redeem their accumulated points for real discounts during Step 5 (Payment).
+- **Rate**: 10 points = 1 PHP discount.
+- **Usage**: Logged-in guests will see a "Redeem Points" section where they can enter the amount of points to use.
+
+### 4.4 Room Packages (Bundles)
+Create enticing bundles under **LuxeResort > Packages**.
+- **Definition**: A package includes a base room and pre-selected services (like breakfast or spa) for a single daily price.
+- **Display**: These appear prominently in the search results to encourage higher-value bookings.
+
 ---
 
 ## 5. Payment Gateway Setup
@@ -138,6 +148,7 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_rooms_grid]` | A beautiful gallery of all available accommodations. |
 | `[resort_guest_dashboard]` | Private area for guests to manage their bookings and leave reviews. |
 | `[resort_reviews]` | Displays the latest guest testimonials. |
+| `[resort_lead_form]` | A sleek lead capture form to build your elite guest list. |
 
 ---
 

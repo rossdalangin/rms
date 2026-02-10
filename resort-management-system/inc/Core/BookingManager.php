@@ -80,14 +80,26 @@ class BookingManager {
 			return;
 		}
 
-		// If transitioning FROM confirmed, reverse loyalty points
+		// If transitioning FROM confirmed, reverse loyalty points earned
 		if ( 'confirmed' === $old_status && 'confirmed' !== $new_booking_status ) {
 			$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
 			if ( $guest_id ) {
 				$amount = get_post_meta( $booking_id, '_resort_total_price', true );
-				$points = floor( floatval( $amount ) / 10 );
+				$points_earned = floor( floatval( $amount ) / 10 );
 				$current_points = get_user_meta( $guest_id, '_resort_loyalty_points', true ) ?: 0;
-				update_user_meta( $guest_id, '_resort_loyalty_points', max( 0, intval($current_points) - $points ) );
+				update_user_meta( $guest_id, '_resort_loyalty_points', max( 0, intval($current_points) - $points_earned ) );
+			}
+		}
+
+		// If status becomes failed/cancelled, refund points spent
+		if ( in_array( $new_booking_status, [ 'failed', 'cancelled', 'abandoned' ] ) ) {
+			$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+			$points_redeemed = get_post_meta( $booking_id, '_resort_points_redeemed', true );
+			if ( $guest_id && $points_redeemed ) {
+				$current_points = get_user_meta( $guest_id, '_resort_loyalty_points', true ) ?: 0;
+				update_user_meta( $guest_id, '_resort_loyalty_points', intval($current_points) + intval($points_redeemed) );
+				delete_post_meta( $booking_id, '_resort_points_redeemed' );
+				\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest #%d refunded %d points due to %s status.', 'resort-manager' ), $guest_id, $points_redeemed, $new_booking_status ) );
 			}
 		}
 

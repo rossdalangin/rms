@@ -12,6 +12,9 @@ We use a combination of Custom Post Types (CPT) for content and Custom Tables fo
   - Meta: `capacity`, `base_price`, `amenities`, `gallery`.
 - `booking`: Represents a reservation.
   - Meta: `checkin`, `checkout`, `guest_id`, `total_price`, `status`.
+- `resort_package`: Represents a bundle of room + services.
+  - Meta: `room_id`, `price`, `services`.
+- `resort_lead`: Captured inquiries.
 
 #### Custom Tables:
 - `wp_resort_availability`:
