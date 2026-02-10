@@ -155,7 +155,20 @@ class ResortManager {
 }
 
 // Register activation hook
-register_activation_hook( __FILE__, [ 'ResortManager\Database', 'create_tables' ] );
+register_activation_hook( __FILE__, function() {
+	ResortManager\Database::create_tables();
+	if ( ! wp_next_scheduled( 'resort_daily_sync' ) ) {
+		wp_schedule_event( time(), 'daily', 'resort_daily_sync' );
+	}
+	if ( ! wp_next_scheduled( 'resort_cleanup_abandoned' ) ) {
+		wp_schedule_event( time(), 'hourly', 'resort_cleanup_abandoned' );
+	}
+} );
+
+register_deactivation_hook( __FILE__, function() {
+	wp_clear_scheduled_hook( 'resort_daily_sync' );
+	wp_clear_scheduled_hook( 'resort_cleanup_abandoned' );
+} );
 
 // Initialize the plugin
 ResortManager::get_instance();

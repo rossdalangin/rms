@@ -210,10 +210,10 @@
             $('#grand-total-display-container').text(this.formatPrice(grandTotal));
             this.state.finalTotal = grandTotal;
 
-            // Adjust button text if only offline is available
-            const enabledMethods = Object.values(resortData.payments).filter(v => v === '1').length;
-            if (enabledMethods <= 1 && resortData.payments.offline === '1') {
-                $('#resort-complete-booking').text('Confirm Reservation');
+            // Adjust button text if only offline is available or all disabled
+            const enabledMethodsCount = Object.values(resortData.payments).filter(v => v === '1').length;
+            if (enabledMethodsCount === 0 || (enabledMethodsCount === 1 && resortData.payments.offline === '1')) {
+                $('#resort-complete-booking').text('Confirm Booking');
             } else {
                 $('#resort-complete-booking').text('Confirm & Pay');
             }

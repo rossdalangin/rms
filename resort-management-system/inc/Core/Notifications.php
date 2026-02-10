@@ -4,6 +4,7 @@ namespace ResortManager\Core;
 class Notifications {
 	public function __construct() {
 		add_action( 'resort_booking_confirmed', [ $this, 'send_confirmation_email' ], 10, 1 );
+		add_action( 'resort_cleanup_abandoned', [ $this, 'trigger_abandoned_reminders' ] );
 	}
 
 	public function send_confirmation_email( $booking_id ) {
@@ -28,6 +29,12 @@ class Notifications {
 			$sms_message = sprintf( __( 'Aloha! Your LuxeResort booking #%d is confirmed. See you soon!', 'resort-manager' ), $booking_id );
 			self::send_sms( $phone, $sms_message );
 		}
+	}
+
+	public function trigger_abandoned_reminders() {
+		// Use the existing maintenance methods to handle logic centrally
+		\ResortManager\Admin\Maintenance::send_reminders();
+		\ResortManager\Admin\Maintenance::cleanup_abandoned_bookings();
 	}
 
 	public static function send_abandoned_reminder( $booking_id ) {
