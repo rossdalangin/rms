@@ -4,6 +4,8 @@
 ## 1. Introduction
 Welcome to **LuxeResort Manager**, the definitive hospitality solution for WordPress. Featuring a modern **Tropical Modern** UI, this plugin provides a 5-star experience for both guests and resort operators.
 
+This manual provides detailed instructions on how to configure your resort, manage your inventory, and ensure a smooth experience for your guests.
+
 From real-time availability and demand-based "Smart Pricing" to integrated marketing with Mailchimp and Twilio, LuxeResort Manager is built to scale with your paradise.
 
 ---
@@ -16,22 +18,27 @@ From real-time availability and demand-based "Smart Pricing" to integrated marke
 ### 2.2 Onboarding Wizard
 Navigate to **LuxeResort > Getting Started**.
 - **The One-Click Tropical Setup**: Click "Build My Paradise" to automatically populate your site with sample luxury villas, essential services, and pre-configured pages. This is the fastest way to see the plugin in action.
+- **Manual Configuration**: Follow the numbered steps to configure your settings and manage your suites if you prefer to start from scratch.
 
 ---
 
 ## 3. Inventory Management
 ### 3.1 Accommodations (Rooms/Villas)
-Manage your inventory under **LuxeResort > Accommodations**.
-- **Base Price**: The standard nightly rate.
-- **Capacity**: Maximum number of guests allowed.
-- **Amenities**: List features like "Private Pool" or "Free WiFi".
-- **iCal Sync**: Enter an external iCal URL (from Airbnb/Booking.com) to automatically block dates on your site.
-- **Rules**: Use the **Settings** to define **Min/Max Stay** and **Lead Time** (e.g., must book 48 hours in advance).
+Manage your inventory under **LuxeResort > Accommodations**. Each accommodation represents a bookable unit (e.g., "Luxury Ocean Villa", "Garden Suite").
+
+- **Base Price**: The standard nightly rate that applies when no dynamic pricing rules match.
+- **Capacity**: Maximum number of guests allowed in this unit.
+- **Amenities**: List features like "Private Pool" or "Free WiFi" for guest information.
+- **iCal Sync**: Provide an **External iCal URL** (e.g., from Airbnb or VRBO) to import existing bookings. The system syncs daily to ensure you never double-book.
+- **Exporting**: Use the **Export URL** provided in the accommodation details to sync your LuxeResort availability to other platforms.
+- **Rules**: Global rules like **Min/Max Stay** and **Lead Time** (Book Ahead) are configured in the main **Settings**.
 
 ### 3.2 Services & Extras
-Add value to your stays under **LuxeResort > Services/Extras**.
-- Create add-ons like "Airport Transfer", "Spa Treatment", or "Breakfast Buffet".
-- These will appear as optional checkboxes during the guest booking flow.
+Add value to your stays under **LuxeResort > Services/Extras**. These are optional items guests can add to their reservation.
+
+- **Creating Extras**: Add items like "Airport Transfer", "Spa Treatment", or "Breakfast Buffet".
+- **Pricing**: Each extra has its own fixed price which is added to the total stay cost.
+- **Booking Flow**: These appear as optional checkboxes after a guest selects their room.
 
 ---
 
@@ -68,18 +75,18 @@ In **LuxeResort > Settings**, you can enable or disable specific payment gateway
 
 ## 6. Managing Reservations
 ### 6.1 Booking Lifecycle
-- **Pending**: Guest started the flow but hasn't paid.
-- **Confirmed**: Payment received and dates blocked.
-- **Abandoned**: Pending booking older than 30 minutes.
+- **Pending**: A guest has started a booking but hasn't completed payment. The room is temporarily held.
+- **Confirmed**: Payment has been verified (or an offline booking recorded). Dates are blocked in the calendar.
+- **Abandoned**: A "Pending" booking that has not been completed within 30 minutes. These are automatically cleaned up to release inventory.
 
 ### 6.2 Reservation Calendar
 View a visual timeline of your resort's occupancy under **LuxeResort > Calendar**.
-- **Start Date**: Select a specific day to start the view from.
-- **Timeline Range**: Choose between 7, 14, or 30-day views to see short or long-term availability.
+- **Visual Overview**: The calendar shows rooms on the vertical axis and dates on the horizontal.
+- **Controls**: Adjust the **Start Date** and **Timeline Range** (7, 14, or 30 days) to navigate through your schedule.
 - **Status Indicators**:
-    - **Free**: Room is available for booking.
-    - **Booked**: Room has a confirmed or pending reservation.
-    - **Sync**: Room is blocked via external iCal (e.g., Airbnb).
+    - **Free**: Room is available.
+    - **Booked**: Confirmed or pending booking (in green).
+    - **Sync**: Blocked by an external calendar sync (in grey).
 
 ### 6.3 Managing Payments
 Track all financial activity under **LuxeResort > Payments**.
@@ -89,10 +96,13 @@ Track all financial activity under **LuxeResort > Payments**.
 
 ### 6.4 Analytics & Reports
 Monitor your performance under **LuxeResort > Reports**.
-- **Revenue Stats**: Track total income from confirmed stays.
-- **Occupancy**: View today's resort load.
-- **Inventory Maintenance**: Use the "Clean Up" tool to release rooms held by abandoned bookings.
-- **CSV Export**: Download your entire booking history for external accounting.
+- **Revenue Stats**: High-level overview of your total earnings and booking counts.
+- **Occupancy Rate**: Real-time metric showing how much of your resort is currently occupied.
+- **Inventory Maintenance**:
+    - **Send Reminders**: Manually trigger reminder emails to guests with "Pending" bookings.
+    - **Clean Up**: Release rooms held by abandoned bookings older than 30 minutes.
+- **CSV Export**: Generate a spreadsheet of all bookings for your financial records.
+- **Revenue Optimization**: View "Smart Pricing" suggestions based on your upcoming occupancy trends.
 
 ---
 
@@ -130,11 +140,12 @@ The system maintains a direct link between transactions and reservations:
 - **Automatic Linking**: Every payment initiated through the booking engine carries a `booking_id`. When a payment is successfully verified, the record in the **Payments** table is automatically linked to the correct reservation.
 - **Manual Reconciliation**: In the **Payments** dashboard, you can view the Room and Guest associated with every transaction ID.
 
-### 9.2 Guest Reviewing (Admin)
-To view the full details of a reservation:
+### 9.2 Booking Management (Admin)
+To view and manage a reservation:
 1. Go to **LuxeResort > Bookings**.
-2. Click on a specific booking.
-3. Find the **Reservation Information** meta box. This provides a complete breakdown of the Accommodation, Guest details (including Phone and Marketing status), Stay Dates, Guest Count, Meal Preferences, Special Requests, and selected Extras.
+2. Click on a specific booking to edit.
+3. **Reservation Information**: See the complete breakdown of the stay, guest preferences (meal, special requests), and total price.
+4. **Communication Log**: Record notes about guest interactions or special fulfillments.
 
 ### 9.3 Loyalty Points Logic
 Guests earn points automatically to encourage repeat business:

@@ -93,6 +93,7 @@ class Reports {
 		?>
 		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'Resort Analytics & Reports', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'Gain deep insights into your resort\'s financial health and operational efficiency. Use the Analytics tab for high-level metrics, or explore Revenue Optimization for data-driven pricing strategies.', 'resort-manager' ); ?></p>
 
 			<h2 class="nav-tab-wrapper">
 				<a href="#" class="nav-tab nav-tab-active" id="resort-tab-analytics"><?php _e( 'Analytics', 'resort-manager' ); ?></a>

@@ -34,6 +34,10 @@ class Coupons {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Coupons & Promo Codes', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'Create promotional codes to encourage bookings during slow seasons or to reward loyal guests. Coupons can be a fixed amount or a percentage of the total stay price.', 'resort-manager' ); ?></p>
+
+			<div class="resort-admin-card" style="margin-top: 20px;">
+			<h3><?php _e( 'Add New Coupon', 'resort-manager' ); ?></h3>
 			<form method="post">
 				<?php wp_nonce_field( 'add_coupon' ); ?>
 				<input type="text" name="code" placeholder="CODE" required>
@@ -43,10 +47,11 @@ class Coupons {
 					<option value="percentage">Percentage</option>
 				</select>
 				<input type="date" name="expiry_date">
-				<input type="submit" name="add_coupon" class="button" value="Add Coupon">
+				<input type="submit" name="add_coupon" class="button button-primary" value="<?php _e( 'Add Coupon', 'resort-manager' ); ?>">
 			</form>
+			</div>
 
-			<h3>Existing Coupons</h3>
+			<h3 style="margin-top: 30px;"><?php _e( 'Existing Coupons', 'resort-manager' ); ?></h3>
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>

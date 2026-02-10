@@ -25,6 +25,9 @@ class Calendar {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Reservation Calendar', 'resort-manager' ); ?></h1>
+			<p class="description">
+				<?php _e( 'Manage your resort\'s daily inventory and occupancy at a glance. You can use the controls below to navigate through time and adjust the timeline density. Confirmed bookings are shown in green, while external iCal blocks (e.g., from Airbnb) are marked as "Sync".', 'resort-manager' ); ?>
+			</p>
 
 			<div class="calendar-controls" style="background: #fff; padding: 15px; border: 1px solid #ccd0d4; margin-bottom: 20px;">
 				<form method="get" action="">

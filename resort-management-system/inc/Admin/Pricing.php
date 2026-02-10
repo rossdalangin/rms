@@ -38,6 +38,7 @@ class Pricing {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Dynamic Pricing Rules', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'Set up seasonal rates or weekend surcharges to maximize your revenue. Pricing rules override the base accommodation price for the specified date range. Rules with higher priority take precedence in case of overlaps.', 'resort-manager' ); ?></p>
 
 			<div class="postbox" style="padding: 20px;">
 				<h3><?php _e( 'Add New Pricing Rule', 'resort-manager' ); ?></h3>

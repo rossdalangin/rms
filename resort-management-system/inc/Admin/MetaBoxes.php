@@ -151,6 +151,7 @@ class MetaBoxes {
 		wp_nonce_field( 'service_meta_box', 'service_meta_box_nonce' );
 		$price = get_post_meta( $post->ID, '_resort_service_price', true );
 		?>
+		<p class="description"><?php _e( 'Define the price for this optional extra. Guests can select this service during the booking process.', 'resort-manager' ); ?></p>
 		<p>
 			<label for="resort_service_price"><?php _e( 'Price:', 'resort-manager' ); ?></label>
 			<input type="number" id="resort_service_price" name="resort_service_price" value="<?php echo esc_attr( $price ); ?>" step="0.01">
@@ -173,8 +174,10 @@ class MetaBoxes {
 		$price = get_post_meta( $post->ID, '_resort_price', true );
 		$capacity = get_post_meta( $post->ID, '_resort_capacity', true );
 		$amenities = get_post_meta( $post->ID, '_resort_amenities', true );
+		$ical_url = get_post_meta( $post->ID, '_resort_ical_url', true );
 
 		?>
+		<p class="description"><?php _e( 'Configure the core properties of this accommodation. These details will be displayed to guests in the room grid and search results.', 'resort-manager' ); ?></p>
 		<p>
 			<label for="resort_price"><?php _e( 'Price per Night:', 'resort-manager' ); ?></label>
 			<input type="number" id="resort_price" name="resort_price" value="<?php echo esc_attr( $price ); ?>" step="0.01">
@@ -185,7 +188,18 @@ class MetaBoxes {
 		</p>
 		<p>
 			<label for="resort_amenities"><?php _e( 'Amenities (comma separated):', 'resort-manager' ); ?></label>
-			<textarea id="resort_amenities" name="resort_amenities" class="widefat"><?php echo esc_textarea( $amenities ); ?></textarea>
+			<textarea id="resort_amenities" name="resort_amenities" class="widefat" placeholder="e.g. WiFi, Ocean View, King Bed, Private Pool"><?php echo esc_textarea( $amenities ); ?></textarea>
+		</p>
+		<hr>
+		<h4><?php _e( 'External iCal Sync', 'resort-manager' ); ?></h4>
+		<p class="description"><?php _e( 'Import availability from external platforms like Airbnb or VRBO by providing their iCal feed URL. The system will automatically block these dates during daily syncs.', 'resort-manager' ); ?></p>
+		<p>
+			<label for="resort_ical_url"><?php _e( 'External iCal URL:', 'resort-manager' ); ?></label>
+			<input type="url" id="resort_ical_url" name="resort_ical_url" value="<?php echo esc_attr( $ical_url ); ?>" class="widefat">
+		</p>
+		<p class="description">
+			<small><?php _e( 'Your private export URL for this room:', 'resort-manager' ); ?> <br>
+			<code><?php echo home_url('/?resort_ical=' . $post->ID); ?></code></small>
 		</p>
 		<?php
 	}
@@ -207,6 +221,9 @@ class MetaBoxes {
 		}
 		if ( isset( $_POST['resort_amenities'] ) ) {
 			update_post_meta( $post_id, '_resort_amenities', sanitize_textarea_field( $_POST['resort_amenities'] ) );
+		}
+		if ( isset( $_POST['resort_ical_url'] ) ) {
+			update_post_meta( $post_id, '_resort_ical_url', esc_url_raw( $_POST['resort_ical_url'] ) );
 		}
 	}
 }

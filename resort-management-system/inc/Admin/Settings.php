@@ -89,7 +89,7 @@ class Settings {
 		add_settings_section(
 			'resort_general_section',
 			__( 'General Settings', 'resort-manager' ),
-			null,
+			[ $this, 'render_general_section_desc' ],
 			'resort-settings'
 		);
 
@@ -159,7 +159,7 @@ class Settings {
 		add_settings_section(
 			'resort_notifications_section',
 			__( 'Notifications & Marketing', 'resort-manager' ),
-			null,
+			[ $this, 'render_notifications_section_desc' ],
 			'resort-settings'
 		);
 
@@ -180,8 +180,16 @@ class Settings {
 		);
 	}
 
+	public function render_general_section_desc() {
+		echo '<p>' . __( 'Basic identification and operational rules for your resort. These settings affect the primary display and booking constraints across the site.', 'resort-manager' ) . '</p>';
+	}
+
 	public function render_payments_section_desc() {
-		echo '<p>' . __( 'Configure your payment methods and API credentials below. If only Offline is enabled, the payment selection will be skipped during booking.', 'resort-manager' ) . '</p>';
+		echo '<p>' . __( 'Configure how you accept money. You can enable multiple gateways to give guests choice, or just one to simplify the flow. If only "Offline" is enabled, the system automatically skips the payment choice step for a faster checkout.', 'resort-manager' ) . '</p>';
+	}
+
+	public function render_notifications_section_desc() {
+		echo '<p>' . __( 'Manage guest communications and marketing integrations. Customize the confirmation email and connect your resort to Mailchimp or Twilio for automated engagement.', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_payment_method_toggles() {
@@ -316,6 +324,7 @@ class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Staff Activity Logs', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'Track all administrative actions performed by your staff. This log ensures full accountability for price changes, booking modifications, and system settings updates.', 'resort-manager' ); ?></p>
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
@@ -345,6 +354,7 @@ class Settings {
 		?>
 		<div class="wrap">
 			<h1><?php _e( 'Guest Profiles', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'A centralized database of your guests. Monitor their stay history, accumulated loyalty points, and contact information to provide a more personalized service.', 'resort-manager' ); ?></p>
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
