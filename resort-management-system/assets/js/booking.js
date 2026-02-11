@@ -253,12 +253,30 @@
                 return;
             }
 
+            const start = new Date(this.state.checkin);
+            const end = new Date(this.state.checkout);
+            const nights = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+            const guestCount = parseInt(this.state.guests);
+
             services.forEach(service => {
                 const clone = template.content.cloneNode(true);
                 const isPreSelected = this.state.selectedServices.find(s => s.id == service.id);
 
+                let isRecommended = false;
+                if (service.title.toLowerCase().includes('spa') && nights > 3) isRecommended = true;
+                if (service.title.toLowerCase().includes('transfer') && guestCount > 2) isRecommended = true;
+                if (service.title.toLowerCase().includes('dinner') && nights > 2) isRecommended = true;
+
                 $(clone).find('.service-title').text(service.title);
                 $(clone).find('.service-price').text(isPreSelected ? 'Included' : this.formatPrice(service.price));
+
+                if (isRecommended && !isPreSelected) {
+                    $(clone).find('.resort-service-item').css({
+                        'border-color': 'var(--resort-coral)',
+                        'background': 'var(--resort-light-teal)',
+                        'position': 'relative'
+                    }).prepend('<span class="resort-badge-recommended">RECOMMENDED FOR YOU</span>');
+                }
 
                 const $cb = $(clone).find('.resort-service-checkbox');
                 $cb.val(service.id).data('price', service.price).data('title', service.title);
@@ -406,7 +424,11 @@
                     payment_method: paymentMethod,
                     coupon: this.state.couponCode || '',
                     points_redeemed: this.state.pointsRedeemed || 0,
-                    final_total: this.state.finalTotal
+                    final_total: this.state.finalTotal,
+                    utm_source: new URLSearchParams(window.location.search).get('utm_source') || '',
+                    utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || '',
+                    utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || '',
+                    referral_url: document.referrer || ''
                 },
                 success: (res) => {
                     if (res.success) {

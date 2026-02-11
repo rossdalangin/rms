@@ -229,8 +229,14 @@ Configure your main competitors under **LuxeResort > Settings > Market Intellige
 - **Loyalty Program**: Guests earn points on every booking, encouraging repeat visits.
 - **Mailchimp Integration**: Sync your guest list to Mailchimp for seasonal newsletters and exclusive member-only offers.
 
-### 11.3 Staff Oversight
-Use the **Activity Logs** to monitor all administrative changes, from price updates to booking modifications, ensuring full accountability.
+### 11.3 Staff Oversight & Operations
+- **Activity Logs**: Monitor all administrative changes, from price updates to booking modifications.
+- **Housekeeping Dashboard**: A dedicated interface for operational staff to track room cleaning status (Clean, Dirty, Cleaning) and prioritize rooms based on today's check-outs. Access this under **LuxeResort > Housekeeping**.
+
+### 11.4 CRM & Attribution (Marketing Intelligence)
+- **HubSpot Integration**: Automatically sync guest contacts to HubSpot for advanced CRM workflows.
+- **Marketing Attribution**: Track `utm_source`, `utm_medium`, and `utm_campaign` for every booking. View these details in individual booking screens or export them via the **Revenue Reports** CSV for ROI analysis.
+- **Outgoing Webhooks**: Connect LuxeResort Manager to Zapier, Make, or custom endpoints to trigger external automations upon booking confirmation.
 
 ---
 

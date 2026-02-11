@@ -70,6 +70,7 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
 		register_setting( 'resort_settings_group', 'resort_hubspot_api_key' );
+		register_setting( 'resort_settings_group', 'resort_webhook_url' );
 		register_setting( 'resort_settings_group', 'resort_competitors' );
 		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
 		register_setting( 'resort_settings_group', 'resort_twilio_token' );
@@ -184,6 +185,14 @@ class Settings {
 		);
 
 		add_settings_field(
+			'resort_webhook_settings',
+			__( 'Ecosystem Webhooks', 'resort-manager' ),
+			[ $this, 'render_webhook_fields' ],
+			'resort-settings',
+			'resort_notifications_section'
+		);
+
+		add_settings_field(
 			'resort_marketing_integrations',
 			__( 'Marketing (API Keys)', 'resort-manager' ),
 			[ $this, 'render_marketing_fields' ],
@@ -285,6 +294,14 @@ class Settings {
 			<?php endforeach; ?>
 		</div>
 		<p class="description"><?php _e( 'Add your main competitors and their approximate average nightly rates.', 'resort-manager' ); ?></p>
+		<?php
+	}
+
+	public function render_webhook_fields() {
+		$url = get_option( 'resort_webhook_url', '' );
+		?>
+		<input type="url" name="resort_webhook_url" value="<?php echo esc_attr($url); ?>" class="regular-text" placeholder="https://hooks.zapier.com/...">
+		<p class="description"><?php _e( 'Enter a URL to receive a POST request with booking data every time a reservation is confirmed. Use this to connect with Zapier, Make, or Slack.', 'resort-manager' ); ?></p>
 		<?php
 	}
 

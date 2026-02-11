@@ -100,6 +100,12 @@ class Booking {
 		update_post_meta( $booking_id, '_resort_marketing_optin', isset( $guest_data['marketing_optin'] ) ? 'yes' : 'no' );
 		update_post_meta( $booking_id, '_resort_digital_waiver', isset( $guest_data['digital_waiver'] ) ? 'accepted' : 'declined' );
 
+		// Marketing Attribution
+		if ( isset($_POST['utm_source']) ) update_post_meta( $booking_id, '_resort_utm_source', sanitize_text_field($_POST['utm_source']) );
+		if ( isset($_POST['utm_medium']) ) update_post_meta( $booking_id, '_resort_utm_medium', sanitize_text_field($_POST['utm_medium']) );
+		if ( isset($_POST['utm_campaign']) ) update_post_meta( $booking_id, '_resort_utm_campaign', sanitize_text_field($_POST['utm_campaign']) );
+		if ( isset($_POST['referral_url']) ) update_post_meta( $booking_id, '_resort_referral_url', esc_url_raw($_POST['referral_url']) );
+
 		// Server-side Price Re-validation (Security Fix)
 		$coupon_code = sanitize_text_field($_POST['coupon'] ?? '');
 		if ( ! empty( $coupon_code ) ) {

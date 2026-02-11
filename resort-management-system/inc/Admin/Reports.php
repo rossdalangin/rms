@@ -28,7 +28,7 @@ class Reports {
 			header( 'Content-Disposition: attachment; filename=resort-bookings-' . date('Y-m-d') . '.csv' );
 
 			$output = fopen( 'php://output', 'w' );
-			fputcsv( $output, [ 'Booking ID', 'First Name', 'Last Name', 'Email', 'Check-in', 'Check-out', 'Total Price', 'Status' ] );
+			fputcsv( $output, [ 'Booking ID', 'First Name', 'Last Name', 'Email', 'Check-in', 'Check-out', 'Total Price', 'Status', 'UTM Source', 'UTM Campaign', 'Referral URL' ] );
 
 			$bookings = get_posts( [ 'post_type' => 'booking', 'numberposts' => -1 ] );
 			foreach ( $bookings as $booking ) {
@@ -44,7 +44,10 @@ class Reports {
 					get_post_meta( $booking->ID, '_resort_checkin', true ),
 					get_post_meta( $booking->ID, '_resort_checkout', true ),
 					get_post_meta( $booking->ID, '_resort_total_price', true ),
-					get_post_meta( $booking->ID, '_resort_status', true )
+					get_post_meta( $booking->ID, '_resort_status', true ),
+					get_post_meta( $booking->ID, '_resort_utm_source', true ) ?: '-',
+					get_post_meta( $booking->ID, '_resort_utm_campaign', true ) ?: '-',
+					get_post_meta( $booking->ID, '_resort_referral_url', true ) ?: '-'
 				] );
 			}
 			fclose( $output );

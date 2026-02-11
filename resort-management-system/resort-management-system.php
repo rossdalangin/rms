@@ -72,6 +72,7 @@ class ResortManager {
 		new ResortManager\Core\Notifications();
 		new ResortManager\Core\PWA();
 		new ResortManager\Core\CRM();
+		new ResortManager\Core\Webhooks();
 
 		if ( is_admin() ) {
 			new ResortManager\Admin\Assets();
@@ -85,6 +86,7 @@ class ResortManager {
 			new ResortManager\Admin\Reports();
 			new ResortManager\Admin\Payments();
 			new ResortManager\Admin\Waivers();
+			new ResortManager\Admin\Housekeeping();
 		}
 	}
 
