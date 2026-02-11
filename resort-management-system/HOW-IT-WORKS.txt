@@ -14,6 +14,7 @@ Step 3: Extras - Guests can add luxury services like "Spa Treatments" or "Airpor
 Step 4: Guest Info - A clean form collects contact details, meal preferences, and special requests. The system automatically creates a private guest account.
 Step 5: Payment - Guests pay securely via Stripe, PayPal, or choose "Pay at Resort." Once confirmed, their dates are instantly blocked across all platforms (iCal sync).
 Step 6: Management - Guests can download professional invoices and add their stay to their Google or Apple calendar directly from their dashboard.
+Step 7: In-Stay - Guests can self-check-in, request room services, and self-check-out directly from their dashboard.
 
 ---
 
@@ -22,7 +23,9 @@ Step 6: Management - Guests can download professional invoices and add their sta
 The "LuxeResort" menu in your WordPress dashboard is your central command center:
 
 * Onboarding: Use the "One-Click Tropical Setup" to instantly generate demo rooms and professional pages.
+* Operational Control: Dedicated Housekeeping Dashboard for staff to manage room readiness and prioritize cleaning.
 * Reservation Calendar: A beautiful, interactive timeline where you can see who is arriving, who is staying, and which rooms are blocked by external sites like Airbnb.
+* CRM & Growth: Multi-CRM integration (HubSpot + Zoho) and detailed Marketing Attribution (UTM) for tracking ROI on your campaigns.
 * Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
 * Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
 * Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends and competitor market data.

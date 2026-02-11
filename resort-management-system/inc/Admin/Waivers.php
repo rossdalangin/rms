@@ -11,7 +11,7 @@ class Waivers {
 			'resort-manager',
 			__( 'Guest Waivers', 'resort-manager' ),
 			__( 'Waivers', 'resort-manager' ),
-			'manage_options',
+			'edit_posts',
 			'resort-waivers',
 			[ $this, 'render_waivers_page' ]
 		);

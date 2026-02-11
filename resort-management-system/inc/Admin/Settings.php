@@ -11,7 +11,7 @@ class Settings {
 		add_menu_page(
 			__( 'LuxeResort Manager', 'resort-manager' ),
 			'LuxeResort',
-			'manage_options',
+			'edit_posts', // Accessible by staff
 			'resort-manager',
 			[ $this, 'render_onboarding_proxy' ],
 			'dashicons-palmtree',
@@ -23,7 +23,7 @@ class Settings {
 			'resort-manager',
 			__( 'Getting Started', 'resort-manager' ),
 			__( 'Getting Started', 'resort-manager' ),
-			'manage_options',
+			'edit_posts',
 			'resort-manager',
 			[ $this, 'render_onboarding_proxy' ]
 		);
@@ -32,7 +32,7 @@ class Settings {
 			'resort-manager',
 			__( 'Settings', 'resort-manager' ),
 			__( 'Settings', 'resort-manager' ),
-			'manage_options',
+			'manage_options', // Only admins
 			'resort-settings',
 			[ $this, 'render_settings_page' ]
 		);
@@ -41,7 +41,7 @@ class Settings {
 			'resort-manager',
 			__( 'Guest Profiles', 'resort-manager' ),
 			__( 'Guest Profiles', 'resort-manager' ),
-			'manage_options',
+			'edit_posts',
 			'resort-guests',
 			[ $this, 'render_guest_profiles_page' ]
 		);
@@ -50,7 +50,7 @@ class Settings {
 			'resort-manager',
 			__( 'Activity Logs', 'resort-manager' ),
 			__( 'Activity Logs', 'resort-manager' ),
-			'manage_options',
+			'edit_posts',
 			'resort-logs',
 			[ $this, 'render_logs_page' ]
 		);
@@ -70,6 +70,9 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
 		register_setting( 'resort_settings_group', 'resort_hubspot_api_key' );
+		register_setting( 'resort_settings_group', 'resort_zoho_client_id' );
+		register_setting( 'resort_settings_group', 'resort_zoho_client_secret' );
+		register_setting( 'resort_settings_group', 'resort_zoho_refresh_token' );
 		register_setting( 'resort_settings_group', 'resort_webhook_url' );
 		register_setting( 'resort_settings_group', 'resort_competitors' );
 		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
@@ -309,6 +312,9 @@ class Settings {
 		$mc_key = get_option( 'resort_mailchimp_api_key', '' );
 		$mc_list = get_option( 'resort_mailchimp_list_id', '' );
 		$hs_key = get_option( 'resort_hubspot_api_key', '' );
+		$zoho_cid = get_option( 'resort_zoho_client_id', '' );
+		$zoho_secret = get_option( 'resort_zoho_client_secret', '' );
+		$zoho_refresh = get_option( 'resort_zoho_refresh_token', '' );
 		$tw_sid = get_option( 'resort_twilio_sid', '' );
 		$tw_token = get_option( 'resort_twilio_token', '' );
 		$tw_num = get_option( 'resort_twilio_number', '' );
@@ -322,6 +328,14 @@ class Settings {
 		<p><strong><?php _e( 'HubSpot CRM Integration', 'resort-manager' ); ?></strong></p>
 		<label>HubSpot API Key (Private App Token):</label><br>
 		<input type="password" name="resort_hubspot_api_key" value="<?php echo esc_attr($hs_key); ?>" class="regular-text"><br><br>
+
+		<p><strong><?php _e( 'Zoho CRM Integration (OAuth)', 'resort-manager' ); ?></strong></p>
+		<label>Client ID:</label><br>
+		<input type="text" name="resort_zoho_client_id" value="<?php echo esc_attr($zoho_cid); ?>" class="regular-text"><br>
+		<label>Client Secret:</label><br>
+		<input type="password" name="resort_zoho_client_secret" value="<?php echo esc_attr($zoho_secret); ?>" class="regular-text"><br>
+		<label>Refresh Token:</label><br>
+		<input type="password" name="resort_zoho_refresh_token" value="<?php echo esc_attr($zoho_refresh); ?>" class="regular-text"><br><br>
 
 		<p><strong><?php _e( 'Twilio SMS Integration', 'resort-manager' ); ?></strong></p>
 		<label>Account SID:</label><br>

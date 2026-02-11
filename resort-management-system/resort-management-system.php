@@ -159,6 +159,14 @@ class ResortManager {
 // Register activation hook
 register_activation_hook( __FILE__, function() {
 	ResortManager\Database::create_tables();
+
+	// Create Resort Staff Role
+	add_role( 'resort_staff', __( 'Resort Staff', 'resort-manager' ), [
+		'read'         => true,
+		'edit_posts'   => true,
+		'upload_files' => true,
+	] );
+
 	if ( ! wp_next_scheduled( 'resort_daily_sync' ) ) {
 		wp_schedule_event( time(), 'daily', 'resort_daily_sync' );
 	}

@@ -23,3 +23,22 @@
 	</div>
 	<button type="button" id="resort-search-btn" class="resort-btn"><?php _e( 'Search Availability', 'resort-manager' ); ?></button>
 </div>
+
+<div class="resort-search-filters" style="margin-top: 20px; display: flex; gap: 20px; justify-content: center; align-items: center; background: #f0fafa; padding: 15px; border-radius: 8px; border: 1px solid #d1eaea;">
+	<span style="font-weight: bold; font-size: 12px; color: var(--resort-primary);"><?php _e( 'FILTERS:', 'resort-manager' ); ?></span>
+	<div class="resort-field" style="margin-bottom: 0;">
+		<select id="resort-filter-price" name="filter_price">
+			<option value=""><?php _e( 'Any Price', 'resort-manager' ); ?></option>
+			<option value="0-5000">₱0 - ₱5,000</option>
+			<option value="5000-10000">₱5,000 - ₱10,000</option>
+			<option value="10000+">₱10,000+</option>
+		</select>
+	</div>
+	<div class="resort-field" style="margin-bottom: 0;">
+		<select id="resort-filter-type" name="filter_type">
+			<option value=""><?php _e( 'All Types', 'resort-manager' ); ?></option>
+			<option value="room"><?php _e( 'Standard Rooms', 'resort-manager' ); ?></option>
+			<option value="package"><?php _e( 'Exclusive Packages', 'resort-manager' ); ?></option>
+		</select>
+	</div>
+</div>

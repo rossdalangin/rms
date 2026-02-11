@@ -11,7 +11,7 @@ class Calendar {
 			'resort-manager',
 			__( 'Reservation Calendar', 'resort-manager' ),
 			__( 'Calendar', 'resort-manager' ),
-			'manage_options',
+			'edit_posts',
 			'resort-calendar',
 			[ $this, 'render_calendar_page' ]
 		);

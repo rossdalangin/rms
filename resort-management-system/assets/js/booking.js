@@ -119,9 +119,18 @@
             this.state.checkout = checkout;
             this.state.guests = guests;
 
+            const priceFilter = $('#resort-filter-price').val();
+            const typeFilter = $('#resort-filter-type').val();
+
             $.ajax({
                 url: `${resortData.api_url}/availability`,
-                data: { checkin, checkout, guests },
+                data: {
+                    checkin,
+                    checkout,
+                    guests,
+                    price_range: priceFilter,
+                    type: typeFilter
+                },
                 method: 'GET',
                 success: (rooms) => {
                     this.renderRooms(rooms);

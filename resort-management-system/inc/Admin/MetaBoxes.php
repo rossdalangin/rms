@@ -12,6 +12,7 @@ class MetaBoxes {
 		add_action( 'add_meta_boxes', [ $this, 'add_accommodation_maintenance_meta_box' ] );
 		add_action( 'admin_init', [ $this, 'handle_manual_block' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_booking_meta_boxes' ] );
+		add_action( 'save_post_booking', [ $this, 'save_booking_meta' ] );
 	}
 
 	public function add_accommodation_meta_boxes() {
@@ -167,6 +168,7 @@ class MetaBoxes {
 	}
 
 	public function render_booking_details( $post ) {
+		wp_nonce_field( 'booking_meta_box', 'booking_meta_box_nonce' );
 		$room_ids = get_post_meta( $post->ID, '_resort_room_ids', true );
 		if ( empty( $room_ids ) ) {
 			$room_ids = [ get_post_meta( $post->ID, '_resort_room_id', true ) ];
@@ -198,26 +200,26 @@ class MetaBoxes {
 						<th><?php _e( 'Accommodation(s):', 'resort-manager' ); ?></th>
 						<td>
 							<?php
-							foreach ( $room_ids as $r_id ) {
-								$room = get_post( $r_id );
-								if ( $room ) {
-									echo '<a href="'.get_edit_post_link($room->ID).'">'.esc_html($room->post_title).'</a><br>';
-								}
-							}
-							?>
+							$all_rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
+							foreach ( $all_rooms as $room ) : ?>
+								<label style="display:block;">
+									<input type="checkbox" name="resort_room_ids[]" value="<?php echo $room->ID; ?>" <?php checked( in_array( $room->ID, $room_ids ) ); ?>>
+									<?php echo esc_html( $room->post_title ); ?>
+								</label>
+							<?php endforeach; ?>
 						</td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Check-in:', 'resort-manager' ); ?></th>
-						<td><?php echo esc_html( $checkin ); ?></td>
+						<td><input type="date" name="resort_checkin" value="<?php echo esc_attr( $checkin ); ?>"></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Check-out:', 'resort-manager' ); ?></th>
-						<td><?php echo esc_html( $checkout ); ?></td>
+						<td><input type="date" name="resort_checkout" value="<?php echo esc_attr( $checkout ); ?>"></td>
 					</tr>
 					<tr>
 						<th><?php _e( 'Guests:', 'resort-manager' ); ?></th>
-						<td><?php echo esc_html( $guests_count ); ?></td>
+						<td><input type="number" name="resort_guests" value="<?php echo esc_attr( $guests_count ); ?>"></td>
 					</tr>
 				</table>
 			</div>
@@ -282,6 +284,57 @@ class MetaBoxes {
 			<?php endif; ?>
 		</div>
 		<?php
+	}
+
+	public function save_booking_meta( $post_id ) {
+		if ( ! isset( $_POST['booking_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['booking_meta_box_nonce'], 'booking_meta_box' ) ) {
+			return;
+		}
+
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		$old_rooms = get_post_meta( $post_id, '_resort_room_ids', true ) ?: [];
+		$old_checkin = get_post_meta( $post_id, '_resort_checkin', true );
+		$old_checkout = get_post_meta( $post_id, '_resort_checkout', true );
+
+		$new_rooms = isset( $_POST['resort_room_ids'] ) ? array_map( 'intval', $_POST['resort_room_ids'] ) : [];
+		$new_checkin = sanitize_text_field( $_POST['resort_checkin'] );
+		$new_checkout = sanitize_text_field( $_POST['resort_checkout'] );
+		$new_guests = intval( $_POST['resort_guests'] );
+
+		// Only sync if dates or rooms changed
+		if ( $old_rooms != $new_rooms || $old_checkin != $new_checkin || $old_checkout != $new_checkout ) {
+			// 1. Release old dates
+			global $wpdb;
+			$wpdb->delete( $wpdb->prefix . 'resort_availability', [ 'booking_id' => $post_id ] );
+
+			// 2. Block new dates
+			if ( ! empty( $new_rooms ) && ! empty( $new_checkin ) && ! empty( $new_checkout ) ) {
+				\ResortManager\Core\AvailabilityEngine::mark_as_booked( $new_rooms, $new_checkin, $new_checkout, $post_id );
+			}
+
+			// 3. Recalculate price (Simple version: just rooms for now)
+			$total_price = 0;
+			foreach ( $new_rooms as $r_id ) {
+				$total_price += \ResortManager\Core\PricingEngine::calculate_total( $r_id, $new_checkin, $new_checkout );
+			}
+			// Add existing services price
+			$services = get_post_meta( $post_id, '_resort_services', true ) ?: [];
+			foreach ( $services as $s_id ) {
+				$total_price += floatval( get_post_meta( $s_id, '_resort_service_price', true ) );
+			}
+			update_post_meta( $post_id, '_resort_total_price', $total_price );
+		}
+
+		update_post_meta( $post_id, '_resort_room_ids', $new_rooms );
+		update_post_meta( $post_id, '_resort_room_id', !empty($new_rooms) ? $new_rooms[0] : 0 );
+		update_post_meta( $post_id, '_resort_checkin', $new_checkin );
+		update_post_meta( $post_id, '_resort_checkout', $new_checkout );
+		update_post_meta( $post_id, '_resort_guests', $new_guests );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Booking #%d updated by admin.', 'resort-manager' ), $post_id ) );
 	}
 
 	public function add_service_meta_boxes() {
