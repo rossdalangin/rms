@@ -31,6 +31,14 @@ class Availability {
 		$checkout = $request->get_param( 'checkout' );
 		$guests = $request->get_param( 'guests' );
 
+		// Check Cut-off Time for Same-Day Bookings
+		if ( $checkin === date('Y-m-d') ) {
+			$cutoff = get_option( 'resort_cutoff_time', '14:00' );
+			if ( time() > strtotime( date('Y-m-d') . ' ' . $cutoff ) ) {
+				return rest_ensure_response( [] ); // Disable same-day if past cutoff
+			}
+		}
+
 		if ( empty( $checkin ) || empty( $checkout ) ) {
 			return rest_ensure_response( [] );
 		}

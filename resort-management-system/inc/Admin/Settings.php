@@ -64,6 +64,7 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_min_nights' );
 		register_setting( 'resort_settings_group', 'resort_max_nights' );
 		register_setting( 'resort_settings_group', 'resort_book_ahead_days' );
+		register_setting( 'resort_settings_group', 'resort_cutoff_time' );
 		register_setting( 'resort_settings_group', 'resort_deposit_percentage' );
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
@@ -319,6 +320,7 @@ class Settings {
 		$min = get_option( 'resort_min_nights', '1' );
 		$max = get_option( 'resort_max_nights', '30' );
 		$ahead = get_option( 'resort_book_ahead_days', '0' );
+		$cutoff = get_option( 'resort_cutoff_time', '14:00' );
 		?>
 		<div style="margin-bottom: 10px;">
 			<label><strong><?php _e( 'Min Nights:', 'resort-manager' ); ?></strong></label>
@@ -330,10 +332,15 @@ class Settings {
 			<input type="number" name="resort_max_nights" value="<?php echo esc_attr( $max ); ?>" style="width: 60px;">
 			<span class="description"><?php _e( '(e.g., limit stays to 14 days)', 'resort-manager' ); ?></span>
 		</div>
-		<div>
+		<div style="margin-bottom: 10px;">
 			<label><strong><?php _e( 'Book Ahead (Days):', 'resort-manager' ); ?></strong></label>
 			<input type="number" name="resort_book_ahead_days" value="<?php echo esc_attr( $ahead ); ?>" style="width: 60px;">
 			<span class="description"><?php _e( '(e.g., "2" means guests must book at least 48 hours before arrival)', 'resort-manager' ); ?></span>
+		</div>
+		<div>
+			<label><strong><?php _e( 'Same-Day Cut-off Time:', 'resort-manager' ); ?></strong></label>
+			<input type="time" name="resort_cutoff_time" value="<?php echo esc_attr( $cutoff ); ?>">
+			<span class="description"><?php _e( '(e.g., "14:00" means same-day bookings are disabled after 2 PM)', 'resort-manager' ); ?></span>
 		</div>
 		<?php
 	}

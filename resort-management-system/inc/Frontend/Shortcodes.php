@@ -166,6 +166,9 @@ class Shortcodes {
 											?>
 												<button class="resort-btn-small self-checkin-btn" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-green);"><?php _e( 'Self Check-in', 'resort-manager' ); ?></button>
 											<?php endif; ?>
+											<?php if ( 'checked_in' === $check_status && date('Y-m-d') === $checkout ) : ?>
+												<button class="resort-btn-small self-checkout-btn" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-coral);"><?php _e( 'Self Check-out', 'resort-manager' ); ?></button>
+											<?php endif; ?>
 											<?php if ( strtotime( $checkin ) <= time() && strtotime( $checkout ) >= time() ) : ?>
 												<button class="resort-btn-small show-service-request-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-accent);"><?php _e( 'Request Service', 'resort-manager' ); ?></button>
 											<?php endif; ?>

@@ -64,6 +64,7 @@
 			$(document).on('click', '#resort-dashboard-pay-now', this.handleDashboardPay.bind(this));
 			$(document).on('submit', '#resort-service-request-form', this.handleServiceRequestSubmit.bind(this));
 			$(document).on('click', '.self-checkin-btn', this.handleSelfCheckin.bind(this));
+			$(document).on('click', '.self-checkout-btn', this.handleSelfCheckout.bind(this));
         },
 
         goToStep: function(step) {
@@ -494,6 +495,29 @@
 				} else {
 					alert(res.data.message);
 					btn.prop('disabled', false).text('Pay Now');
+				}
+			});
+		},
+
+		handleSelfCheckout: function(e) {
+			const btn = $(e.currentTarget);
+			const bookingId = btn.data('booking');
+
+			if (!confirm('Are you departing from the resort now? This will mark you as checked-out.')) return;
+
+			btn.prop('disabled', true).text('Checking out...');
+
+			$.post(resortData.ajax_url, {
+				action: 'resort_self_checkout',
+				nonce: resortData.nonce,
+				booking_id: bookingId
+			}, (res) => {
+				if (res.success) {
+					alert(res.data.message);
+					window.location.reload();
+				} else {
+					alert(res.data.message);
+					btn.prop('disabled', false).text('Self Check-out');
 				}
 			});
 		},

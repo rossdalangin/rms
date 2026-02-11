@@ -149,9 +149,10 @@ Guests can leave reviews via the **Guest Dashboard** after their stay.
 Guests who choose "Pay at Resort" (Offline) can later choose to pay their balance online via Stripe or PayPal through their **Guest Dashboard**.
 - Once the payment is completed online, the booking status automatically updates to "Fully Paid" in the admin.
 
-### 7.4 Digital Self Check-in
+### 7.4 Digital Self Check-in & Out
 On the day of arrival, guests will see a **Self Check-in** button in their dashboard.
-- Clicking this marks their status as "Checked In" and alerts the front desk staff via the administrative logs.
+- On the day of departure, they will see a **Self Check-out** button.
+- Clicking these marks their status appropriately and alerts the front desk staff via the administrative logs for key collection/room cleaning.
 
 ### 7.5 In-Stay Service Requests
 During their stay, guests can submit requests (e.g., "Fresh Towels", "Room Cleaning") directly from their dashboard.

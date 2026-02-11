@@ -14,6 +14,7 @@ class Booking {
 		add_action( 'wp_ajax_resort_pay_balance', [ $this, 'pay_balance' ] );
 		add_action( 'wp_ajax_resort_submit_service_request', [ $this, 'submit_service_request' ] );
 		add_action( 'wp_ajax_resort_self_checkin', [ $this, 'handle_self_checkin' ] );
+		add_action( 'wp_ajax_resort_self_checkout', [ $this, 'handle_self_checkout' ] );
 		add_action( 'wp_ajax_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
 	}
@@ -327,6 +328,27 @@ class Booking {
 		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'In-stay service request for Booking #%d.', 'resort-manager' ), $booking_id ) );
 
 		wp_send_json_success( [ 'message' => __( 'Your request has been received. Our staff will be with you shortly.', 'resort-manager' ) ] );
+	}
+
+	public function handle_self_checkout() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		$checkout = get_post_meta( $booking_id, '_resort_checkout', true );
+		if ( date('Y-m-d') !== $checkout ) {
+			wp_send_json_error( [ 'message' => __( 'Self check-out is only available on your departure date.', 'resort-manager' ) ] );
+		}
+
+		update_post_meta( $booking_id, '_resort_check_status', 'checked_out' );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest self-checked-out for Booking #%d.', 'resort-manager' ), $booking_id ) );
+
+		wp_send_json_success( [ 'message' => __( 'Thank you for staying with LuxeResort! You are now checked out. We hope to see you again soon.', 'resort-manager' ) ] );
 	}
 
 	public function handle_self_checkin() {
