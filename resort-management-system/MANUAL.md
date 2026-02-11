@@ -234,9 +234,13 @@ Configure your main competitors under **LuxeResort > Settings > Market Intellige
 - **Housekeeping Dashboard**: A dedicated interface for operational staff to track room cleaning status (Clean, Dirty, Cleaning) and prioritize rooms based on today's check-outs. Access this under **LuxeResort > Housekeeping**.
 
 ### 11.4 CRM & Attribution (Marketing Intelligence)
-- **HubSpot Integration**: Automatically sync guest contacts to HubSpot for advanced CRM workflows.
+- **Multi-CRM Integration**: Automatically sync guest contacts to HubSpot and Zoho CRM for advanced workflows.
 - **Marketing Attribution**: Track `utm_source`, `utm_medium`, and `utm_campaign` for every booking. View these details in individual booking screens or export them via the **Revenue Reports** CSV for ROI analysis.
 - **Outgoing Webhooks**: Connect LuxeResort Manager to Zapier, Make, or custom endpoints to trigger external automations upon booking confirmation.
+
+### 11.5 Operational Automation
+- **Concierge Emails**: The system automatically sends Pre-Arrival emails (2 days before check-in) and Post-Departure feedback requests (1 day after check-out).
+- **Business Intelligence**: The Reports dashboard now provides real-time metrics for Customer Lifetime Value (LTV) and Average Order Value (AOV), alongside an Elite Guests leader board.
 
 ---
 

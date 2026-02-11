@@ -167,6 +167,26 @@ class Reports {
 		// Fetch Smart Pricing Insights
 		$insights = $this->generate_smart_pricing_suggestions();
 
+		// Business Intelligence Calculations
+		$aov = $confirmed_bookings > 0 ? $total_revenue / $confirmed_bookings : 0;
+
+		// LTV Calculation (Group by Email)
+		$guest_revenue = [];
+		foreach ( $bookings as $booking ) {
+			$status = get_post_meta( $booking->ID, '_resort_status', true );
+			if ( 'confirmed' === $status ) {
+				$email = get_post_meta( $booking->ID, '_resort_guest_email', true );
+				$rev = floatval( get_post_meta( $booking->ID, '_resort_total_price', true ) );
+				if ( ! isset($guest_revenue[$email]) ) {
+					$guest_revenue[$email] = [ 'rev' => 0, 'name' => get_post_meta($booking->ID, '_resort_first_name', true) . ' ' . get_post_meta($booking->ID, '_resort_last_name', true) ];
+				}
+				$guest_revenue[$email]['rev'] += $rev;
+			}
+		}
+		uasort($guest_revenue, function($a, $b) { return $b['rev'] <=> $a['rev']; });
+		$top_guests = array_slice($guest_revenue, 0, 5);
+		$avg_ltv = count($guest_revenue) > 0 ? $total_revenue / count($guest_revenue) : 0;
+
 		?>
 		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'Resort Analytics & Reports', 'resort-manager' ); ?></h1>
@@ -201,6 +221,30 @@ class Reports {
 					<h3><?php _e( 'Occupancy Rate', 'resort-manager' ); ?></h3>
 					<p style="font-size: 28px; font-weight: 700; color: var(--resort-coral);"><?php echo round( $occupancy_rate, 1 ); ?>%</p>
 					<p style="color:var(--resort-muted);"><small><?php _e( 'For today', 'resort-manager' ); ?></small></p>
+				</div>
+				<div class="stat-card resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-accent);">
+					<h3><?php _e( 'Avg Order Value (AOV)', 'resort-manager' ); ?></h3>
+					<p style="font-size: 28px; font-weight: 700; color: var(--resort-accent);"><?php echo \ResortManager\Core\PricingEngine::format_price( $aov ); ?></p>
+					<p style="color:var(--resort-muted);"><small><?php _e( 'Revenue per booking', 'resort-manager' ); ?></small></p>
+				</div>
+			</div>
+
+			<div class="resort-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+				<div class="resort-admin-card" style="margin-bottom:0; border-top-color: #6c5ce7;">
+					<h3><?php _e( 'Customer Lifetime Value (LTV)', 'resort-manager' ); ?></h3>
+					<p style="font-size: 28px; font-weight: 700; color: #6c5ce7;"><?php echo \ResortManager\Core\PricingEngine::format_price( $avg_ltv ); ?></p>
+					<p style="color:var(--resort-muted);"><small><?php _e( 'Average revenue per unique guest', 'resort-manager' ); ?></small></p>
+				</div>
+				<div class="resort-admin-card" style="margin-bottom:0; border-top-color: #fdcb6e;">
+					<h3><?php _e( 'Elite Guests (Top Spend)', 'resort-manager' ); ?></h3>
+					<ul style="margin:0; padding:0; list-style:none;">
+						<?php foreach ( $top_guests as $email => $data ) : ?>
+							<li style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f0f0f0;">
+								<span><?php echo esc_html($data['name']); ?></span>
+								<strong><?php echo \ResortManager\Core\PricingEngine::format_price($data['rev']); ?></strong>
+							</li>
+						<?php endforeach; ?>
+					</ul>
 				</div>
 			</div>
 
