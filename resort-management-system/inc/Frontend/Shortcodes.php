@@ -160,6 +160,15 @@ class Shortcodes {
 											<?php if ( $p_status === 'pending' ) : ?>
 												<button class="resort-btn-small show-pay-modal" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-teal);"><?php _e( 'Pay Balance', 'resort-manager' ); ?></button>
 											<?php endif; ?>
+											<?php
+											$check_status = get_post_meta( $booking->ID, '_resort_check_status', true ) ?: 'pending';
+											if ( 'pending' === $check_status && date('Y-m-d') === $checkin ) :
+											?>
+												<button class="resort-btn-small self-checkin-btn" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-green);"><?php _e( 'Self Check-in', 'resort-manager' ); ?></button>
+											<?php endif; ?>
+											<?php if ( strtotime( $checkin ) <= time() && strtotime( $checkout ) >= time() ) : ?>
+												<button class="resort-btn-small show-service-request-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-accent);"><?php _e( 'Request Service', 'resort-manager' ); ?></button>
+											<?php endif; ?>
 										</div>
 									<?php endif; ?>
 									<?php if ( 'confirmed' === $status && strtotime( $checkout ) < time() ) : ?>
@@ -200,6 +209,31 @@ class Shortcodes {
 				<div class="resort-field">
 					<label><?php _e( 'Requested Changes', 'resort-manager' ); ?></label>
 					<textarea name="request_details" placeholder="e.g. Change dates to Aug 12-15..." required></textarea>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn"><?php _e( 'Send Request', 'resort-manager' ); ?></button>
+					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
+				</div>
+			</form>
+		</div>
+
+		<div id="resort-service-request-modal" class="resort-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:1000; width:400px;">
+			<h3><?php _e( 'In-Stay Service Request', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'Need something? Let our staff know and we will handle it immediately.', 'resort-manager' ); ?></p>
+			<form id="resort-service-request-form">
+				<input type="hidden" name="booking_id" id="service-request-booking-id">
+				<div class="resort-field">
+					<label><?php _e( 'I need...', 'resort-manager' ); ?></label>
+					<select name="request_type" required>
+						<option value="towels"><?php _e( 'Fresh Towels', 'resort-manager' ); ?></option>
+						<option value="cleaning"><?php _e( 'Room Cleaning', 'resort-manager' ); ?></option>
+						<option value="maintenance"><?php _e( 'Maintenance Repair', 'resort-manager' ); ?></option>
+						<option value="other"><?php _e( 'Other (Specify below)', 'resort-manager' ); ?></option>
+					</select>
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Details', 'resort-manager' ); ?></label>
+					<textarea name="request_details" placeholder="e.g. Room 202 needs more coffee pods..." required></textarea>
 				</div>
 				<div style="margin-top:20px;">
 					<button type="submit" class="resort-btn"><?php _e( 'Send Request', 'resort-manager' ); ?></button>

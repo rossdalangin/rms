@@ -71,6 +71,7 @@ class ResortManager {
 		new ResortManager\Gateways\PayPal();
 		new ResortManager\Core\Notifications();
 		new ResortManager\Core\PWA();
+		new ResortManager\Core\CRM();
 
 		if ( is_admin() ) {
 			new ResortManager\Admin\Assets();

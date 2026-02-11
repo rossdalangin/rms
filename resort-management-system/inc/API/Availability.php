@@ -12,6 +12,18 @@ class Availability {
 			'callback' => [ $this, 'get_availability' ],
 			'permission_callback' => '__return_true',
 		] );
+
+		register_rest_route( 'resort/v1', '/guest/history', [
+			'methods'  => 'GET',
+			'callback' => [ $this, 'get_guest_history' ],
+			'permission_callback' => function() { return is_user_logged_in(); },
+		] );
+
+		register_rest_route( 'resort/v1', '/guest/requests', [
+			'methods'  => 'POST',
+			'callback' => [ $this, 'create_guest_request' ],
+			'permission_callback' => function() { return is_user_logged_in(); },
+		] );
 	}
 
 	public function get_availability( $request ) {
@@ -65,5 +77,49 @@ class Availability {
 		}
 
 		return rest_ensure_response( $response );
+	}
+
+	public function get_guest_history( $request ) {
+		$user_id = get_current_user_id();
+		$bookings = get_posts( [
+			'post_type'  => 'booking',
+			'meta_key'   => '_resort_guest_id',
+			'meta_value' => $user_id,
+			'numberposts' => -1
+		] );
+
+		$response = [];
+		foreach ( $bookings as $booking ) {
+			$response[] = [
+				'id'      => $booking->ID,
+				'checkin' => get_post_meta( $booking->ID, '_resort_checkin', true ),
+				'checkout'=> get_post_meta( $booking->ID, '_resort_checkout', true ),
+				'status'  => get_post_meta( $booking->ID, '_resort_status', true ),
+				'total'   => get_post_meta( $booking->ID, '_resort_total_price', true ),
+			];
+		}
+
+		return rest_ensure_response( $response );
+	}
+
+	public function create_guest_request( $request ) {
+		$booking_id = intval( $request->get_param( 'booking_id' ) );
+		$type = sanitize_text_field( $request->get_param( 'type' ) );
+		$details = sanitize_textarea_field( $request->get_param( 'details' ) );
+
+		// Permission Check
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) {
+			return new \WP_Error( 'rest_forbidden', __( 'Unauthorized access.', 'resort-manager' ), [ 'status' => 403 ] );
+		}
+
+		$log = get_post_meta( $booking_id, '_resort_communication_log', true ) ?: [];
+		$log[] = [
+			'date'    => date( 'Y-m-d H:i' ),
+			'message' => sprintf( 'MOBILE REQUEST (%s): %s', strtoupper($type), $details )
+		];
+		update_post_meta( $booking_id, '_resort_communication_log', $log );
+
+		return rest_ensure_response( [ 'success' => true, 'message' => __( 'Request sent via API.', 'resort-manager' ) ] );
 	}
 }

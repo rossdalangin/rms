@@ -68,6 +68,7 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
+		register_setting( 'resort_settings_group', 'resort_hubspot_api_key' );
 		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
 		register_setting( 'resort_settings_group', 'resort_twilio_token' );
 		register_setting( 'resort_settings_group', 'resort_twilio_number' );
@@ -248,6 +249,7 @@ class Settings {
 	public function render_marketing_fields() {
 		$mc_key = get_option( 'resort_mailchimp_api_key', '' );
 		$mc_list = get_option( 'resort_mailchimp_list_id', '' );
+		$hs_key = get_option( 'resort_hubspot_api_key', '' );
 		$tw_sid = get_option( 'resort_twilio_sid', '' );
 		$tw_token = get_option( 'resort_twilio_token', '' );
 		$tw_num = get_option( 'resort_twilio_number', '' );
@@ -257,6 +259,10 @@ class Settings {
 		<input type="text" name="resort_mailchimp_api_key" value="<?php echo esc_attr($mc_key); ?>" class="regular-text"><br>
 		<label>Audience (List) ID:</label><br>
 		<input type="text" name="resort_mailchimp_list_id" value="<?php echo esc_attr($mc_list); ?>" class="regular-text"><br><br>
+
+		<p><strong><?php _e( 'HubSpot CRM Integration', 'resort-manager' ); ?></strong></p>
+		<label>HubSpot API Key (Private App Token):</label><br>
+		<input type="password" name="resort_hubspot_api_key" value="<?php echo esc_attr($hs_key); ?>" class="regular-text"><br><br>
 
 		<p><strong><?php _e( 'Twilio SMS Integration', 'resort-manager' ); ?></strong></p>
 		<label>Account SID:</label><br>

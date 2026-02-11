@@ -12,6 +12,8 @@ class Booking {
 		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_resort_modify_request', [ $this, 'handle_modify_request' ] );
 		add_action( 'wp_ajax_resort_pay_balance', [ $this, 'pay_balance' ] );
+		add_action( 'wp_ajax_resort_submit_service_request', [ $this, 'submit_service_request' ] );
+		add_action( 'wp_ajax_resort_self_checkin', [ $this, 'handle_self_checkin' ] );
 		add_action( 'wp_ajax_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
 	}
@@ -297,6 +299,53 @@ class Booking {
 		wp_send_json_success( [
 			'ajax_action' => $ajax_action
 		] );
+	}
+
+	public function submit_service_request() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$type = sanitize_text_field( $_POST['request_type'] );
+		$details = sanitize_textarea_field( $_POST['request_details'] );
+
+		// Verify this booking belongs to the user
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		// Log request in communication log
+		$log = get_post_meta( $booking_id, '_resort_communication_log', true ) ?: [];
+		$log[] = [
+			'date'    => date( 'Y-m-d H:i' ),
+			'message' => sprintf( 'IN-STAY REQUEST (%s): %s', strtoupper($type), $details )
+		];
+		update_post_meta( $booking_id, '_resort_communication_log', $log );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'In-stay service request for Booking #%d.', 'resort-manager' ), $booking_id ) );
+
+		wp_send_json_success( [ 'message' => __( 'Your request has been received. Our staff will be with you shortly.', 'resort-manager' ) ] );
+	}
+
+	public function handle_self_checkin() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		$checkin = get_post_meta( $booking_id, '_resort_checkin', true );
+		if ( date('Y-m-d') !== $checkin ) {
+			wp_send_json_error( [ 'message' => __( 'Self check-in is only available on your arrival date.', 'resort-manager' ) ] );
+		}
+
+		update_post_meta( $booking_id, '_resort_check_status', 'checked_in' );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest self-checked-in for Booking #%d.', 'resort-manager' ), $booking_id ) );
+
+		wp_send_json_success( [ 'message' => __( 'Welcome to LuxeResort! You are now checked in. Please proceed to the front desk to collect your keys.', 'resort-manager' ) ] );
 	}
 
 	public function submit_standalone_service() {

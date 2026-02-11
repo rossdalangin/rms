@@ -3,6 +3,10 @@ namespace ResortManager\Core;
 
 class AvailabilityEngine {
 	public static function get_available_rooms( $checkin, $checkout ) {
+		$cache_key = 'resort_avail_' . md5( $checkin . $checkout );
+		$cached = get_transient( $cache_key );
+		if ( false !== $cached ) return $cached;
+
 		global $wpdb;
 		$table_availability = $wpdb->prefix . 'resort_availability';
 
@@ -22,7 +26,9 @@ class AvailabilityEngine {
 			$args['post__not_in'] = $booked_rooms;
 		}
 
-		return get_posts( $args );
+		$rooms = get_posts( $args );
+		set_transient( $cache_key, $rooms, HOUR_IN_SECONDS );
+		return $rooms;
 	}
 
 	public static function mark_as_booked( $room_ids, $checkin, $checkout, $booking_id ) {
@@ -48,5 +54,10 @@ class AvailabilityEngine {
 				] );
 			}
 		}
+
+		// Flush all availability transients
+		global $wpdb;
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_resort_avail_%'" );
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_timeout_resort_avail_%'" );
 	}
 }

@@ -49,14 +49,21 @@
 				$('#resort-dashboard-pay-now').data('booking', $(e.currentTarget).data('booking'));
 				$('#resort-pay-modal').show();
 			});
+			$(document).on('click', '.show-service-request-form', (e) => {
+				$('#service-request-booking-id').val($(e.currentTarget).data('booking'));
+				$('#resort-service-request-modal').show();
+			});
             $(document).on('click', '.close-modal', () => {
 				$('#resort-review-modal').hide();
 				$('#resort-modify-modal').hide();
 				$('#resort-pay-modal').hide();
+				$('#resort-service-request-modal').hide();
 			});
             $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
 			$(document).on('submit', '#resort-modify-form', this.handleModifySubmit.bind(this));
 			$(document).on('click', '#resort-dashboard-pay-now', this.handleDashboardPay.bind(this));
+			$(document).on('submit', '#resort-service-request-form', this.handleServiceRequestSubmit.bind(this));
+			$(document).on('click', '.self-checkin-btn', this.handleSelfCheckin.bind(this));
         },
 
         goToStep: function(step) {
@@ -487,6 +494,54 @@
 				} else {
 					alert(res.data.message);
 					btn.prop('disabled', false).text('Pay Now');
+				}
+			});
+		},
+
+		handleSelfCheckin: function(e) {
+			const btn = $(e.currentTarget);
+			const bookingId = btn.data('booking');
+
+			if (!confirm('Are you arriving at the resort now? This will mark you as checked-in.')) return;
+
+			btn.prop('disabled', true).text('Checking in...');
+
+			$.post(resortData.ajax_url, {
+				action: 'resort_self_checkin',
+				nonce: resortData.nonce,
+				booking_id: bookingId
+			}, (res) => {
+				if (res.success) {
+					alert(res.data.message);
+					window.location.reload();
+				} else {
+					alert(res.data.message);
+					btn.prop('disabled', false).text('Self Check-in');
+				}
+			});
+		},
+
+		handleServiceRequestSubmit: function(e) {
+			e.preventDefault();
+			const form = $(e.currentTarget);
+			const btn = form.find('button');
+			const data = {
+				action: 'resort_submit_service_request',
+				nonce: resortData.nonce,
+				booking_id: $('#service-request-booking-id').val(),
+				request_type: form.find('[name="request_type"]').val(),
+				request_details: form.find('[name="request_details"]').val()
+			};
+
+			btn.prop('disabled', true).text('Sending...');
+
+			$.post(resortData.ajax_url, data, function(res) {
+				if (res.success) {
+					alert(res.data.message);
+					$('#resort-service-request-modal').hide();
+				} else {
+					alert('Error sending request.');
+					btn.prop('disabled', false).text('Send Request');
 				}
 			});
 		},

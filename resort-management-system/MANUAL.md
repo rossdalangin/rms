@@ -113,7 +113,10 @@ View a visual timeline of your resort's occupancy under **LuxeResort > Calendar*
     - **Booked**: Confirmed or pending booking (Vibrant Green).
     - **Sync**: Blocked by an external calendar sync (Slate Grey).
 
-### 6.3 Managing Payments
+### 6.3 Guest Waivers
+All signed digital liability waivers are centrally managed under **LuxeResort > Waivers**. You can filter by date and view the associated booking for each waiver.
+
+### 6.4 Managing Payments
 Track all financial activity under **LuxeResort > Payments**.
 - **Online Payments**: Stripe and PayPal transactions are logged automatically.
 - **Offline Payments**: When a guest chooses "Pay at Resort", a pending record is created. Once they pay (cash/check), find the record and click **Update** to mark it as **Completed**.
@@ -145,7 +148,18 @@ Guests can leave reviews via the **Guest Dashboard** after their stay.
 Guests who choose "Pay at Resort" (Offline) can later choose to pay their balance online via Stripe or PayPal through their **Guest Dashboard**.
 - Once the payment is completed online, the booking status automatically updates to "Fully Paid" in the admin.
 
-### 7.3 Loyalty & Perks
+### 7.4 Digital Self Check-in
+On the day of arrival, guests will see a **Self Check-in** button in their dashboard.
+- Clicking this marks their status as "Checked In" and alerts the front desk staff via the administrative logs.
+
+### 7.5 In-Stay Service Requests
+During their stay, guests can submit requests (e.g., "Fresh Towels", "Room Cleaning") directly from their dashboard.
+- These requests are instantly logged in the **Guest Communication Log** for that specific booking for staff fulfillment.
+
+### 7.6 Progressive Web App (PWA)
+Guests can install LuxeResort as a standalone app on their mobile devices for offline access to their dashboard and faster service requests.
+
+### 7.7 Loyalty & Perks
 Guests automatically earn **1 point for every $10 spent**.
 - Points are displayed in the **Guest Dashboard**.
 - Admin can view total points and booking counts under **LuxeResort > Guest Profiles**.
@@ -160,6 +174,7 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_guest_dashboard]` | Private area for guests to manage their bookings and leave reviews. |
 | `[resort_reviews]` | Displays the latest guest testimonials. |
 | `[resort_lead_form]` | A sleek lead capture form to build your elite guest list. |
+| `[resort_service_booking]` | A standalone booking form for guests who only want to book a spa or excursion without a room. |
 
 ---
 
