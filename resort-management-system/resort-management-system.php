@@ -70,6 +70,7 @@ class ResortManager {
 		new ResortManager\Gateways\Stripe();
 		new ResortManager\Gateways\PayPal();
 		new ResortManager\Core\Notifications();
+		new ResortManager\Core\PWA();
 
 		if ( is_admin() ) {
 			new ResortManager\Admin\Assets();
@@ -82,6 +83,7 @@ class ResortManager {
 			new ResortManager\Admin\BookingCommunication();
 			new ResortManager\Admin\Reports();
 			new ResortManager\Admin\Payments();
+			new ResortManager\Admin\Waivers();
 		}
 	}
 

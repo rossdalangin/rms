@@ -6,6 +6,7 @@ class Reports {
 		add_action( 'admin_menu', [ $this, 'add_reports_page' ] );
 		add_action( 'admin_init', [ $this, 'handle_export_csv' ] );
 		add_action( 'wp_ajax_resort_apply_smart_pricing', [ $this, 'apply_smart_pricing' ] );
+		add_action( 'resort_daily_sync', [ $this, 'check_competitor_alerts' ] );
 	}
 
 	public function add_reports_page() {
@@ -83,6 +84,35 @@ class Reports {
 		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Smart Pricing applied: %s%% for %d days.', 'resort-manager' ), ($modifier > 0 ? '+' : '') . $modifier, $days ) );
 
 		wp_send_json_success( [ 'message' => __( 'Pricing rules applied successfully!', 'resort-manager' ) ] );
+	}
+
+	public function check_competitor_alerts() {
+		// Simulated Competitor Data Analysis
+		$competitors = [
+			[ 'name' => 'Blue Waters Resort', 'price' => 5200 ],
+			[ 'name' => 'Sunset Sands Hotel', 'price' => 4800 ]
+		];
+
+		$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => 1 ] );
+		if ( empty($rooms) ) return;
+
+		$my_price = get_post_meta( $rooms[0]->ID, '_resort_price', true );
+		$admin_email = get_option( 'admin_email' );
+
+		foreach ( $competitors as $comp ) {
+			if ( $comp['price'] < ($my_price * 0.8) ) {
+				// Alert: Competitor is significantly cheaper
+				$subject = sprintf( __( 'LuxeResort Market Alert: %s', 'resort-manager' ), $comp['name'] );
+				$message = sprintf(
+					__( 'Warning: %s has dropped their rates to %s, which is more than 20%% below your current rate of %s. Consider reviewing your "Smart Pricing" rules.', 'resort-manager' ),
+					$comp['name'],
+					\ResortManager\Core\PricingEngine::format_price( $comp['price'] ),
+					\ResortManager\Core\PricingEngine::format_price( $my_price )
+				);
+				wp_mail( $admin_email, $subject, $message );
+				\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Market Alert sent for %s.', 'resort-manager' ), $comp['name'] ) );
+			}
+		}
 	}
 
 	public function render_reports_page() {

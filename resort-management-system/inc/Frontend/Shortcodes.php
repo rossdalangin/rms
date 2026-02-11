@@ -9,6 +9,7 @@ class Shortcodes {
 		add_shortcode( 'resort_reviews', [ $this, 'render_reviews' ] );
 		add_shortcode( 'resort_lead_form', [ $this, 'render_lead_form' ] );
 		add_shortcode( 'resort_room_calendar', [ $this, 'render_room_calendar' ] );
+		add_shortcode( 'resort_service_booking', [ $this, 'render_service_booking' ] );
 	}
 
 	public function render_booking_engine( $atts ) {
@@ -321,6 +322,75 @@ class Shortcodes {
 				<span><span style="display:inline-block; width:10px; height:10px; background:#d63638; border-radius:2px;"></span> Booked</span>
 			</div>
 		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	public function render_service_booking( $atts ) {
+		$services = get_posts( [ 'post_type' => 'service', 'numberposts' => -1 ] );
+		ob_start();
+		?>
+		<div class="resort-booking-container standalone-service-booking">
+			<h3><?php _e( 'Book an Experience', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'Not staying with us? You can still enjoy our 5-star spa and excursions.', 'resort-manager' ); ?></p>
+
+			<form id="resort-standalone-service-form">
+				<div class="resort-field">
+					<label><?php _e( 'Select Experience', 'resort-manager' ); ?></label>
+					<select name="service_id" required>
+						<?php foreach ( $services as $service ) :
+							$price = get_post_meta( $service->ID, '_resort_service_price', true );
+							?>
+							<option value="<?php echo $service->ID; ?>"><?php echo esc_html( $service->post_title ); ?> - <?php echo \ResortManager\Core\PricingEngine::format_price( $price ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Date', 'resort-manager' ); ?></label>
+					<input type="date" name="booking_date" required min="<?php echo date('Y-m-d'); ?>">
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Your Name', 'resort-manager' ); ?></label>
+					<input type="text" name="guest_name" required>
+				</div>
+				<div class="resort-field">
+					<label><?php _e( 'Email Address', 'resort-manager' ); ?></label>
+					<input type="email" name="guest_email" required>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn" style="width:100%;"><?php _e( 'Confirm Experience', 'resort-manager' ); ?></button>
+				</div>
+				<div id="service-booking-message" style="margin-top:15px; text-align:center;"></div>
+			</form>
+		</div>
+		<script>
+		jQuery(document).ready(function($) {
+			$('#resort-standalone-service-form').on('submit', function(e) {
+				e.preventDefault();
+				const form = $(this);
+				const btn = form.find('button');
+				const data = {
+					action: 'resort_submit_standalone_service',
+					nonce: '<?php echo wp_create_nonce("resort_booking_nonce"); ?>',
+					service_id: form.find('[name="service_id"]').val(),
+					date: form.find('[name="booking_date"]').val(),
+					name: form.find('[name="guest_name"]').val(),
+					email: form.find('[name="guest_email"]').val()
+				};
+
+				btn.prop('disabled', true).text('Processing...');
+
+				$.post('<?php echo admin_url("admin-ajax.php"); ?>', data, function(res) {
+					if (res.success) {
+						form.html('<div style="color:green; padding:20px;"><h4>' + res.data.message + '</h4><p>Booking ID: #' + res.data.booking_id + '</p></div>');
+					} else {
+						$('#service-booking-message').text(res.data.message).css('color', 'red');
+						btn.prop('disabled', false).text('Confirm Experience');
+					}
+				});
+			});
+		});
+		</script>
 		<?php
 		return ob_get_clean();
 	}

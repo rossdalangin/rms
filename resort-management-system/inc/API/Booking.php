@@ -12,6 +12,8 @@ class Booking {
 		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_resort_modify_request', [ $this, 'handle_modify_request' ] );
 		add_action( 'wp_ajax_resort_pay_balance', [ $this, 'pay_balance' ] );
+		add_action( 'wp_ajax_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
+		add_action( 'wp_ajax_nopriv_resort_submit_standalone_service', [ $this, 'submit_standalone_service' ] );
 	}
 
 	public function submit_booking() {
@@ -294,6 +296,49 @@ class Booking {
 
 		wp_send_json_success( [
 			'ajax_action' => $ajax_action
+		] );
+	}
+
+	public function submit_standalone_service() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		$service_id = intval( $_POST['service_id'] );
+		$date = sanitize_text_field( $_POST['date'] );
+		$name = sanitize_text_field( $_POST['name'] );
+		$email = sanitize_email( $_POST['email'] );
+
+		if ( ! is_email( $email ) ) {
+			wp_send_json_error( [ 'message' => __( 'Valid email required.', 'resort-manager' ) ] );
+		}
+
+		$service = get_post( $service_id );
+		if ( ! $service || 'service' !== $service->post_type ) {
+			wp_send_json_error( [ 'message' => __( 'Invalid experience.', 'resort-manager' ) ] );
+		}
+
+		$price = get_post_meta( $service_id, '_resort_service_price', true );
+
+		// Create a "Booking" post for this service
+		$booking_id = wp_insert_post( [
+			'post_type'   => 'booking',
+			'post_title'  => sprintf( 'Service: %s for %s', $service->post_title, $name ),
+			'post_status' => 'publish',
+		] );
+
+		update_post_meta( $booking_id, '_resort_booking_type', 'service_only' );
+		update_post_meta( $booking_id, '_resort_service_id', $service_id );
+		update_post_meta( $booking_id, '_resort_checkin', $date );
+		update_post_meta( $booking_id, '_resort_first_name', $name );
+		update_post_meta( $booking_id, '_resort_guest_email', $email );
+		update_post_meta( $booking_id, '_resort_total_price', $price );
+		update_post_meta( $booking_id, '_resort_status', 'confirmed' ); // Auto-confirm standalone services for now
+		update_post_meta( $booking_id, '_resort_payment_status', 'completed' );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Standalone service #%d booked by %s.', 'resort-manager' ), $booking_id, $name ) );
+
+		wp_send_json_success( [
+			'booking_id' => $booking_id,
+			'message'    => __( 'Experience booked! We look forward to seeing you.', 'resort-manager' )
 		] );
 	}
 
