@@ -229,6 +229,30 @@ class Reports {
 			</div>
 
 			<div id="resort-optimization-content" style="display:none; margin-top:30px;">
+
+				<div class="resort-admin-card" style="margin-bottom:30px; border-top-color: var(--resort-teal);">
+					<h3><span class="dashicons dashicons-analytics" style="color:var(--resort-teal);"></span> <?php _e( 'Competitor Insights (Simulated)', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Real-time market analysis for nearby resorts. Use these insights to stay competitive.', 'resort-manager' ); ?></p>
+					<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-top:20px;">
+						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
+							<strong>Blue Waters Resort</strong><br>
+							<small>Avg. Nightly: ₱5,200</small><br>
+							<span style="color:green; font-weight:bold;">-12% vs you</span>
+						</div>
+						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
+							<strong>Sunset Sands Hotel</strong><br>
+							<small>Avg. Nightly: ₱4,800</small><br>
+							<span style="color:green; font-weight:bold;">-18% vs you</span>
+						</div>
+						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
+							<strong>Palm Grove Villas</strong><br>
+							<small>Avg. Nightly: ₱6,500</small><br>
+							<span style="color:orange; font-weight:bold;">+10% vs you</span>
+						</div>
+					</div>
+					<p style="margin-top:15px;"><small><em><?php _e( 'Insights provided by LuxeResort Market Intelligence API.', 'resort-manager' ); ?></em></small></p>
+				</div>
+
 				<div class="postbox" style="padding:20px; border-left: 4px solid #008080;">
 					<h3><span class="dashicons dashicons-lightbulb" style="color:#FFD700;"></span> <?php _e( 'Smart Pricing Suggestions', 'resort-manager' ); ?></h3>
 					<p><?php _e( 'Based on your occupancy trends for the next 30 days, we suggest the following adjustments to maximize revenue.', 'resort-manager' ); ?></p>

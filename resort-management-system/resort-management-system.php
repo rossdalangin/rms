@@ -99,34 +99,52 @@ class ResortManager {
 				$verified = false;
 				$transaction_id = 'EXT-' . time();
 
-				// Security: Verification Logic
-				// In a real production environment, we MUST call the Gateway API to verify the transaction.
-				// We allow "simulation" if no API keys are configured, otherwise we check.
+				// Security: Real-world Verification Logic
 				$stripe_secret = get_option('resort_stripe_secret_key');
-				$paypal_cid = get_option('resort_paypal_client_id');
+				$paypal_secret = get_option('resort_paypal_secret');
 
 				if ( 'stripe' === $method && isset($_GET['session_id']) ) {
+					$session_id = sanitize_text_field($_GET['session_id']);
 					if ( empty($stripe_secret) ) {
-						$verified = true; // Simulation mode
-						$transaction_id = 'SIM-STRIPE-' . time();
+						// Simulation mode: Check for a simulation-specific marker to prevent simple URL manipulation
+						if ( strpos($session_id, 'cs_test_') === 0 ) {
+							$verified = true;
+							$transaction_id = 'SIM-STRIPE-' . time();
+						}
 					} else {
-						// PRODUCTION TODO: wp_remote_get("https://api.stripe.com/v1/checkout/sessions/".$_GET['session_id'])
-						$verified = true; // Placeholder for verified status
-						$transaction_id = sanitize_text_field($_GET['session_id']);
+						// PRODUCTION: Call Stripe API to verify session status
+						$response = wp_remote_get("https://api.stripe.com/v1/checkout/sessions/$session_id", [
+							'headers' => [ 'Authorization' => 'Bearer ' . $stripe_secret ]
+						]);
+						if ( ! is_wp_error($response) && 200 === wp_remote_retrieve_response_code($response) ) {
+							$body = json_decode(wp_remote_retrieve_body($response));
+							if ( isset($body->payment_status) && 'paid' === $body->payment_status ) {
+								$verified = true;
+								$transaction_id = $session_id;
+							}
+						}
 					}
-				} elseif ( 'paypal' === $method ) {
-					if ( empty($paypal_cid) ) {
-						$verified = true; // Simulation mode
+				} elseif ( 'paypal' === $method && isset($_GET['token']) ) {
+					$token = sanitize_text_field($_GET['token']);
+					if ( empty($paypal_secret) ) {
+						// Simulation mode
+						$verified = true;
 						$transaction_id = 'SIM-PAYPAL-' . time();
 					} else {
-						// PRODUCTION TODO: wp_remote_get("https://api-m.paypal.com/v2/checkout/orders/".$_GET['token'])
-						$verified = true;
+						// PRODUCTION: Call PayPal API to verify order status
+						// This would normally involve getting an OAuth token first
+						$verified = false; // Default to false until full OAuth flow is implemented
 					}
 				}
 
 				if ( $verified ) {
 					// Use central BookingManager to handle everything
 					\ResortManager\Core\BookingManager::confirm_booking( $booking_id, $transaction_id, $method );
+				} else {
+					// Verification failed - log attempt
+					if ( class_exists( '\ResortManager\Core\ActivityLogger' ) ) {
+						\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Payment verification failed for Booking #%d.', 'resort-manager' ), $booking_id ) );
+					}
 				}
 			}
 		}

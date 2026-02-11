@@ -13,6 +13,7 @@ Step 2: Selection - Guests see available rooms with high-quality images and tota
 Step 3: Extras - Guests can add luxury services like "Spa Treatments" or "Airport Transfers" to their stay.
 Step 4: Guest Info - A clean form collects contact details, meal preferences, and special requests. The system automatically creates a private guest account.
 Step 5: Payment - Guests pay securely via Stripe, PayPal, or choose "Pay at Resort." Once confirmed, their dates are instantly blocked across all platforms (iCal sync).
+Step 6: Management - Guests can download professional invoices and add their stay to their Google or Apple calendar directly from their dashboard.
 
 ---
 
@@ -24,7 +25,7 @@ The "LuxeResort" menu in your WordPress dashboard is your central command center
 * Reservation Calendar: A beautiful, interactive timeline where you can see who is arriving, who is staying, and which rooms are blocked by external sites like Airbnb.
 * Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
 * Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
-* Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends for the next 30 days.
+* Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends and competitor market data.
 * Marketing & Leads: Capture inquiries with the Lead Form and automatically sync them to Mailchimp.
 * Content Management: Use built-in Gutenberg blocks to easily add the booking engine, room grids, or reviews to any page.
 

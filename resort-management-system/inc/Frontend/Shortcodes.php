@@ -8,6 +8,7 @@ class Shortcodes {
 		add_shortcode( 'resort_guest_dashboard', [ $this, 'render_guest_dashboard' ] );
 		add_shortcode( 'resort_reviews', [ $this, 'render_reviews' ] );
 		add_shortcode( 'resort_lead_form', [ $this, 'render_lead_form' ] );
+		add_shortcode( 'resort_room_calendar', [ $this, 'render_room_calendar' ] );
 	}
 
 	public function render_booking_engine( $atts ) {
@@ -138,7 +139,14 @@ class Shortcodes {
 									<?php if ( 'confirmed' === $status ) : ?>
 										<div style="margin-top:10px;">
 											<a href="<?php echo home_url('/?resort_invoice=' . $booking->ID); ?>" target="_blank" class="resort-btn-small" style="background:var(--resort-teal); text-decoration:none; margin-right:5px;">📄 Invoice</a>
-											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none; margin-right:5px;">🗓️ Calendar</a>
+											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none; margin-right:5px;">🗓️ iCal</a>
+											<a href="<?php
+												$gcal_url = 'https://www.google.com/calendar/render?action=TEMPLATE';
+												$gcal_url .= '&text=' . urlencode('Stay at LuxeResort');
+												$gcal_url .= '&dates=' . date('Ymd', strtotime($checkin)) . '/' . date('Ymd', strtotime($checkout));
+												$gcal_url .= '&details=' . urlencode('Booking ID: #' . $booking->ID);
+												echo $gcal_url;
+											?>" target="_blank" class="resort-btn-small" style="background:#4285F4; text-decoration:none; margin-right:5px;">🔵 Google</a>
 											<?php if ( strtotime( $checkin ) > time() ) : ?>
 												<button class="resort-btn-small show-modify-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-secondary);"><?php _e( 'Modify Stay', 'resort-manager' ); ?></button>
 											<?php endif; ?>
@@ -240,6 +248,57 @@ class Shortcodes {
 			});
 		});
 		</script>
+		<?php
+		return ob_get_clean();
+	}
+
+	public function render_room_calendar( $atts ) {
+		$atts = shortcode_atts( [
+			'id' => 0,
+		], $atts );
+
+		$room_id = intval( $atts['id'] );
+		if ( ! $room_id ) return '';
+
+		global $wpdb;
+		$table = $wpdb->prefix . 'resort_availability';
+		$start = date('Y-m-d');
+		$end = date('Y-m-d', strtotime('+30 days'));
+
+		$blocks = $wpdb->get_results( $wpdb->prepare(
+			"SELECT date, status FROM $table WHERE room_id = %d AND date >= %s AND date <= %s",
+			$room_id, $start, $end
+		) );
+
+		$availability = [];
+		foreach ( $blocks as $b ) {
+			$availability[$b->date] = $b->status;
+		}
+
+		ob_start();
+		?>
+		<div class="resort-room-calendar-wrap resort-booking-container" style="max-width:500px;">
+			<h4><?php _e( 'Availability - Next 30 Days', 'resort-manager' ); ?></h4>
+			<div class="resort-calendar-mini-grid" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:5px; margin-top:15px;">
+				<?php
+				for ( $i = 0; $i < 30; $i++ ) {
+					$date = date('Y-m-d', strtotime("+$i days"));
+					$status = $availability[$date] ?? 'available';
+					$color = ($status === 'available') ? '#46b450' : '#d63638';
+					if ($status === 'sync') $color = '#636e72';
+					?>
+					<div title="<?php echo $date; ?>" style="background:<?php echo $color; ?>; height:30px; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;">
+						<?php echo date('j', strtotime($date)); ?>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+			<div style="margin-top:15px; font-size:11px; display:flex; gap:15px; justify-content:center;">
+				<span><span style="display:inline-block; width:10px; height:10px; background:#46b450; border-radius:2px;"></span> Available</span>
+				<span><span style="display:inline-block; width:10px; height:10px; background:#d63638; border-radius:2px;"></span> Booked</span>
+			</div>
+		</div>
 		<?php
 		return ob_get_clean();
 	}
