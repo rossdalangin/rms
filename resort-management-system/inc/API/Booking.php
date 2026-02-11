@@ -11,6 +11,7 @@ class Booking {
 		add_action( 'wp_ajax_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_resort_modify_request', [ $this, 'handle_modify_request' ] );
+		add_action( 'wp_ajax_resort_cancel_request', [ $this, 'handle_cancel_request' ] );
 		add_action( 'wp_ajax_resort_pay_balance', [ $this, 'pay_balance' ] );
 		add_action( 'wp_ajax_resort_submit_service_request', [ $this, 'submit_service_request' ] );
 		add_action( 'wp_ajax_resort_self_checkin', [ $this, 'handle_self_checkin' ] );
@@ -266,6 +267,31 @@ class Booking {
 		$this->sync_to_mailchimp( $email, $name, '' );
 
 		wp_send_json_success( [ 'message' => __( 'Welcome to the club! Check your inbox for your first gift.', 'resort-manager' ) ] );
+	}
+
+	public function handle_cancel_request() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$reason = sanitize_textarea_field( $_POST['reason'] );
+
+		// Verify this booking belongs to the user
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		// Record the request in the communication log
+		$log = get_post_meta( $booking_id, '_resort_communication_log', true ) ?: [];
+		$log[] = [
+			'date'    => date( 'Y-m-d H:i' ),
+			'message' => 'GUEST CANCELLATION REQUEST: ' . $reason
+		];
+		update_post_meta( $booking_id, '_resort_communication_log', $log );
+
+		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest requested cancellation for Booking #%d.', 'resort-manager' ), $booking_id ) );
+
+		wp_send_json_success( [ 'message' => __( 'Your cancellation request has been sent. Our staff will process it according to our refund policy.', 'resort-manager' ) ] );
 	}
 
 	public function handle_modify_request() {

@@ -49,6 +49,10 @@
 				$('#resort-dashboard-pay-now').data('booking', $(e.currentTarget).data('booking'));
 				$('#resort-pay-modal').show();
 			});
+			$(document).on('click', '.show-cancel-form', (e) => {
+				$('#cancel-booking-id').val($(e.currentTarget).data('booking'));
+				$('#resort-cancel-modal').show();
+			});
 			$(document).on('click', '.show-service-request-form', (e) => {
 				$('#service-request-booking-id').val($(e.currentTarget).data('booking'));
 				$('#resort-service-request-modal').show();
@@ -65,9 +69,11 @@
 				$('#resort-pay-modal').hide();
 				$('#resort-service-request-modal').hide();
 				$('#resort-waiver-modal').hide();
+				$('#resort-cancel-modal').hide();
 			});
             $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
 			$(document).on('submit', '#resort-modify-form', this.handleModifySubmit.bind(this));
+			$(document).on('submit', '#resort-cancel-form', this.handleCancelSubmit.bind(this));
 			$(document).on('click', '#resort-dashboard-pay-now', this.handleDashboardPay.bind(this));
 			$(document).on('submit', '#resort-service-request-form', this.handleServiceRequestSubmit.bind(this));
 			$(document).on('click', '.self-checkin-btn', this.handleSelfCheckin.bind(this));
@@ -514,6 +520,30 @@
             $('#resort-confirmation-screen').show();
             $('#resort-conf-id').text(bookingId);
         },
+
+		handleCancelSubmit: function(e) {
+			e.preventDefault();
+			const form = $(e.currentTarget);
+			const btn = form.find('button');
+			const data = {
+				action: 'resort_cancel_request',
+				nonce: resortData.nonce,
+				booking_id: $('#cancel-booking-id').val(),
+				reason: form.find('[name="cancel_reason"]').val()
+			};
+
+			btn.prop('disabled', true).text('Sending...');
+
+			$.post(resortData.ajax_url, data, function(res) {
+				if (res.success) {
+					alert(res.data.message);
+					$('#resort-cancel-modal').hide();
+				} else {
+					alert('Error sending request.');
+					btn.prop('disabled', false).text('Send Request');
+				}
+			});
+		},
 
 		handleModifySubmit: function(e) {
 			e.preventDefault();

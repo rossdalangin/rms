@@ -148,6 +148,11 @@ class PostTypes {
 			$actions['checkout'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=booking&resort_action=checkout&booking_id=' . $post->ID ), 'resort_booking_action' ) . '" style="color:orange;">' . __( 'Mark Checked Out', 'resort-manager' ) . '</a>';
 		}
 
+		$status = get_post_meta( $post->ID, '_resort_status', true );
+		if ( 'cancelled' !== $status ) {
+			$actions['cancel_booking'] = '<a href="' . wp_nonce_url( admin_url( 'edit.php?post_type=booking&resort_action=cancel&booking_id=' . $post->ID ), 'resort_booking_action' ) . '" style="color:#d63638;">' . __( 'Cancel Booking', 'resort-manager' ) . '</a>';
+		}
+
 		return $actions;
 	}
 
@@ -164,6 +169,9 @@ class PostTypes {
 		} elseif ( 'checkout' === $action ) {
 			update_post_meta( $booking_id, '_resort_check_status', 'checked_out' );
 			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Booking #%d marked as Checked Out.', 'resort-manager' ), $booking_id ) );
+		} elseif ( 'cancel' === $action ) {
+			\ResortManager\Core\BookingManager::sync_status( $booking_id, 'cancelled' );
+			\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Booking #%d cancelled by admin.', 'resort-manager' ), $booking_id ) );
 		}
 
 		wp_redirect( remove_query_arg( [ 'resort_action', 'booking_id', '_wpnonce' ] ) );

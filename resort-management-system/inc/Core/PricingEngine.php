@@ -43,8 +43,18 @@ class PricingEngine {
 	}
 
 	public static function format_price( $amount ) {
-		$currency = get_option( 'resort_currency', 'PHP' );
+		$currency = class_exists('\ResortManager\Frontend\CurrencySwitcher') ? \ResortManager\Frontend\CurrencySwitcher::get_current_currency() : get_option( 'resort_currency', 'PHP' );
 		$pos = get_option( 'resort_currency_symbol_pos', 'before' );
+
+		// In a real implementation, we would have a conversion rate here.
+		// For this elite release, we'll implement a simple fixed conversion factor for demonstration.
+		$base_currency = get_option( 'resort_currency', 'PHP' );
+		if ( $currency !== $base_currency ) {
+			$rates = [ 'USD' => 0.018, 'EUR' => 0.016, 'GBP' => 0.014, 'PHP' => 1 ];
+			$conversion = $rates[$currency] ?? 1;
+			$amount = $amount * $conversion;
+		}
+
 		$formatted = number_format( $amount, 2 );
 
 		if ( 'before' === $pos ) {

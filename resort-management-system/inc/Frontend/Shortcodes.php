@@ -88,6 +88,24 @@ class Shortcodes {
 
 		$current_user = wp_get_current_user();
 		$loyalty_points = get_user_meta( $current_user->ID, '_resort_loyalty_points', true ) ?: 0;
+
+		// Calculate Loyalty Tier
+		$total_spend = 0;
+		$confirmed_bookings = get_posts([
+			'post_type' => 'booking',
+			'meta_query' => [
+				[ 'key' => '_resort_guest_id', 'value' => $current_user->ID ],
+				[ 'key' => '_resort_status', 'value' => 'confirmed' ]
+			],
+			'numberposts' => -1
+		]);
+		foreach($confirmed_bookings as $cb) $total_spend += floatval(get_post_meta($cb->ID, '_resort_total_price', true));
+
+		$tier = __( 'Island Explorer', 'resort-manager' );
+		if ($total_spend > 200000) $tier = __( 'Diamond Elite', 'resort-manager' );
+		elseif ($total_spend > 50000) $tier = __( 'Gold Sanctuary Member', 'resort-manager' );
+		elseif ($total_spend > 10000) $tier = __( 'Silver Voyager', 'resort-manager' );
+
 		$display_name = $current_user->first_name ?: $current_user->display_name;
 
 		$bookings = get_posts( [
@@ -109,9 +127,15 @@ class Shortcodes {
 					<h2 style="margin:0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $display_name ); ?></h2>
 					<p><?php _e( 'Welcome to your private guest portal.', 'resort-manager' ); ?></p>
 				</div>
-				<div class="loyalty-badge" style="background:var(--resort-primary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
-					<span style="font-size:24px; font-weight:bold; display:block;"><?php echo $loyalty_points; ?></span>
-					<span style="font-size:10px; text-transform:uppercase;"><?php _e( 'Loyalty Points', 'resort-manager' ); ?></span>
+				<div style="display:flex; gap:15px;">
+					<div class="loyalty-tier" style="background:var(--resort-secondary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
+						<span style="font-size:14px; font-weight:bold; display:block;"><?php echo $tier; ?></span>
+						<span style="font-size:9px; text-transform:uppercase; opacity:0.8;"><?php _e( 'Your Status', 'resort-manager' ); ?></span>
+					</div>
+					<div class="loyalty-badge" style="background:var(--resort-primary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
+						<span style="font-size:24px; font-weight:bold; display:block;"><?php echo $loyalty_points; ?></span>
+						<span style="font-size:10px; text-transform:uppercase;"><?php _e( 'Loyalty Points', 'resort-manager' ); ?></span>
+					</div>
 				</div>
 			</div>
 
@@ -157,6 +181,7 @@ class Shortcodes {
 											?>" target="_blank" class="resort-btn-small" style="background:#4285F4; text-decoration:none; margin-right:5px;">🔵 Google</a>
 											<?php if ( strtotime( $checkin ) > time() ) : ?>
 												<button class="resort-btn-small show-modify-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-secondary);"><?php _e( 'Modify Stay', 'resort-manager' ); ?></button>
+												<button class="resort-btn-small show-cancel-form" data-booking="<?php echo $booking->ID; ?>" style="background:#d63638;"><?php _e( 'Cancel Request', 'resort-manager' ); ?></button>
 											<?php endif; ?>
 											<?php if ( $p_status === 'pending' ) : ?>
 												<button class="resort-btn-small show-pay-modal" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-teal);"><?php _e( 'Pay Balance', 'resort-manager' ); ?></button>
@@ -257,6 +282,22 @@ class Shortcodes {
 				<button type="button" id="resort-dashboard-pay-now" class="resort-btn"><?php _e( 'Pay Now', 'resort-manager' ); ?></button>
 				<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
 			</div>
+		</div>
+
+		<div id="resort-cancel-modal" class="resort-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:1000; width:400px;">
+			<h3><?php _e( 'Request Cancellation', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'We are sorry to hear you might be leaving us. Please let us know the reason for cancellation.', 'resort-manager' ); ?></p>
+			<form id="resort-cancel-form">
+				<input type="hidden" name="booking_id" id="cancel-booking-id">
+				<div class="resort-field">
+					<label><?php _e( 'Reason', 'resort-manager' ); ?></label>
+					<textarea name="cancel_reason" placeholder="e.g. Flight cancelled, medical reasons..." required></textarea>
+				</div>
+				<div style="margin-top:20px;">
+					<button type="submit" class="resort-btn" style="background:#d63638;"><?php _e( 'Send Request', 'resort-manager' ); ?></button>
+					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Stay in Paradise', 'resort-manager' ); ?></button>
+				</div>
+			</form>
 		</div>
 		<?php
 		return ob_get_clean();

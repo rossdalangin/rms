@@ -60,6 +60,7 @@ class ResortManager {
 		add_action( 'init', [ $this, 'handle_payment_return' ] );
 		new ResortManager\Frontend\Shortcodes();
 		new ResortManager\Frontend\Assets();
+		new ResortManager\Frontend\CurrencySwitcher();
 		new ResortManager\API\Availability();
 		new ResortManager\API\Booking();
 		new ResortManager\API\Services();

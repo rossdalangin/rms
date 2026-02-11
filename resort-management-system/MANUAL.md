@@ -165,6 +165,11 @@ Guests can install LuxeResort as a standalone app on their mobile devices for of
 
 ### 7.7 Loyalty & Perks
 Guests automatically earn **1 point for every $10 spent**.
+- **Loyalty Tiers**: As guests spend more, they unlock higher tiers:
+    - **Island Explorer**: Base Tier.
+    - **Silver Voyager**: Spend > ₱10,000.
+    - **Gold Sanctuary Member**: Spend > ₱50,000.
+    - **Diamond Elite**: Spend > ₱200,000.
 - Points are displayed in the **Guest Dashboard**.
 - Admin can view total points and booking counts under **LuxeResort > Guest Profiles**.
 
@@ -180,6 +185,7 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_lead_form]` | A sleek lead capture form to build your elite guest list. |
 | `[resort_service_booking]` | A standalone booking form for guests who only want to book a spa or excursion without a room. |
 | `[resort_gated_content]` | Hides exclusive content (like a 'Secret Package') until the guest submits a lead form. |
+| `[resort_currency_switcher]` | Displays a dropdown for guests to view prices in PHP, USD, EUR, or GBP. |
 
 ---
 
@@ -217,6 +223,11 @@ Guests earn points automatically to encourage repeat business:
 - **Assignment**: Points are credited to the guest's profile immediately after a payment is verified as "Completed".
 - **Tracking**: Admin can monitor total points per guest under **LuxeResort > Guest Profiles**.
 
+### 11.6 Guest Self-Service Cancellations
+Guests can request a cancellation directly from their **Guest Dashboard**.
+- **Admin Approval**: Cancellation requests appear in the booking's communication log.
+- **Approval Flow**: Admin can click **"Cancel Booking"** from the Bookings list to officially release the inventory and update the status.
+
 ---
 
 ## 12. Troubleshooting & Support
@@ -229,7 +240,12 @@ Guests earn points automatically to encourage repeat business:
 ## 13. Advanced Enterprise Features
 LuxeResort Manager provides high-level tools for optimizing your operations.
 
-### 11.1 Revenue Optimization
+### 11.1 Multi-Currency Support
+LuxeResort supports viewing prices in multiple currencies (PHP, USD, EUR, GBP).
+- Use the `[resort_currency_switcher]` shortcode anywhere on your site to allow guests to toggle their preferred currency.
+- **Conversion**: The system uses a built-in elite conversion engine to estimate prices based on the resort's base currency (Default: PHP).
+
+### 11.2 Revenue Optimization
 Visit **LuxeResort > Reports > Revenue Optimization** for AI-driven pricing suggestions. The system analyzes your occupancy for the next 30 days and recommends rate increases during high-demand periods or promotional discounts during slow seasons.
 
 #### 11.1.1 Competitor Intelligence
