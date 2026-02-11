@@ -322,6 +322,8 @@ class Booking {
 		];
 		update_post_meta( $booking_id, '_resort_communication_log', $log );
 
+		do_action( 'resort_service_request_submitted', $booking_id, $details );
+
 		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'In-stay service request for Booking #%d.', 'resort-manager' ), $booking_id ) );
 
 		wp_send_json_success( [ 'message' => __( 'Your request has been received. Our staff will be with you shortly.', 'resort-manager' ) ] );

@@ -107,6 +107,7 @@ In **LuxeResort > Settings**, you can enable or disable specific payment gateway
 View a visual timeline of your resort's occupancy under **LuxeResort > Calendar**.
 - **Manual Blocking**: To block a room for maintenance, go to the individual **Accommodation** edit screen and use the **Maintenance & Manual Date Blocking** sidebar box. These dates will appear greyed out in the calendar.
 - **Visual Overview**: The calendar shows rooms on the vertical axis and dates on the horizontal.
+- **Master Export**: Click "Export Master iCal" to get a feed of all bookings for your personal calendar or a master channel manager.
 - **Controls**: Adjust the **Start Date** and **Timeline Range** (7, 14, or 30 days) to navigate through your schedule.
 - **Status Indicators**:
     - **Free**: Room is available (White).
@@ -155,6 +156,7 @@ On the day of arrival, guests will see a **Self Check-in** button in their dashb
 ### 7.5 In-Stay Service Requests
 During their stay, guests can submit requests (e.g., "Fresh Towels", "Room Cleaning") directly from their dashboard.
 - These requests are instantly logged in the **Guest Communication Log** for that specific booking for staff fulfillment.
+- **Admin Notifications**: Staff will receive an email notification for every new service request to ensure 5-star responsiveness.
 
 ### 7.6 Progressive Web App (PWA)
 Guests can install LuxeResort as a standalone app on their mobile devices for offline access to their dashboard and faster service requests.

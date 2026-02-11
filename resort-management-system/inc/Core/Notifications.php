@@ -5,6 +5,7 @@ class Notifications {
 	public function __construct() {
 		add_action( 'resort_booking_confirmed', [ $this, 'send_confirmation_email' ], 10, 1 );
 		add_action( 'resort_cleanup_abandoned', [ $this, 'trigger_abandoned_reminders' ] );
+		add_action( 'resort_service_request_submitted', [ $this, 'send_service_request_to_admin' ], 10, 2 );
 	}
 
 	public function send_confirmation_email( $booking_id ) {
@@ -29,6 +30,19 @@ class Notifications {
 			$sms_message = sprintf( __( 'Aloha! Your LuxeResort booking #%d is confirmed. See you soon!', 'resort-manager' ), $booking_id );
 			self::send_sms( $phone, $sms_message );
 		}
+	}
+
+	public function send_service_request_to_admin( $booking_id, $details ) {
+		$admin_email = get_option( 'admin_email' );
+		$subject = sprintf( __( 'New Service Request: Booking #%d', 'resort-manager' ), $booking_id );
+
+		$message = "<h2>" . __( 'Service Request Received', 'resort-manager' ) . "</h2>";
+		$message .= "<p><strong>" . __( 'Booking ID:', 'resort-manager' ) . "</strong> #" . $booking_id . "</p>";
+		$message .= "<p><strong>" . __( 'Details:', 'resort-manager' ) . "</strong><br>" . nl2br( esc_html( $details ) ) . "</p>";
+		$message .= "<p><a href='" . admin_url( 'post.php?post=' . $booking_id . '&action=edit' ) . "'>" . __( 'View Booking', 'resort-manager' ) . "</a></p>";
+
+		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
+		wp_mail( $admin_email, $subject, $message, $headers );
 	}
 
 	public function trigger_abandoned_reminders() {

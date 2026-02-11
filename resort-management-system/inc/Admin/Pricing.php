@@ -34,6 +34,12 @@ class Pricing {
 			echo '<div class="updated"><p>Rule added!</p></div>';
 		}
 
+		if ( isset( $_GET['delete_rule'] ) && check_admin_referer( 'delete_pricing_rule' ) ) {
+			$wpdb->delete( $table_pricing, [ 'id' => intval( $_GET['delete_rule'] ) ] );
+			\ResortManager\Core\ActivityLogger::log( __( 'Pricing rule deleted.', 'resort-manager' ) );
+			echo '<div class="updated"><p>Rule deleted!</p></div>';
+		}
+
 		$rules = $wpdb->get_results( "SELECT * FROM $table_pricing ORDER BY room_id, priority DESC" );
 		$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => -1 ] );
 		?>
@@ -100,6 +106,7 @@ class Pricing {
 						<th><?php _e( 'Dates', 'resort-manager' ); ?></th>
 						<th><?php _e( 'Modifier', 'resort-manager' ); ?></th>
 						<th><?php _e( 'Priority', 'resort-manager' ); ?></th>
+						<th><?php _e( 'Actions', 'resort-manager' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -111,6 +118,9 @@ class Pricing {
 							<td><?php echo $rule->start_date; ?> to <?php echo $rule->end_date; ?></td>
 							<td><?php echo $rule->price_modifier; ?> (<?php echo $rule->modifier_type; ?>)</td>
 							<td><?php echo $rule->priority; ?></td>
+							<td>
+								<a href="<?php echo wp_nonce_url( admin_url( 'admin.php?page=resort-pricing&delete_rule=' . $rule->id ), 'delete_pricing_rule' ); ?>" class="button button-small" onclick="return confirm('Delete this rule?');"><?php _e( 'Delete', 'resort-manager' ); ?></a>
+							</td>
 						</tr>
 					<?php endforeach; ?>
 				</tbody>

@@ -50,6 +50,12 @@ class Calendar {
 					</select>
 
 					<input type="submit" class="button" value="<?php _e( 'Update View', 'resort-manager' ); ?>">
+
+					<div style="float:right;">
+						<a href="<?php echo home_url('/?resort_ical=all'); ?>" class="button button-secondary">
+							<span class="dashicons dashicons-calendar-alt" style="vertical-align: middle;"></span> <?php _e( 'Export Master iCal', 'resort-manager' ); ?>
+						</a>
+					</div>
 				</form>
 			</div>
 

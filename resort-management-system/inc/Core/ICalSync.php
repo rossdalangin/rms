@@ -9,8 +9,12 @@ class ICalSync {
 
 	public function handle_ical_request() {
 		if ( isset( $_GET['resort_ical'] ) ) {
-			$room_id = intval( $_GET['resort_ical'] );
-			$this->generate_ical( $room_id );
+			if ( $_GET['resort_ical'] === 'all' ) {
+				$this->generate_master_ical();
+			} else {
+				$room_id = intval( $_GET['resort_ical'] );
+				$this->generate_ical( $room_id );
+			}
 			exit;
 		}
 
@@ -44,6 +48,37 @@ class ICalSync {
 		echo "SUMMARY:" . sprintf( __( 'Stay at LuxeResort - %s', 'resort-manager' ), $room_title ) . "\n";
 		echo "DESCRIPTION:" . sprintf( __( 'Your paradise escape awaits. Booking ID: #%d', 'resort-manager' ), $booking_id ) . "\n";
 		echo "END:VEVENT\n";
+		echo "END:VCALENDAR\n";
+	}
+
+	private function generate_master_ical() {
+		$bookings = get_posts( [
+			'post_type'   => 'booking',
+			'numberposts' => -1,
+		] );
+
+		header( 'Content-Type: text/calendar; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="master-calendar.ics"' );
+
+		echo "BEGIN:VCALENDAR\n";
+		echo "VERSION:2.0\n";
+		echo "PRODID:-//LuxeResort//NONSGML v1.0//EN\n";
+
+		foreach ( $bookings as $booking ) {
+			$checkin = get_post_meta( $booking->ID, '_resort_checkin', true );
+			$checkout = get_post_meta( $booking->ID, '_resort_checkout', true );
+			$room_id = get_post_meta( $booking->ID, '_resort_room_id', true );
+			$room_title = get_the_title( $room_id );
+
+			echo "BEGIN:VEVENT\n";
+			echo "UID:" . $booking->ID . "@" . $_SERVER['HTTP_HOST'] . "\n";
+			echo "DTSTAMP:" . date( 'Ymd\THis\Z' ) . "\n";
+			echo "DTSTART;VALUE=DATE:" . date( 'Ymd', strtotime( $checkin ) ) . "\n";
+			echo "DTEND;VALUE=DATE:" . date( 'Ymd', strtotime( $checkout ) ) . "\n";
+			echo "SUMMARY:" . sprintf( __( 'LuxeResort Booking #%d (%s)', 'resort-manager' ), $booking->ID, $room_title ) . "\n";
+			echo "END:VEVENT\n";
+		}
+
 		echo "END:VCALENDAR\n";
 	}
 
