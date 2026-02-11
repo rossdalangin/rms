@@ -162,9 +162,13 @@ register_activation_hook( __FILE__, function() {
 
 	// Create Resort Staff Role
 	add_role( 'resort_staff', __( 'Resort Staff', 'resort-manager' ), [
-		'read'         => true,
-		'edit_posts'   => true,
-		'upload_files' => true,
+		'read'                   => true,
+		'edit_posts'             => true,
+		'edit_others_posts'      => true,
+		'edit_published_posts'   => true,
+		'publish_posts'          => true,
+		'delete_posts'           => false, // Prevent deletions by staff
+		'upload_files'           => true,
 	] );
 
 	if ( ! wp_next_scheduled( 'resort_daily_sync' ) ) {

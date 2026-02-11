@@ -249,6 +249,10 @@ class Reports {
 			</div>
 
 			<div style="margin-top: 20px; text-align: right;">
+				<button type="button" class="button button-secondary" onclick="window.print();">
+					<span class="dashicons dashicons-printer" style="vertical-align: middle;"></span> <?php _e( 'Print / Export to PDF', 'resort-manager' ); ?>
+				</button>
+				&nbsp;
 				<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=resort-reports&resort_export_bookings=1'), 'resort_export_nonce' ); ?>" class="button button-secondary">
 					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span> <?php _e( 'Export All Bookings to CSV', 'resort-manager' ); ?>
 				</a>

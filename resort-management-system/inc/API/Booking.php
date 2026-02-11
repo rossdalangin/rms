@@ -127,6 +127,15 @@ class Booking {
 		}
 
 		update_post_meta( $booking_id, '_resort_total_price', $total_price );
+
+		// Calculate Deposit and Balance
+		$deposit_percent = get_option( 'resort_deposit_percentage', '100' );
+		$deposit_amount = ( floatval($total_price) * intval($deposit_percent) ) / 100;
+		$balance_amount = $total_price - $deposit_amount;
+
+		update_post_meta( $booking_id, '_resort_deposit_amount', $deposit_amount );
+		update_post_meta( $booking_id, '_resort_balance_amount', $balance_amount );
+
 		update_post_meta( $booking_id, '_resort_services', $services );
 		update_post_meta( $booking_id, '_resort_coupon_used', sanitize_text_field($_POST['coupon'] ?? '') );
 

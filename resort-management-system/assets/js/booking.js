@@ -53,11 +53,18 @@
 				$('#service-request-booking-id').val($(e.currentTarget).data('booking'));
 				$('#resort-service-request-modal').show();
 			});
+			$(document).on('click', '#resort-view-waiver-link', (e) => {
+				e.preventDefault();
+				const content = resortData.waiver_text + "\n\n" + resortData.terms_text;
+				$('#resort-waiver-content-area').text(content);
+				$('#resort-waiver-modal').show();
+			});
             $(document).on('click', '.close-modal', () => {
 				$('#resort-review-modal').hide();
 				$('#resort-modify-modal').hide();
 				$('#resort-pay-modal').hide();
 				$('#resort-service-request-modal').hide();
+				$('#resort-waiver-modal').hide();
 			});
             $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
 			$(document).on('submit', '#resort-modify-form', this.handleModifySubmit.bind(this));
@@ -339,6 +346,10 @@
 
             const grandTotal = roomsTotal + servicesTotal;
 
+            const depositPercent = parseInt(resortData.deposit_percent || 100);
+            const depositAmount = (grandTotal * depositPercent) / 100;
+            const balanceAmount = grandTotal - depositAmount;
+
             $summary.html(`
                 ${roomsHtml}
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
@@ -346,10 +357,16 @@
                 <p><strong>Subtotal:</strong> ${this.formatPrice(grandTotal)}</p>
                 <div id="discount-display" style="color: #d63638; display:none;"></div>
                 <p><strong>Total Price:</strong> <span id="grand-total-display-container"></span></p>
+                <div id="deposit-summary-display" style="margin: 10px 0; padding: 10px; background: #f0fdf4; border-radius: 8px; ${depositPercent < 100 ? '' : 'display:none;'}">
+                    <p style="margin:0;"><strong>Due Now (${depositPercent}%):</strong> <span id="deposit-amount-display"></span></p>
+                    <p style="margin:0; font-size: 0.9em; color: #666;"><strong>Remaining Balance:</strong> <span id="balance-amount-display"></span></p>
+                </div>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name} (${this.state.guestData.phone || 'No phone'})</p>
                 ${this.state.guestData.special_requests ? `<p><strong>Requests:</strong> ${this.state.guestData.special_requests}</p>` : ''}
             `);
             $('#grand-total-display-container').text(this.formatPrice(grandTotal));
+            $('#deposit-amount-display').text(this.formatPrice(depositAmount));
+            $('#balance-amount-display').text(this.formatPrice(balanceAmount));
             this.state.finalTotal = grandTotal;
 
             // Adjust button text if only offline is available or all disabled
@@ -377,6 +394,7 @@
 
             this.state.pointsRedeemed = points;
             this.state.finalTotal = newTotal;
+            this.updateDepositSummary();
             $('#points-message').text('Points applied!').css('color', 'green');
             $('#resort-apply-points').prop('disabled', true);
             $('#resort-redeem-points').prop('disabled', true);
@@ -404,11 +422,24 @@
                     $('#grand-total-display-container').text(this.formatPrice(newTotal));
                     this.state.couponCode = code;
                     this.state.finalTotal = newTotal;
+                    this.updateDepositSummary();
                     $('#coupon-message').text('Coupon applied!').css('color', 'green');
                 } else {
                     $('#coupon-message').text(res.data.message).css('color', 'red');
                 }
             });
+        },
+
+        updateDepositSummary: function() {
+            const depositPercent = parseInt(resortData.deposit_percent || 100);
+            const depositAmount = (this.state.finalTotal * depositPercent) / 100;
+            const balanceAmount = this.state.finalTotal - depositAmount;
+
+            $('#deposit-amount-display').text(this.formatPrice(depositAmount));
+            $('#balance-amount-display').text(this.formatPrice(balanceAmount));
+            if (depositPercent < 100) {
+                $('#deposit-summary-display').show();
+            }
         },
 
         handleCompleteBooking: function() {

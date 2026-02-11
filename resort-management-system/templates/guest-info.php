@@ -42,7 +42,17 @@
 				<input type="checkbox" name="digital_waiver" required>
 				<?php _e( 'I agree to the Resort Terms of Service and Liability Waiver.', 'resort-manager' ); ?>
 			</label>
-			<p><small><a href="#"><?php _e( 'Read Liability Waiver', 'resort-manager' ); ?></a></small></p>
+			<p><small><a href="#" id="resort-view-waiver-link"><?php _e( 'Read Liability Waiver', 'resort-manager' ); ?></a></small></p>
+		</div>
+
+		<!-- Waiver Modal -->
+		<div id="resort-waiver-modal" class="resort-modal" style="display:none;">
+			<div class="resort-modal-content">
+				<span class="close-modal">&times;</span>
+				<h3><?php _e( 'Resort Waiver & Terms', 'resort-manager' ); ?></h3>
+				<div style="max-height: 400px; overflow-y: auto; background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd; white-space: pre-wrap;" id="resort-waiver-content-area"></div>
+				<button type="button" class="resort-btn close-modal" style="margin-top:20px;"><?php _e( 'Close', 'resort-manager' ); ?></button>
+			</div>
 		</div>
 		<button type="submit" class="resort-btn" style="margin-top:20px;"><?php _e( 'Continue to Payment', 'resort-manager' ); ?></button>
 	</form>

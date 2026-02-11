@@ -152,7 +152,7 @@ class PostTypes {
 	}
 
 	public static function handle_booking_actions() {
-		if ( ! isset( $_GET['resort_action'] ) || ! current_user_can( 'manage_options' ) ) return;
+		if ( ! isset( $_GET['resort_action'] ) || ! current_user_can( 'edit_posts' ) ) return;
 		check_admin_referer( 'resort_booking_action' );
 
 		$booking_id = intval( $_GET['booking_id'] );

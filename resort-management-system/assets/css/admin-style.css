@@ -188,3 +188,47 @@ input:focus {
     border-color: var(--resort-teal) !important;
     box-shadow: 0 0 0 2px rgba(0, 128, 128, 0.1) !important;
 }
+
+/* Print Styles for Reports & Invoices */
+@media print {
+    #adminmenuback, #adminmenuwrap, #wpadminbar, #footer-thankyou, #footer-upgrade, .nav-tab-wrapper, .button, .button-primary, .button-secondary {
+        display: none !important;
+    }
+
+    #wpcontent {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .wrap {
+        margin: 0 !important;
+    }
+
+    .resort-admin-card {
+        box-shadow: none !important;
+        border: 1px solid #eee !important;
+        margin-bottom: 20px !important;
+        break-inside: avoid;
+    }
+
+    h1 {
+        font-size: 24pt !important;
+        margin-top: 0 !important;
+    }
+
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .wp-list-table {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+
+    .wp-list-table thead th {
+        background: #f0f0f0 !important;
+        color: #000 !important;
+        border-bottom: 2px solid #333 !important;
+    }
+}

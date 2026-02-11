@@ -66,6 +66,8 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_book_ahead_days' );
 		register_setting( 'resort_settings_group', 'resort_cutoff_time' );
 		register_setting( 'resort_settings_group', 'resort_deposit_percentage' );
+		register_setting( 'resort_settings_group', 'resort_waiver_text' );
+		register_setting( 'resort_settings_group', 'resort_terms_text' );
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
@@ -137,6 +139,14 @@ class Settings {
 			'resort_deposit_policy',
 			__( 'Deposit Policy (%)', 'resort-manager' ),
 			[ $this, 'render_deposit_field' ],
+			'resort-settings',
+			'resort_general_section'
+		);
+
+		add_settings_field(
+			'resort_waiver_settings',
+			__( 'Waiver & Terms', 'resort-manager' ),
+			[ $this, 'render_waiver_fields' ],
 			'resort-settings',
 			'resort_general_section'
 		);
@@ -385,6 +395,17 @@ class Settings {
 			<option value="before" <?php selected($pos, 'before'); ?>><?php _e( 'Symbol Before ($100)', 'resort-manager' ); ?></option>
 			<option value="after" <?php selected($pos, 'after'); ?>><?php _e( 'Symbol After (100 €)', 'resort-manager' ); ?></option>
 		</select>
+		<?php
+	}
+
+	public function render_waiver_fields() {
+		$waiver = get_option( 'resort_waiver_text', 'Liability Release: By booking, you agree to waive all liability for tropical accidents...' );
+		$terms = get_option( 'resort_terms_text', 'Standard Resort Terms: 1. No pets. 2. Quiet hours after 10 PM. 3. Full refund if canceled 7 days prior.' );
+		?>
+		<label><strong><?php _e( 'Liability Waiver:', 'resort-manager' ); ?></strong></label><br>
+		<textarea name="resort_waiver_text" class="large-text" rows="4"><?php echo esc_textarea($waiver); ?></textarea><br><br>
+		<label><strong><?php _e( 'Terms & Conditions:', 'resort-manager' ); ?></strong></label><br>
+		<textarea name="resort_terms_text" class="large-text" rows="4"><?php echo esc_textarea($terms); ?></textarea>
 		<?php
 	}
 
