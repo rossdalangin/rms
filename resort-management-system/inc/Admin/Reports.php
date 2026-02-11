@@ -87,11 +87,14 @@ class Reports {
 	}
 
 	public function check_competitor_alerts() {
-		// Simulated Competitor Data Analysis
-		$competitors = [
-			[ 'name' => 'Blue Waters Resort', 'price' => 5200 ],
-			[ 'name' => 'Sunset Sands Hotel', 'price' => 4800 ]
-		];
+		// Competitor Data Analysis
+		$competitors = get_option( 'resort_competitors' );
+		if ( ! is_array( $competitors ) ) {
+			$competitors = [
+				[ 'name' => 'Blue Waters Resort', 'price' => 5200 ],
+				[ 'name' => 'Sunset Sands Hotel', 'price' => 4800 ]
+			];
+		}
 
 		$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => 1 ] );
 		if ( empty($rooms) ) return;
@@ -261,26 +264,36 @@ class Reports {
 			<div id="resort-optimization-content" style="display:none; margin-top:30px;">
 
 				<div class="resort-admin-card" style="margin-bottom:30px; border-top-color: var(--resort-teal);">
-					<h3><span class="dashicons dashicons-analytics" style="color:var(--resort-teal);"></span> <?php _e( 'Competitor Insights (Simulated)', 'resort-manager' ); ?></h3>
-					<p><?php _e( 'Real-time market analysis for nearby resorts. Use these insights to stay competitive.', 'resort-manager' ); ?></p>
-					<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-top:20px;">
-						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
-							<strong>Blue Waters Resort</strong><br>
-							<small>Avg. Nightly: ₱5,200</small><br>
-							<span style="color:green; font-weight:bold;">-12% vs you</span>
-						</div>
-						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
-							<strong>Sunset Sands Hotel</strong><br>
-							<small>Avg. Nightly: ₱4,800</small><br>
-							<span style="color:green; font-weight:bold;">-18% vs you</span>
-						</div>
-						<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
-							<strong>Palm Grove Villas</strong><br>
-							<small>Avg. Nightly: ₱6,500</small><br>
-							<span style="color:orange; font-weight:bold;">+10% vs you</span>
-						</div>
+					<h3><span class="dashicons dashicons-analytics" style="color:var(--resort-teal);"></span> <?php _e( 'Competitor Insights', 'resort-manager' ); ?></h3>
+					<p><?php _e( 'Market analysis for your configured competitors. Use these insights to stay competitive.', 'resort-manager' ); ?></p>
+					<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:20px; margin-top:20px;">
+						<?php
+						$competitors = get_option( 'resort_competitors' );
+						if ( ! is_array( $competitors ) ) {
+							$competitors = [
+								[ 'name' => 'Blue Waters Resort', 'price' => 5200 ],
+								[ 'name' => 'Sunset Sands Hotel', 'price' => 4800 ]
+							];
+						}
+
+						// Get our base room price for comparison
+						$rooms = get_posts( [ 'post_type' => 'accommodation', 'numberposts' => 1 ] );
+						$my_price = empty($rooms) ? 6000 : get_post_meta( $rooms[0]->ID, '_resort_price', true );
+
+						foreach ( $competitors as $comp ) :
+							$diff = (($comp['price'] - $my_price) / $my_price) * 100;
+							$color = $diff < 0 ? 'green' : 'orange';
+							?>
+							<div style="padding:15px; background:#f9fdfd; border:1px solid #d1eaea; border-radius:8px;">
+								<strong><?php echo esc_html( $comp['name'] ); ?></strong><br>
+								<small><?php echo sprintf( __( 'Avg. Nightly: %s', 'resort-manager' ), \ResortManager\Core\PricingEngine::format_price( $comp['price'] ) ); ?></small><br>
+								<span style="color:<?php echo $color; ?>; font-weight:bold;">
+									<?php echo ($diff > 0 ? '+' : '') . round($diff) . '% vs you'; ?>
+								</span>
+							</div>
+						<?php endforeach; ?>
 					</div>
-					<p style="margin-top:15px;"><small><em><?php _e( 'Insights provided by LuxeResort Market Intelligence API.', 'resort-manager' ); ?></em></small></p>
+					<p style="margin-top:15px;"><small><em><?php _e( 'Insights provided by LuxeResort Market Intelligence engine.', 'resort-manager' ); ?></em></small></p>
 				</div>
 
 				<div class="postbox" style="padding:20px; border-left: 4px solid #008080;">

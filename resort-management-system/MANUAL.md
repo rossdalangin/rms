@@ -218,6 +218,12 @@ LuxeResort Manager provides high-level tools for optimizing your operations.
 ### 11.1 Revenue Optimization
 Visit **LuxeResort > Reports > Revenue Optimization** for AI-driven pricing suggestions. The system analyzes your occupancy for the next 30 days and recommends rate increases during high-demand periods or promotional discounts during slow seasons.
 
+#### 11.1.1 Competitor Intelligence
+Configure your main competitors under **LuxeResort > Settings > Market Intelligence**.
+- Enter the names and average nightly rates of nearby resorts.
+- The system will calculate the percentage difference between your rates and theirs, helping you stay competitive.
+- **Market Alerts**: If a competitor's price drops significantly below your own, the system will send an email alert to the administrator.
+
 ### 11.2 Guest Retention (Loyalty & CRM)
 - **Automatic Account Creation**: Every guest gets a private dashboard to manage their stay.
 - **Loyalty Program**: Guests earn points on every booking, encouraging repeat visits.

@@ -70,6 +70,7 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
 		register_setting( 'resort_settings_group', 'resort_hubspot_api_key' );
+		register_setting( 'resort_settings_group', 'resort_competitors' );
 		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
 		register_setting( 'resort_settings_group', 'resort_twilio_token' );
 		register_setting( 'resort_settings_group', 'resort_twilio_number' );
@@ -189,6 +190,21 @@ class Settings {
 			'resort-settings',
 			'resort_notifications_section'
 		);
+
+		add_settings_section(
+			'resort_intelligence_section',
+			__( 'Market Intelligence & Competitors', 'resort-manager' ),
+			[ $this, 'render_intelligence_section_desc' ],
+			'resort-settings'
+		);
+
+		add_settings_field(
+			'resort_competitors',
+			__( 'Competitor Resorts', 'resort-manager' ),
+			[ $this, 'render_competitor_fields' ],
+			'resort-settings',
+			'resort_intelligence_section'
+		);
 	}
 
 	public function render_general_section_desc() {
@@ -204,6 +220,10 @@ class Settings {
 	public function render_notifications_section_desc() {
 		echo '<p>' . __( 'Manage guest communications and marketing integrations. Customize the confirmation email and connect your resort to Mailchimp or Twilio for automated engagement.', 'resort-manager' ) . '</p>';
 		echo '<p><strong>' . __( 'Integration Example:', 'resort-manager' ) . '</strong> ' . __( 'Connect Twilio to send an instant "Aloha!" SMS to guests as soon as their booking is confirmed.', 'resort-manager' ) . '</p>';
+	}
+
+	public function render_intelligence_section_desc() {
+		echo '<p>' . __( 'Configure your local competitors to receive market alerts and dynamic pricing suggestions. This data is used by the Smart Pricing engine to help you stay competitive.', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_payment_method_toggles() {
@@ -245,6 +265,27 @@ class Settings {
 	public function render_email_template_field() {
 		$value = get_option( 'resort_email_template_confirmation', '<h1>Booking Confirmed!</h1><p>Thank you for choosing LuxeResort.</p>' );
 		wp_editor( $value, 'resort_email_template_confirmation' );
+	}
+
+	public function render_competitor_fields() {
+		$competitors = get_option( 'resort_competitors' );
+		if ( ! is_array( $competitors ) ) {
+			$competitors = [
+				[ 'name' => 'Blue Waters Resort', 'price' => 5200 ],
+				[ 'name' => 'Sunset Sands Hotel', 'price' => 4800 ]
+			];
+		}
+		?>
+		<div id="resort-competitors-wrap">
+			<?php foreach ( $competitors as $index => $comp ) : ?>
+				<div class="competitor-row" style="margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 4px;">
+					<input type="text" name="resort_competitors[<?php echo $index; ?>][name]" value="<?php echo esc_attr( $comp['name'] ); ?>" placeholder="Competitor Name">
+					<input type="number" name="resort_competitors[<?php echo $index; ?>][price]" value="<?php echo esc_attr( $comp['price'] ); ?>" placeholder="Avg Price">
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<p class="description"><?php _e( 'Add your main competitors and their approximate average nightly rates.', 'resort-manager' ); ?></p>
+		<?php
 	}
 
 	public function render_marketing_fields() {
