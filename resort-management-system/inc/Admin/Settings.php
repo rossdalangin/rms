@@ -462,6 +462,13 @@ class Settings {
 		<div class="wrap">
 			<h1><?php _e( 'Staff Activity Logs', 'resort-manager' ); ?></h1>
 			<p class="description"><?php _e( 'Track all administrative actions performed by your staff. This log ensures full accountability for price changes, booking modifications, and system settings updates.', 'resort-manager' ); ?></p>
+
+			<div style="margin-bottom: 20px;">
+				<a href="<?php echo wp_nonce_url( admin_url('admin.php?page=resort-reports&resort_export_logs=1'), 'resort_export_logs_nonce' ); ?>" class="button button-secondary">
+					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span> <?php _e( 'Export Logs to CSV', 'resort-manager' ); ?>
+				</a>
+			</div>
+
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>

@@ -52,6 +52,6 @@ We use a combination of Custom Post Types (CPT) for content and Custom Tables fo
 - **Rooms**: Manage room types and tiers.
 - **Services/Extras**: Manage spa, tours, and add-ons.
 - **Payments**: Stripe/PayPal keys, Deposit % settings, Toggle enabled payment methods (Stripe, PayPal, Offline).
-- **Reports**: Revenue, Occupancy, CSV Export, and Inventory Cleanup.
+- **Reports**: Revenue (with date filtering), Occupancy, CSV Export (Bookings & Activity Logs), and Inventory Cleanup.
 - **Onboarding**: One-click demo setup and guided configuration.
 - **Notifications**: Edit Email/SMS templates.

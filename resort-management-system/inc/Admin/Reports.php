@@ -5,6 +5,7 @@ class Reports {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_reports_page' ] );
 		add_action( 'admin_init', [ $this, 'handle_export_csv' ] );
+		add_action( 'admin_init', [ $this, 'handle_export_logs_csv' ] );
 		add_action( 'wp_ajax_resort_apply_smart_pricing', [ $this, 'apply_smart_pricing' ] );
 		add_action( 'resort_daily_sync', [ $this, 'check_competitor_alerts' ] );
 	}
@@ -18,6 +19,34 @@ class Reports {
 			'resort-reports',
 			[ $this, 'render_reports_page' ]
 		);
+	}
+
+	public function handle_export_logs_csv() {
+		if ( isset( $_GET['resort_export_logs'] ) && current_user_can( 'edit_posts' ) ) {
+			check_admin_referer( 'resort_export_logs_nonce' );
+
+			header( 'Content-Type: text/csv; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename=resort-activity-logs-' . date('Y-m-d') . '.csv' );
+
+			$output = fopen( 'php://output', 'w' );
+			fputcsv( $output, [ 'Date', 'User ID', 'User Name', 'Action' ] );
+
+			global $wpdb;
+			$table_logs = $wpdb->prefix . 'resort_activity_logs';
+			$logs = $wpdb->get_results( "SELECT * FROM $table_logs ORDER BY created_at DESC" );
+
+			foreach ( $logs as $log ) {
+				$user = get_userdata( $log->user_id );
+				fputcsv( $output, [
+					$log->created_at,
+					$log->user_id,
+					$user ? $user->display_name : 'System',
+					$log->action
+				] );
+			}
+			fclose( $output );
+			exit;
+		}
 	}
 
 	public function handle_export_csv() {
@@ -132,11 +161,31 @@ class Reports {
 			echo '<div class="updated"><p>' . sprintf( __( '%d reminder emails sent to potential guests.', 'resort-manager' ), $sent ) . '</p></div>';
 		}
 
-		$bookings = get_posts( [
+		$from_date = isset( $_GET['from_date'] ) ? sanitize_text_field( $_GET['from_date'] ) : date( 'Y-m-01' );
+		$to_date = isset( $_GET['to_date'] ) ? sanitize_text_field( $_GET['to_date'] ) : date( 'Y-m-t' );
+
+		$args = [
 			'post_type'   => 'booking',
 			'numberposts' => -1,
 			'post_status' => 'publish',
-		] );
+			'meta_query'  => [
+				'relation' => 'AND',
+				[
+					'key'     => '_resort_checkin',
+					'value'   => $from_date,
+					'compare' => '>=',
+					'type'    => 'DATE'
+				],
+				[
+					'key'     => '_resort_checkin',
+					'value'   => $to_date,
+					'compare' => '<=',
+					'type'    => 'DATE'
+				]
+			]
+		];
+
+		$bookings = get_posts( $args );
 
 		$total_revenue = 0;
 		$total_bookings = count( $bookings );
@@ -191,6 +240,22 @@ class Reports {
 		<div class="wrap toplevel_page_resort-manager">
 			<h1><?php _e( 'Resort Analytics & Reports', 'resort-manager' ); ?></h1>
 			<p class="description"><?php _e( 'Gain deep insights into your resort\'s financial health and operational efficiency. Use the Analytics tab for high-level metrics, or explore Revenue Optimization for data-driven pricing strategies.', 'resort-manager' ); ?></p>
+
+			<div class="resort-admin-card" style="margin-bottom: 20px;">
+				<form method="get" action="">
+					<input type="hidden" name="page" value="resort-reports">
+					<label><strong><?php _e( 'Filter by Check-in Date:', 'resort-manager' ); ?></strong></label>
+					&nbsp;
+					<label><?php _e( 'From:', 'resort-manager' ); ?></label>
+					<input type="date" name="from_date" value="<?php echo esc_attr($from_date); ?>">
+					&nbsp;
+					<label><?php _e( 'To:', 'resort-manager' ); ?></label>
+					<input type="date" name="to_date" value="<?php echo esc_attr($to_date); ?>">
+					&nbsp;
+					<input type="submit" class="button button-primary" value="<?php _e( 'Apply Filter', 'resort-manager' ); ?>">
+					<a href="<?php echo admin_url('admin.php?page=resort-reports'); ?>" class="button"><?php _e( 'Reset', 'resort-manager' ); ?></a>
+				</form>
+			</div>
 
 			<h2 class="nav-tab-wrapper">
 				<a href="#" class="nav-tab nav-tab-active" id="resort-tab-analytics"><?php _e( 'Analytics', 'resort-manager' ); ?></a>

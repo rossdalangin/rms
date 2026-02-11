@@ -131,6 +131,7 @@ Monitor your performance under **LuxeResort > Reports**.
 - **Inventory Maintenance**:
     - **Send Reminders**: Manually trigger reminder emails to guests with "Pending" bookings.
     - **Clean Up**: Release rooms held by abandoned bookings older than 30 minutes.
+- **Date Filtering**: Filter your revenue stats and booking list by check-in date range for detailed periodic analysis.
 - **CSV Export**: Generate a spreadsheet of all bookings for your financial records.
 - **Revenue Optimization**: View "Smart Pricing" suggestions based on your upcoming occupancy trends.
 
@@ -243,7 +244,7 @@ Configure your main competitors under **LuxeResort > Settings > Market Intellige
 - **Mailchimp Integration**: Sync your guest list to Mailchimp for seasonal newsletters and exclusive member-only offers.
 
 ### 11.3 Staff Oversight & Operations
-- **Activity Logs**: Monitor all administrative changes, from price updates to booking modifications.
+- **Activity Logs**: Monitor all administrative changes, from price updates to booking modifications. You can export these logs to CSV for audit purposes.
 - **Housekeeping Dashboard**: A dedicated interface for operational staff to track room cleaning status (Clean, Dirty, Cleaning) and prioritize rooms based on today's check-outs. Access this under **LuxeResort > Housekeeping**.
 
 ### 11.4 CRM & Attribution (Marketing Intelligence)
