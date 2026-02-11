@@ -178,10 +178,23 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_reviews]` | Displays the latest guest testimonials. |
 | `[resort_lead_form]` | A sleek lead capture form to build your elite guest list. |
 | `[resort_service_booking]` | A standalone booking form for guests who only want to book a spa or excursion without a room. |
+| `[resort_gated_content]` | Hides exclusive content (like a 'Secret Package') until the guest submits a lead form. |
 
 ---
 
-## 9. Operational Workflows
+## 9. Marketing & Lead Generation
+### 9.1 Gated Lead Content
+The `[resort_gated_content]` shortcode is a powerful tool for lead generation. It allows you to offer "Secret" deals or exclusive guides that are only visible to guests who join your list.
+- **Usage**: `[resort_gated_content title="Secret 50% Villa Deal" desc="Join our list to see the promo code."] Promo Code: PARADISE50 [/resort_gated_content]`
+- **How it works**: When a guest submits the lead form inside the gated block, the page reloads, and the content is revealed. The guest's status is saved in a cookie for 1 year.
+
+## 10. Reporting & Exports
+### 10.1 Print-Ready Reports
+Every analytics dashboard and revenue report is optimized for high-quality printing or saving as a PDF.
+- **How to use**: Simply click the **"Print / Export to PDF"** button found at the bottom of the **Revenue Reports** page.
+- **Optimized View**: The system automatically hides sidebars, admin menus, and buttons to ensure a professional, clean document suitable for executive review.
+
+## 11. Operational Workflows
 Understanding how the system manages the "behind-the-scenes" logic.
 
 ### 9.1 Payment & Booking Association
@@ -205,14 +218,14 @@ Guests earn points automatically to encourage repeat business:
 
 ---
 
-## 10. Troubleshooting & Support
+## 12. Troubleshooting & Support
 - **Calendars not syncing?** Ensure your server can make outbound requests and that your external iCal URL is public.
 - **Payments failing?** Double-check your API keys and ensure you are using the correct currency code (e.g., USD, EUR).
 - **Data Reset**: If you need to wipe everything, use the **Maintenance Tools** in **Settings**.
 
 ---
 
-## 11. Advanced Enterprise Features
+## 13. Advanced Enterprise Features
 LuxeResort Manager provides high-level tools for optimizing your operations.
 
 ### 11.1 Revenue Optimization
@@ -244,7 +257,7 @@ Configure your main competitors under **LuxeResort > Settings > Market Intellige
 
 ---
 
-## 12. Developer API
+## 14. Developer API
 Extend LuxeResort Manager with custom code.
 
 ### 12.1 PHP Hooks

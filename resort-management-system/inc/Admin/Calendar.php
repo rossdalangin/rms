@@ -44,9 +44,9 @@ class Calendar {
 
 					<label style="margin-left: 20px;"><?php _e( 'Timeline Range:', 'resort-manager' ); ?></label>
 					<select name="duration">
-						<option value="7" <?php selected( $duration, 7 ); ?>>7 Days</option>
-						<option value="14" <?php selected( $duration, 14 ); ?>>14 Days</option>
-						<option value="30" <?php selected( $duration, 30 ); ?>>30 Days</option>
+						<option value="7" <?php selected( $duration, 7 ); ?>><?php _e( '7 Days', 'resort-manager' ); ?></option>
+						<option value="14" <?php selected( $duration, 14 ); ?>><?php _e( '14 Days', 'resort-manager' ); ?></option>
+						<option value="30" <?php selected( $duration, 30 ); ?>><?php _e( '30 Days', 'resort-manager' ); ?></option>
 					</select>
 
 					<input type="submit" class="button" value="<?php _e( 'Update View', 'resort-manager' ); ?>">

@@ -60,42 +60,42 @@ class InvoiceEngine {
 			</style>
 		</head>
 		<body>
-			<button class="print-btn" onclick="window.print();">Print Invoice</button>
+			<button class="print-btn" onclick="window.print();"><?php _e( 'Print Invoice', 'resort-manager' ); ?></button>
 			<div class="header">
 				<div class="resort-info">
 					<h1><?php echo esc_html($resort_name); ?></h1>
-					<p>Paradise Found</p>
+					<p><?php _e( 'Paradise Found', 'resort-manager' ); ?></p>
 				</div>
 				<div class="invoice-meta">
-					<h2>INVOICE</h2>
-					<p><strong>ID:</strong> #<?php echo $booking_id; ?></p>
-					<p><strong>Date:</strong> <?php echo date('F j, Y'); ?></p>
+					<h2><?php _e( 'INVOICE', 'resort-manager' ); ?></h2>
+					<p><strong><?php _e( 'ID:', 'resort-manager' ); ?></strong> #<?php echo $booking_id; ?></p>
+					<p><strong><?php _e( 'Date:', 'resort-manager' ); ?></strong> <?php echo date('F j, Y'); ?></p>
 				</div>
 			</div>
 
 			<div class="details-grid">
 				<div>
-					<h4>Guest Information</h4>
-					<p><strong>Name:</strong> <?php echo esc_html("$fname $lname"); ?></p>
-					<p><strong>Email:</strong> <?php echo esc_html($email); ?></p>
+					<h4><?php _e( 'Guest Information', 'resort-manager' ); ?></h4>
+					<p><strong><?php _e( 'Name:', 'resort-manager' ); ?></strong> <?php echo esc_html("$fname $lname"); ?></p>
+					<p><strong><?php _e( 'Email:', 'resort-manager' ); ?></strong> <?php echo esc_html($email); ?></p>
 				</div>
 				<div>
-					<h4>Stay Details</h4>
-					<p><strong>Room:</strong> <?php echo get_the_title($room_id); ?></p>
-					<p><strong>Dates:</strong> <?php echo esc_html("$checkin to $checkout"); ?></p>
+					<h4><?php _e( 'Stay Details', 'resort-manager' ); ?></h4>
+					<p><strong><?php _e( 'Room:', 'resort-manager' ); ?></strong> <?php echo get_the_title($room_id); ?></p>
+					<p><strong><?php _e( 'Dates:', 'resort-manager' ); ?></strong> <?php echo esc_html("$checkin to $checkout"); ?></p>
 				</div>
 			</div>
 
 			<table>
 				<thead>
 					<tr>
-						<th>Description</th>
-						<th style="text-align: right;">Amount</th>
+						<th><?php _e( 'Description', 'resort-manager' ); ?></th>
+						<th style="text-align: right;"><?php _e( 'Amount', 'resort-manager' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td>Accommodation (<?php echo esc_html($checkin); ?> - <?php echo esc_html($checkout); ?>)</td>
+						<td><?php printf( __( 'Accommodation (%s - %s)', 'resort-manager' ), esc_html($checkin), esc_html($checkout) ); ?></td>
 						<td style="text-align: right;"><?php echo \ResortManager\Core\PricingEngine::format_price($total); // Simplified for this release ?></td>
 					</tr>
 					<?php foreach ( $services as $s_id ) :
@@ -108,15 +108,15 @@ class InvoiceEngine {
 						</tr>
 					<?php endforeach; ?>
 					<tr class="total-row">
-						<td>TOTAL PAID</td>
+						<td><?php _e( 'TOTAL PAID', 'resort-manager' ); ?></td>
 						<td style="text-align: right;"><?php echo \ResortManager\Core\PricingEngine::format_price($total); ?></td>
 					</tr>
 				</tbody>
 			</table>
 
 			<div class="footer">
-				<p>Thank you for choosing <?php echo esc_html($resort_name); ?>. We look forward to your arrival.</p>
-				<p><small>This is a computer-generated document. No signature required.</small></p>
+				<p><?php printf( __( 'Thank you for choosing %s. We look forward to your arrival.', 'resort-manager' ), esc_html($resort_name) ); ?></p>
+				<p><small><?php _e( 'This is a computer-generated document. No signature required.', 'resort-manager' ); ?></small></p>
 			</div>
 		</body>
 		</html>

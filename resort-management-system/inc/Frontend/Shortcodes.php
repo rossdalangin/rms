@@ -10,6 +10,7 @@ class Shortcodes {
 		add_shortcode( 'resort_lead_form', [ $this, 'render_lead_form' ] );
 		add_shortcode( 'resort_room_calendar', [ $this, 'render_room_calendar' ] );
 		add_shortcode( 'resort_service_booking', [ $this, 'render_service_booking' ] );
+		add_shortcode( 'resort_gated_content', [ $this, 'render_gated_content' ] );
 	}
 
 	public function render_booking_engine( $atts ) {
@@ -261,12 +262,36 @@ class Shortcodes {
 		return ob_get_clean();
 	}
 
+	public function render_gated_content( $atts, $content = null ) {
+		if ( isset( $_COOKIE['resort_lead_captured'] ) || is_user_logged_in() ) {
+			return do_shortcode( $content );
+		}
+
+		$atts = shortcode_atts( [
+			'title' => __( 'Elite Guest Access Required', 'resort-manager' ),
+			'desc'  => __( 'Please join our guest list to unlock this exclusive content.', 'resort-manager' ),
+		], $atts );
+
+		ob_start();
+		?>
+		<div class="resort-gated-wrap resort-booking-container" style="background:#f9f9f9; border: 2px dashed var(--resort-teal); padding: 40px; text-align: center; border-radius: 12px;">
+			<span class="dashicons dashicons-lock" style="font-size: 48px; height: 48px; width: 48px; color: var(--resort-teal); margin-bottom: 20px;"></span>
+			<h3><?php echo esc_html( $atts['title'] ); ?></h3>
+			<p><?php echo esc_html( $atts['desc'] ); ?></p>
+			<div style="max-width: 400px; margin: 30px auto 0; text-align: left;">
+				<?php echo $this->render_lead_form([]); ?>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
 	public function render_lead_form( $atts ) {
 		ob_start();
 		?>
 		<div class="resort-lead-form-container resort-booking-container" style="max-width:600px;">
-			<h3><?php _e( 'Unlock Exclusive Offers', 'resort-manager' ); ?></h3>
-			<p><?php _e( 'Join our elite guest list to receive seasonal discounts and resort news directly in your inbox.', 'resort-manager' ); ?></p>
+			<h3 class="resort-lead-title"><?php _e( 'Unlock Exclusive Offers', 'resort-manager' ); ?></h3>
+			<p class="resort-lead-desc"><?php _e( 'Join our elite guest list to receive seasonal discounts and resort news directly in your inbox.', 'resort-manager' ); ?></p>
 			<form id="resort-lead-form">
 				<div class="resort-field">
 					<label><?php _e( 'Your Name', 'resort-manager' ); ?></label>
@@ -299,7 +324,12 @@ class Shortcodes {
 
 				$.post('<?php echo admin_url("admin-ajax.php"); ?>', data, function(res) {
 					if (res.success) {
+						// Set cookie for gated content
+						document.cookie = "resort_lead_captured=1; path=/; max-age=" + (365 * 24 * 60 * 60);
 						form.html('<div style="color:green; padding:20px;">' + res.data.message + '</div>');
+						if ( $('.resort-gated-wrap').length ) {
+							setTimeout(() => { window.location.reload(); }, 1500);
+						}
 					} else {
 						$('#lead-form-message').text(res.data.message).css('color', 'red');
 						btn.prop('disabled', false).text('Get My Invites');
