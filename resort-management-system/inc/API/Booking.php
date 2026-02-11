@@ -11,6 +11,7 @@ class Booking {
 		add_action( 'wp_ajax_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_nopriv_resort_submit_lead', [ $this, 'submit_lead' ] );
 		add_action( 'wp_ajax_resort_modify_request', [ $this, 'handle_modify_request' ] );
+		add_action( 'wp_ajax_resort_pay_balance', [ $this, 'pay_balance' ] );
 	}
 
 	public function submit_booking() {
@@ -270,6 +271,30 @@ class Booking {
 		\ResortManager\Core\ActivityLogger::log( sprintf( __( 'Guest requested modification for Booking #%d.', 'resort-manager' ), $booking_id ) );
 
 		wp_send_json_success( [ 'message' => __( 'Your request has been sent to our staff. We will contact you shortly.', 'resort-manager' ) ] );
+	}
+
+	public function pay_balance() {
+		check_ajax_referer( 'resort_booking_nonce', 'nonce' );
+
+		if ( ! is_user_logged_in() ) wp_send_json_error();
+
+		$booking_id = intval( $_POST['booking_id'] );
+		$payment_method = sanitize_text_field( $_POST['payment_method'] );
+
+		// Verify this booking belongs to the user and needs payment
+		$guest_id = get_post_meta( $booking_id, '_resort_guest_id', true );
+		if ( intval($guest_id) !== get_current_user_id() ) wp_send_json_error();
+
+		$payment_status = get_post_meta( $booking_id, '_resort_payment_status', true );
+		if ( 'completed' === $payment_status ) {
+			wp_send_json_error( [ 'message' => __( 'This booking is already fully paid.', 'resort-manager' ) ] );
+		}
+
+		$ajax_action = $payment_method === 'stripe' ? 'resort_stripe_checkout' : 'resort_paypal_checkout';
+
+		wp_send_json_success( [
+			'ajax_action' => $ajax_action
+		] );
 	}
 
 	public function validate_coupon() {

@@ -105,19 +105,26 @@
 }
 
 .status-booked {
-    background-color: #ffe4e1 !important; /* Misty Rose */
-    color: var(--resort-coral) !important;
-    border-radius: 4px;
+    background-color: #46b450 !important;
+    color: #fff !important;
+    font-weight: bold;
 }
 
 .status-available {
-    background-color: #e0f8f8 !important;
-    color: var(--resort-teal) !important;
+    background-color: #fff !important;
+    color: #ddd !important;
 }
 
-.status-booked-external {
-    background-color: #fffacd !important;
-    color: #daa520 !important;
+.status-sync {
+    background-color: #636e72 !important;
+    color: #fff !important;
+}
+
+.calendar-cell {
+    text-align: center;
+    font-size: 10px;
+    text-transform: uppercase;
+    border: 1px solid #eee !important;
 }
 
 /* Badges */

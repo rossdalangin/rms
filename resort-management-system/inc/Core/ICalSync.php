@@ -41,8 +41,8 @@ class ICalSync {
 		echo "DTSTAMP:" . date( 'Ymd\THis\Z' ) . "\n";
 		echo "DTSTART;VALUE=DATE:" . date( 'Ymd', strtotime( $checkin ) ) . "\n";
 		echo "DTEND;VALUE=DATE:" . date( 'Ymd', strtotime( $checkout ) ) . "\n";
-		echo "SUMMARY:Stay at LuxeResort - " . $room_title . "\n";
-		echo "DESCRIPTION:Your paradise escape awaits. Booking ID: #" . $booking_id . "\n";
+		echo "SUMMARY:" . sprintf( __( 'Stay at LuxeResort - %s', 'resort-manager' ), $room_title ) . "\n";
+		echo "DESCRIPTION:" . sprintf( __( 'Your paradise escape awaits. Booking ID: #%d', 'resort-manager' ), $booking_id ) . "\n";
 		echo "END:VEVENT\n";
 		echo "END:VCALENDAR\n";
 	}
@@ -75,7 +75,7 @@ class ICalSync {
 			echo "DTSTAMP:" . date( 'Ymd\THis\Z' ) . "\n";
 			echo "DTSTART;VALUE=DATE:" . date( 'Ymd', strtotime( $checkin ) ) . "\n";
 			echo "DTEND;VALUE=DATE:" . date( 'Ymd', strtotime( $checkout ) ) . "\n";
-			echo "SUMMARY:Booking #" . $booking->ID . "\n";
+			echo "SUMMARY:" . sprintf( __( 'Booking #%d', 'resort-manager' ), $booking->ID ) . "\n";
 			echo "END:VEVENT\n";
 		}
 
@@ -104,8 +104,11 @@ class ICalSync {
 
 		$content = wp_remote_retrieve_body( $response );
 
-		// Very basic regex-based VCALENDAR parser for VEVENT dates
-		preg_match_all( '/BEGIN:VEVENT.*?DTSTART(?:;VALUE=DATE)?:(\d{8}).*?DTEND(?:;VALUE=DATE)?:(\d{8}).*?END:VEVENT/s', $content, $matches, PREG_SET_ORDER );
+		// Unfold lines as per RFC 5545 (remove CRLF followed by space/tab)
+		$content = preg_replace( '/\r?\n[ \t]/', '', $content );
+
+		// Match VEVENTS and extract dates (handles both DATE and DATE-TIME formats)
+		preg_match_all( '/BEGIN:VEVENT.*?DTSTART(?:;VALUE=DATE|;VALUE=DATE-TIME)?:?(\d{8}(?:T\d{6}Z?)?).*?DTEND(?:;VALUE=DATE|;VALUE=DATE-TIME)?:?(\d{8}(?:T\d{6}Z?)?).*?END:VEVENT/s', $content, $matches, PREG_SET_ORDER );
 
 		if ( empty( $matches ) ) {
 			return;
@@ -118,8 +121,17 @@ class ICalSync {
 		$wpdb->delete( $table, [ 'room_id' => $room_id, 'status' => 'sync' ] );
 
 		foreach ( $matches as $match ) {
-			$start = date( 'Y-m-d', strtotime( $match[1] ) );
-			$end = date( 'Y-m-d', strtotime( $match[2] ) );
+			$raw_start = $match[1];
+			$raw_end   = $match[2];
+
+			// Normalize to Y-m-d
+			$start_ts = strtotime( substr($raw_start, 0, 8) );
+			$end_ts   = strtotime( substr($raw_end, 0, 8) );
+
+			if ( ! $start_ts || ! $end_ts ) continue;
+
+			$start = date( 'Y-m-d', $start_ts );
+			$end   = date( 'Y-m-d', $end_ts );
 
 			// Mark each day between start and end as 'sync'
 			$current = strtotime( $start );

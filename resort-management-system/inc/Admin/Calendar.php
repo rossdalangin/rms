@@ -90,12 +90,14 @@ class Calendar {
 										$date = date( 'Y-m-d', strtotime( "$start_date +$i days" ) );
 										$status = isset( $availability_map[$room->ID][$date] ) ? $availability_map[$room->ID][$date] : 'available';
 
-										$class = $status === 'booked' ? 'status-booked' : 'status-available';
-										if ( $status === 'blocked_external' ) $class = 'status-booked-external';
+										$class = 'calendar-cell';
+										if ( $status === 'booked' ) $class .= ' status-booked';
+										elseif ( $status === 'sync' ) $class .= ' status-sync';
+										else $class .= ' status-available';
 
-										$label = $status === 'booked' ? __( 'Booked', 'resort-manager' ) : ( $status === 'blocked_external' ? __( 'Sync', 'resort-manager' ) : __( 'Free', 'resort-manager' ) );
+										$label = $status === 'booked' ? __( 'Booked', 'resort-manager' ) : ( $status === 'sync' ? __( 'Sync', 'resort-manager' ) : __( 'Free', 'resort-manager' ) );
 										?>
-										<td class="<?php echo $class; ?>"><?php echo $label; ?></td>
+										<td class="<?php echo $class; ?>" title="<?php echo esc_attr($date . ' - ' . $label); ?>"><?php echo $label; ?></td>
 									<?php endfor; ?>
 								</tr>
 							<?php endforeach; ?>

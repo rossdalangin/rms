@@ -45,12 +45,18 @@
 				$('#modify-booking-id').val($(e.currentTarget).data('booking'));
 				$('#resort-modify-modal').show();
 			});
+			$(document).on('click', '.show-pay-modal', (e) => {
+				$('#resort-dashboard-pay-now').data('booking', $(e.currentTarget).data('booking'));
+				$('#resort-pay-modal').show();
+			});
             $(document).on('click', '.close-modal', () => {
 				$('#resort-review-modal').hide();
 				$('#resort-modify-modal').hide();
+				$('#resort-pay-modal').hide();
 			});
             $(document).on('submit', '#resort-review-form', this.handleReviewSubmit.bind(this));
 			$(document).on('submit', '#resort-modify-form', this.handleModifySubmit.bind(this));
+			$(document).on('click', '#resort-dashboard-pay-now', this.handleDashboardPay.bind(this));
         },
 
         goToStep: function(step) {
@@ -459,6 +465,28 @@
 				} else {
 					alert('Error sending request.');
 					btn.prop('disabled', false).text('Send Request');
+				}
+			});
+		},
+
+		handleDashboardPay: function(e) {
+			const btn = $(e.currentTarget);
+			const bookingId = btn.data('booking');
+			const method = $('input[name="dashboard_payment_method"]:checked').val();
+
+			btn.prop('disabled', true).text('Initializing...');
+
+			$.post(resortData.ajax_url, {
+				action: 'resort_pay_balance',
+				nonce: resortData.nonce,
+				booking_id: bookingId,
+				payment_method: method
+			}, (res) => {
+				if (res.success) {
+					this.processPayment(res.data.ajax_action, bookingId);
+				} else {
+					alert(res.data.message);
+					btn.prop('disabled', false).text('Pay Now');
 				}
 			});
 		},

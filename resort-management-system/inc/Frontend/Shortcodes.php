@@ -135,7 +135,13 @@ class Shortcodes {
 								<td style="padding:10px;">#<?php echo $booking->ID; ?></td>
 								<td style="padding:10px;"><?php echo esc_html( $checkin ); ?> - <?php echo esc_html( $checkout ); ?></td>
 								<td style="padding:10px;">
-									<?php echo esc_html( ucfirst( $status ) ); ?>
+									<?php
+									$p_status = get_post_meta( $booking->ID, '_resort_payment_status', true );
+									echo esc_html( ucfirst( $status ) );
+									if ( $p_status === 'pending' ) {
+										echo ' <small style="color:var(--resort-coral);">(' . __( 'Payment Pending', 'resort-manager' ) . ')</small>';
+									}
+									?>
 									<?php if ( 'confirmed' === $status ) : ?>
 										<div style="margin-top:10px;">
 											<a href="<?php echo home_url('/?resort_invoice=' . $booking->ID); ?>" target="_blank" class="resort-btn-small" style="background:var(--resort-teal); text-decoration:none; margin-right:5px;">📄 Invoice</a>
@@ -149,6 +155,9 @@ class Shortcodes {
 											?>" target="_blank" class="resort-btn-small" style="background:#4285F4; text-decoration:none; margin-right:5px;">🔵 Google</a>
 											<?php if ( strtotime( $checkin ) > time() ) : ?>
 												<button class="resort-btn-small show-modify-form" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-secondary);"><?php _e( 'Modify Stay', 'resort-manager' ); ?></button>
+											<?php endif; ?>
+											<?php if ( $p_status === 'pending' ) : ?>
+												<button class="resort-btn-small show-pay-modal" data-booking="<?php echo $booking->ID; ?>" style="background:var(--resort-teal);"><?php _e( 'Pay Balance', 'resort-manager' ); ?></button>
 											<?php endif; ?>
 										</div>
 									<?php endif; ?>
@@ -196,6 +205,19 @@ class Shortcodes {
 					<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
 				</div>
 			</form>
+		</div>
+
+		<div id="resort-pay-modal" class="resort-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:30px; box-shadow:0 0 20px rgba(0,0,0,0.2); z-index:1000; width:400px;">
+			<h3><?php _e( 'Pay Your Balance', 'resort-manager' ); ?></h3>
+			<p><?php _e( 'Select a payment method to complete your reservation.', 'resort-manager' ); ?></p>
+			<div class="resort-field">
+				<label><input type="radio" name="dashboard_payment_method" value="stripe" checked> Stripe (Credit Card)</label><br>
+				<label><input type="radio" name="dashboard_payment_method" value="paypal"> PayPal</label>
+			</div>
+			<div style="margin-top:20px;">
+				<button type="button" id="resort-dashboard-pay-now" class="resort-btn"><?php _e( 'Pay Now', 'resort-manager' ); ?></button>
+				<button type="button" class="resort-btn-secondary close-modal"><?php _e( 'Cancel', 'resort-manager' ); ?></button>
+			</div>
 		</div>
 		<?php
 		return ob_get_clean();

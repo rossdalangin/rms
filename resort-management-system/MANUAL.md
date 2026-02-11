@@ -109,9 +109,9 @@ View a visual timeline of your resort's occupancy under **LuxeResort > Calendar*
 - **Visual Overview**: The calendar shows rooms on the vertical axis and dates on the horizontal.
 - **Controls**: Adjust the **Start Date** and **Timeline Range** (7, 14, or 30 days) to navigate through your schedule.
 - **Status Indicators**:
-    - **Free**: Room is available.
-    - **Booked**: Confirmed or pending booking (in green).
-    - **Sync**: Blocked by an external calendar sync (in grey).
+    - **Free**: Room is available (White).
+    - **Booked**: Confirmed or pending booking (Vibrant Green).
+    - **Sync**: Blocked by an external calendar sync (Slate Grey).
 
 ### 6.3 Managing Payments
 Track all financial activity under **LuxeResort > Payments**.
@@ -140,6 +140,10 @@ Open any individual **Booking** to find the **Guest Communication Log**. Record 
 Guests can leave reviews via the **Guest Dashboard** after their stay.
 - Moderate new reviews under **LuxeResort > Reviews**.
 - Display them using the `[resort_reviews]` shortcode, featuring star ratings and tropical design.
+
+### 7.3 Paying the Balance (Self-Service)
+Guests who choose "Pay at Resort" (Offline) can later choose to pay their balance online via Stripe or PayPal through their **Guest Dashboard**.
+- Once the payment is completed online, the booking status automatically updates to "Fully Paid" in the admin.
 
 ### 7.3 Loyalty & Perks
 Guests automatically earn **1 point for every $10 spent**.
