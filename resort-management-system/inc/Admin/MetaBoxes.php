@@ -376,6 +376,7 @@ class MetaBoxes {
 		$capacity = get_post_meta( $post->ID, '_resort_capacity', true );
 		$amenities = get_post_meta( $post->ID, '_resort_amenities', true );
 		$ical_url = get_post_meta( $post->ID, '_resort_ical_url', true );
+		$checklist = get_post_meta( $post->ID, '_resort_housekeeping_checklist', true ) ?: "Clean Pool\nRestock Mini Bar\nReplace Towels\nSanitize Surfaces";
 
 		?>
 		<p class="description"><?php _e( 'Configure the core properties of this accommodation. These details will be displayed to guests in the room grid and search results.', 'resort-manager' ); ?></p>
@@ -402,6 +403,12 @@ class MetaBoxes {
 			<small><?php _e( 'Your private export URL for this room:', 'resort-manager' ); ?> <br>
 			<code><?php echo home_url('/?resort_ical=' . $post->ID); ?></code></small>
 		</p>
+		<hr>
+		<h4><?php _e( 'Housekeeping Checklist', 'resort-manager' ); ?></h4>
+		<p class="description"><?php _e( 'Enter one task per line. This list will be shown to housekeeping staff in their dashboard.', 'resort-manager' ); ?></p>
+		<p>
+			<textarea name="resort_housekeeping_checklist" class="widefat" rows="5"><?php echo esc_textarea( $checklist ); ?></textarea>
+		</p>
 		<?php
 	}
 
@@ -425,6 +432,9 @@ class MetaBoxes {
 		}
 		if ( isset( $_POST['resort_ical_url'] ) ) {
 			update_post_meta( $post_id, '_resort_ical_url', esc_url_raw( $_POST['resort_ical_url'] ) );
+		}
+		if ( isset( $_POST['resort_housekeeping_checklist'] ) ) {
+			update_post_meta( $post_id, '_resort_housekeeping_checklist', sanitize_textarea_field( $_POST['resort_housekeeping_checklist'] ) );
 		}
 	}
 }

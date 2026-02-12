@@ -81,7 +81,23 @@ class Housekeeping {
 						) );
 						?>
 						<tr>
-							<td><strong><?php echo esc_html( $room->post_title ); ?></strong></td>
+							<td>
+								<strong><?php echo esc_html( $room->post_title ); ?></strong>
+								<?php
+								$checklist = get_post_meta( $room->ID, '_resort_housekeeping_checklist', true );
+								if ( $checklist ) :
+									$tasks = explode("\n", $checklist);
+								?>
+									<div class="room-checklist" style="margin-top:10px; font-size:11px; color:#666; background:#f9f9f9; padding:8px; border-radius:4px; border-left:3px solid var(--resort-sand);">
+										<strong><?php _e( 'Tasks:', 'resort-manager' ); ?></strong><br>
+										<?php foreach ( $tasks as $task ) : if(trim($task)) : ?>
+											<label style="display:block; margin-top:3px;">
+												<input type="checkbox"> <?php echo esc_html(trim($task)); ?>
+											</label>
+										<?php endif; endforeach; ?>
+									</div>
+								<?php endif; ?>
+							</td>
 							<td>
 								<span class="housekeeping-status-dot" style="background:<?php echo $color; ?>;"></span>
 								<?php echo esc_html( ucfirst($status) ); ?>

@@ -139,6 +139,29 @@ class Shortcodes {
 				</div>
 			</div>
 
+			<div class="guest-perks-box" style="background: #fffdf5; border: 1px solid #ffeaa7; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+				<h4 style="margin-top:0; color: #d35400;"><span class="dashicons dashicons-awards"></span> <?php _e( 'Your Elite Perks:', 'resort-manager' ); ?> <?php echo $tier; ?></h4>
+				<ul style="margin-bottom:0; font-size: 13px; color: #636e72;">
+					<?php if ($total_spend > 200000) : ?>
+						<li>✔ <?php _e( 'Complimentary Private Jet Transfer', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Unlimited 24/7 Personal Butler', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Daily Champagne & Caviar Breakfast', 'resort-manager' ); ?></li>
+					<?php elseif ($total_spend > 50000) : ?>
+						<li>✔ <?php _e( 'VIP Airport Fast-Track Access', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Daily Luxury Spa Treatment (90min)', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Private Sunset Dinner once per stay', 'resort-manager' ); ?></li>
+					<?php elseif ($total_spend > 10000) : ?>
+						<li>✔ <?php _e( 'Complimentary Airport Transfer', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Late Check-out (up to 4 PM)', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Welcome Tropical Gift Basket', 'resort-manager' ); ?></li>
+					<?php else : ?>
+						<li>✔ <?php _e( 'Access to Member-only Seasonal Rates', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Complimentary High-speed Fiber WiFi', 'resort-manager' ); ?></li>
+						<li>✔ <?php _e( 'Early Check-in (Subject to availability)', 'resort-manager' ); ?></li>
+					<?php endif; ?>
+				</ul>
+			</div>
+
 			<h3><?php _e( 'Your Stay History', 'resort-manager' ); ?></h3>
 			<?php if ( empty( $bookings ) ) : ?>
 				<p><?php _e( 'You have no reservations.', 'resort-manager' ); ?></p>
