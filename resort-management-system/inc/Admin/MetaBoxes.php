@@ -73,6 +73,17 @@ class MetaBoxes {
 				global $wpdb;
 				$wpdb->delete( $wpdb->prefix . 'resort_availability', [ 'id' => intval($_GET['resort_remove_block']) ] );
 			}
+
+		if ( isset( $_GET['resort_sync_ical'] ) ) {
+			check_admin_referer( 'resort_sync_ical' );
+			$room_id = intval( $_GET['resort_sync_ical'] );
+			$sync_engine = new \ResortManager\Core\ICalSync();
+			$url = get_post_meta( $room_id, '_resort_ical_url', true );
+			if ( $url ) {
+				$sync_engine->sync_all_external_calendars(); // Simplified: sync all, but we could make it room-specific
+				echo '<div class="updated"><p>' . __( 'iCal Synchronization Complete.', 'resort-manager' ) . '</p></div>';
+			}
+		}
 			return;
 		}
 
@@ -403,6 +414,9 @@ class MetaBoxes {
 			<small><?php _e( 'Your private export URL for this room:', 'resort-manager' ); ?> <br>
 			<code><?php echo home_url('/?resort_ical=' . $post->ID); ?></code></small>
 		</p>
+		<?php if ( get_post_meta( $post->ID, '_resort_ical_url', true ) ) : ?>
+			<a href="<?php echo wp_nonce_url( admin_url('post.php?post=' . $post->ID . '&action=edit&resort_sync_ical=' . $post->ID), 'resort_sync_ical' ); ?>" class="button button-secondary"><?php _e( 'Sync Now', 'resort-manager' ); ?></a>
+		<?php endif; ?>
 		<hr>
 		<h4><?php _e( 'Housekeeping Checklist', 'resort-manager' ); ?></h4>
 		<p class="description"><?php _e( 'Enter one task per line. This list will be shown to housekeeping staff in their dashboard.', 'resort-manager' ); ?></p>

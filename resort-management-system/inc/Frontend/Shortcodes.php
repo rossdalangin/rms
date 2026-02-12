@@ -162,6 +162,16 @@ class Shortcodes {
 				</ul>
 			</div>
 
+			<?php
+			$gcal_id = get_option('resort_google_calendar_id');
+			if ( $gcal_id ) : ?>
+				<div style="margin-bottom: 20px; text-align: right;">
+					<a href="https://calendar.google.com/calendar/render?cid=<?php echo urlencode($gcal_id); ?>" target="_blank" style="font-size: 11px; color: var(--resort-primary); text-decoration: none;">
+						<span class="dashicons dashicons-calendar-alt" style="font-size: 14px; vertical-align: middle;"></span> <?php _e( 'Subscribe to Resort Events', 'resort-manager' ); ?>
+					</a>
+				</div>
+			<?php endif; ?>
+
 			<h3><?php _e( 'Your Stay History', 'resort-manager' ); ?></h3>
 			<?php if ( empty( $bookings ) ) : ?>
 				<p><?php _e( 'You have no reservations.', 'resort-manager' ); ?></p>
@@ -196,10 +206,13 @@ class Shortcodes {
 											<a href="<?php echo home_url('/?resort_invoice=' . $booking->ID); ?>" target="_blank" class="resort-btn-small" style="background:var(--resort-teal); text-decoration:none; margin-right:5px;">📄 Invoice</a>
 											<a href="<?php echo home_url('/?resort_ical_booking=' . $booking->ID); ?>" class="resort-btn-small" style="background:#636e72; text-decoration:none; margin-right:5px;">🗓️ iCal</a>
 											<a href="<?php
+												$resort_name = get_option('resort_name', 'LuxeResort');
+												$room_id = get_post_meta($booking->ID, '_resort_room_id', true);
+												$room_title = get_the_title($room_id);
 												$gcal_url = 'https://www.google.com/calendar/render?action=TEMPLATE';
-												$gcal_url .= '&text=' . urlencode('Stay at LuxeResort');
+												$gcal_url .= '&text=' . urlencode( sprintf( __('Stay at %s (%s)', 'resort-manager'), $resort_name, $room_title ) );
 												$gcal_url .= '&dates=' . date('Ymd', strtotime($checkin)) . '/' . date('Ymd', strtotime($checkout));
-												$gcal_url .= '&details=' . urlencode('Booking ID: #' . $booking->ID);
+												$gcal_url .= '&details=' . urlencode( sprintf( __('Your paradise escape awaits. Booking ID: #%d. Resort: %s. Room: %s.', 'resort-manager'), $booking->ID, $resort_name, $room_title ) );
 												echo $gcal_url;
 											?>" target="_blank" class="resort-btn-small" style="background:#4285F4; text-decoration:none; margin-right:5px;">🔵 Google</a>
 											<?php if ( strtotime( $checkin ) > time() ) : ?>

@@ -66,6 +66,9 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_book_ahead_days' );
 		register_setting( 'resort_settings_group', 'resort_cutoff_time' );
 		register_setting( 'resort_settings_group', 'resort_deposit_percentage' );
+		register_setting( 'resort_settings_group', 'resort_tax_rate' );
+		register_setting( 'resort_settings_group', 'resort_cleaning_fee' );
+		register_setting( 'resort_settings_group', 'resort_base_fee' );
 		register_setting( 'resort_settings_group', 'resort_waiver_text' );
 		register_setting( 'resort_settings_group', 'resort_terms_text' );
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
@@ -80,11 +83,13 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_twilio_sid' );
 		register_setting( 'resort_settings_group', 'resort_twilio_token' );
 		register_setting( 'resort_settings_group', 'resort_twilio_number' );
+		register_setting( 'resort_settings_group', 'resort_google_calendar_id' );
 
 		// Payment Gateways Enable/Disable
 		register_setting( 'resort_settings_group', 'resort_payment_stripe_enabled' );
 		register_setting( 'resort_settings_group', 'resort_payment_paypal_enabled' );
 		register_setting( 'resort_settings_group', 'resort_payment_offline_enabled' );
+		register_setting( 'resort_settings_group', 'resort_payment_woocommerce_enabled' );
 
 		// Stripe Settings
 		register_setting( 'resort_settings_group', 'resort_stripe_publishable_key' );
@@ -101,6 +106,14 @@ class Settings {
 			__( 'General Settings', 'resort-manager' ),
 			[ $this, 'render_general_section_desc' ],
 			'resort-settings'
+		);
+
+		add_settings_field(
+			'resort_taxes_fees',
+			__( 'Taxes & Fees', 'resort-manager' ),
+			[ $this, 'render_taxes_fees_fields' ],
+			'resort-settings',
+			'resort_general_section'
 		);
 
 		add_settings_field(
@@ -264,6 +277,11 @@ class Settings {
 		<label>
 			<input type="checkbox" name="resort_payment_offline_enabled" value="1" <?php checked( $offline, '1' ); ?>>
 			<?php _e( 'Enable Offline (Pay at Resort)', 'resort-manager' ); ?>
+		</label><br>
+		<label>
+			<input type="checkbox" name="resort_payment_woocommerce_enabled" value="1" <?php checked( get_option('resort_payment_woocommerce_enabled'), '1' ); ?> <?php echo !class_exists('WooCommerce') ? 'disabled' : ''; ?>>
+			<?php _e( 'Enable WooCommerce Checkout (Use any WC Gateway)', 'resort-manager' ); ?>
+			<?php if(!class_exists('WooCommerce')) echo '<small style="color:red;"> (' . __('WooCommerce not detected', 'resort-manager') . ')</small>'; ?>
 		</label>
 		<?php
 	}
@@ -312,9 +330,18 @@ class Settings {
 
 	public function render_webhook_fields() {
 		$url = get_option( 'resort_webhook_url', '' );
+		$gcal_id = get_option( 'resort_google_calendar_id', '' );
 		?>
-		<input type="url" name="resort_webhook_url" value="<?php echo esc_attr($url); ?>" class="regular-text" placeholder="https://hooks.zapier.com/...">
-		<p class="description"><?php _e( 'Enter a URL to receive a POST request with booking data every time a reservation is confirmed. Use this to connect with Zapier, Make, or Slack.', 'resort-manager' ); ?></p>
+		<div style="margin-bottom: 20px;">
+			<label><strong><?php _e( 'Webhook URL:', 'resort-manager' ); ?></strong></label><br>
+			<input type="url" name="resort_webhook_url" value="<?php echo esc_attr($url); ?>" class="regular-text" placeholder="https://hooks.zapier.com/...">
+			<p class="description"><?php _e( 'Enter a URL to receive a POST request with booking data every time a reservation is confirmed. Use this to connect with Zapier, Make, or Slack.', 'resort-manager' ); ?></p>
+		</div>
+		<div>
+			<label><strong><?php _e( 'Public Google Calendar ID:', 'resort-manager' ); ?></strong></label><br>
+			<input type="text" name="resort_google_calendar_id" value="<?php echo esc_attr($gcal_id); ?>" class="regular-text" placeholder="your-resort@gmail.com">
+			<p class="description"><?php _e( 'Enter your public Google Calendar ID to provide guests with a "Subscribe to Resort Events" link.', 'resort-manager' ); ?></p>
+		</div>
 		<?php
 	}
 
@@ -434,6 +461,29 @@ class Settings {
 			<label><strong><?php _e( 'Same-Day Cut-off Time:', 'resort-manager' ); ?></strong></label>
 			<input type="time" name="resort_cutoff_time" value="<?php echo esc_attr( $cutoff ); ?>">
 			<span class="description"><?php _e( '(e.g., "14:00" means same-day bookings are disabled after 2 PM)', 'resort-manager' ); ?></span>
+		</div>
+		<?php
+	}
+
+	public function render_taxes_fees_fields() {
+		$tax = get_option( 'resort_tax_rate', '0' );
+		$cleaning = get_option( 'resort_cleaning_fee', '0' );
+		$base = get_option( 'resort_base_fee', '0' );
+		?>
+		<div style="margin-bottom: 10px;">
+			<label><strong><?php _e( 'Tax Rate (%):', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_tax_rate" value="<?php echo esc_attr( $tax ); ?>" style="width: 80px;">
+			<p class="description"><?php _e( 'Percentage tax applied to the subtotal (rooms + services).', 'resort-manager' ); ?></p>
+		</div>
+		<div style="margin-bottom: 10px;">
+			<label><strong><?php _e( 'Cleaning Fee (Fixed):', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_cleaning_fee" value="<?php echo esc_attr( $cleaning ); ?>" style="width: 100px;">
+			<p class="description"><?php _e( 'A one-time fee per booking for cleaning.', 'resort-manager' ); ?></p>
+		</div>
+		<div>
+			<label><strong><?php _e( 'Resort / Base Fee (Fixed):', 'resort-manager' ); ?></strong></label>
+			<input type="number" name="resort_base_fee" value="<?php echo esc_attr( $base ); ?>" style="width: 100px;">
+			<p class="description"><?php _e( 'A one-time mandatory fee per booking.', 'resort-manager' ); ?></p>
 		</div>
 		<?php
 	}

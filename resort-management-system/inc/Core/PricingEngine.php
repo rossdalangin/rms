@@ -20,6 +20,24 @@ class PricingEngine {
 		return $total;
 	}
 
+	public static function get_booking_breakdown( $subtotal ) {
+		$tax_rate = floatval( get_option( 'resort_tax_rate', 0 ) );
+		$cleaning_fee = floatval( get_option( 'resort_cleaning_fee', 0 ) );
+		$base_fee = floatval( get_option( 'resort_base_fee', 0 ) );
+
+		$tax_amount = ( $subtotal * $tax_rate ) / 100;
+		$total = $subtotal + $tax_amount + $cleaning_fee + $base_fee;
+
+		return [
+			'subtotal'     => $subtotal,
+			'tax_rate'     => $tax_rate,
+			'tax_amount'   => $tax_amount,
+			'cleaning_fee' => $cleaning_fee,
+			'base_fee'     => $base_fee,
+			'total'        => $total,
+		];
+	}
+
 	public static function get_price_for_date( $room_id, $date, $base_price ) {
 		global $wpdb;
 		$table_pricing = $wpdb->prefix . 'resort_pricing';

@@ -127,20 +127,7 @@ class Booking {
 			}
 		}
 
-		update_post_meta( $booking_id, '_resort_total_price', $total_price );
-
-		// Calculate Deposit and Balance
-		$deposit_percent = get_option( 'resort_deposit_percentage', '100' );
-		$deposit_amount = ( floatval($total_price) * intval($deposit_percent) ) / 100;
-		$balance_amount = $total_price - $deposit_amount;
-
-		update_post_meta( $booking_id, '_resort_deposit_amount', $deposit_amount );
-		update_post_meta( $booking_id, '_resort_balance_amount', $balance_amount );
-
-		update_post_meta( $booking_id, '_resort_services', $services );
-		update_post_meta( $booking_id, '_resort_coupon_used', sanitize_text_field($_POST['coupon'] ?? '') );
-
-		// Handle Loyalty Points Redemption
+		// Handle Loyalty Points Redemption (Before Taxes)
 		$points_redeemed = intval($_POST['points_redeemed'] ?? 0);
 		if ( $points_redeemed > 0 && is_user_logged_in() ) {
 			$available_points = get_user_meta( get_current_user_id(), '_resort_loyalty_points', true ) ?: 0;
@@ -155,7 +142,26 @@ class Booking {
 			}
 		}
 
+		// Apply Taxes and Fees
+		$breakdown = \ResortManager\Core\PricingEngine::get_booking_breakdown( $total_price );
+		update_post_meta( $booking_id, '_resort_subtotal', $total_price );
+		update_post_meta( $booking_id, '_resort_tax_amount', $breakdown['tax_amount'] );
+		update_post_meta( $booking_id, '_resort_cleaning_fee', $breakdown['cleaning_fee'] );
+		update_post_meta( $booking_id, '_resort_base_fee', $breakdown['base_fee'] );
+
+		$total_price = $breakdown['total'];
 		update_post_meta( $booking_id, '_resort_total_price', $total_price );
+
+		// Calculate Deposit and Balance
+		$deposit_percent = get_option( 'resort_deposit_percentage', '100' );
+		$deposit_amount = ( floatval($total_price) * intval($deposit_percent) ) / 100;
+		$balance_amount = $total_price - $deposit_amount;
+
+		update_post_meta( $booking_id, '_resort_deposit_amount', $deposit_amount );
+		update_post_meta( $booking_id, '_resort_balance_amount', $balance_amount );
+
+		update_post_meta( $booking_id, '_resort_services', $services );
+		update_post_meta( $booking_id, '_resort_coupon_used', sanitize_text_field($_POST['coupon'] ?? '') );
 		update_post_meta( $booking_id, '_resort_status', 'pending' );
 
 		// 2. Mailchimp Sync

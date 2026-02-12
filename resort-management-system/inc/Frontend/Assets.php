@@ -24,6 +24,11 @@ class Assets {
 				'pos'  => get_option( 'resort_currency_symbol_pos', 'before' ),
 			],
 			'deposit_percent' => get_option( 'resort_deposit_percentage', '100' ),
+			'taxes_fees' => [
+				'tax_rate'     => get_option( 'resort_tax_rate', '0' ),
+				'cleaning_fee' => get_option( 'resort_cleaning_fee', '0' ),
+				'base_fee'     => get_option( 'resort_base_fee', '0' ),
+			],
 			'waiver_text' => get_option( 'resort_waiver_text', 'Liability Release: By booking, you agree to waive all liability for tropical accidents...' ),
 			'terms_text' => get_option( 'resort_terms_text', 'Standard Resort Terms: 1. No pets. 2. Quiet hours after 10 PM. 3. Full refund if canceled 7 days prior.' ),
 			'payments' => [

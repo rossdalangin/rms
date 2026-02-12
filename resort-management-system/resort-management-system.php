@@ -70,6 +70,7 @@ class ResortManager {
 		new ResortManager\Core\Elementor();
 		new ResortManager\Gateways\Stripe();
 		new ResortManager\Gateways\PayPal();
+		new ResortManager\Gateways\WooCommerce();
 		new ResortManager\Core\Notifications();
 		new ResortManager\Core\PWA();
 		new ResortManager\Core\CRM();

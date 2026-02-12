@@ -350,30 +350,28 @@
             let roomsTotal = 0;
             this.state.selectedRooms.forEach(r => roomsTotal += parseFloat(r.price));
 
-            const grandTotal = roomsTotal + servicesTotal;
-
-            const depositPercent = parseInt(resortData.deposit_percent || 100);
-            const depositAmount = (grandTotal * depositPercent) / 100;
-            const balanceAmount = grandTotal - depositAmount;
+            this.state.baseSubtotal = roomsTotal + servicesTotal;
+            this.updateCalculations();
 
             $summary.html(`
                 ${roomsHtml}
                 <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
                 ${servicesHtml}
-                <p><strong>Subtotal:</strong> ${this.formatPrice(grandTotal)}</p>
+                <div id="resort-breakdown-container" style="border-top: 1px solid #ddd; margin-top: 15px; padding-top: 15px;">
+                    <!-- Calculations will be injected here -->
+                </div>
                 <div id="discount-display" style="color: #d63638; display:none;"></div>
-                <p><strong>Total Price:</strong> <span id="grand-total-display-container"></span></p>
-                <div id="deposit-summary-display" style="margin: 10px 0; padding: 10px; background: #f0fdf4; border-radius: 8px; ${depositPercent < 100 ? '' : 'display:none;'}">
-                    <p style="margin:0;"><strong>Due Now (${depositPercent}%):</strong> <span id="deposit-amount-display"></span></p>
-                    <p style="margin:0; font-size: 0.9em; color: #666;"><strong>Remaining Balance:</strong> <span id="balance-amount-display"></span></p>
+                <p style="display:flex; justify-content:space-between; margin: 15px 0 5px; font-size: 1.2em;"><strong>Total Price:</strong> <strong id="grand-total-display-container"></strong></p>
+
+                <div id="deposit-summary-display" style="margin: 10px 0; padding: 15px; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px; display:none;">
+                    <p style="display:flex; justify-content:space-between; margin:0;"><strong>Due Now (<span id="deposit-percent-label"></span>%):</strong> <span id="deposit-amount-display"></span></p>
+                    <p style="display:flex; justify-content:space-between; margin:0; font-size: 0.9em; color: #666;"><span>Remaining Balance:</span> <span id="balance-amount-display"></span></p>
                 </div>
                 <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name} (${this.state.guestData.phone || 'No phone'})</p>
                 ${this.state.guestData.special_requests ? `<p><strong>Requests:</strong> ${this.state.guestData.special_requests}</p>` : ''}
             `);
-            $('#grand-total-display-container').text(this.formatPrice(grandTotal));
-            $('#deposit-amount-display').text(this.formatPrice(depositAmount));
-            $('#balance-amount-display').text(this.formatPrice(balanceAmount));
-            this.state.finalTotal = grandTotal;
+
+            this.updateCalculationsUI();
 
             // Adjust button text if only offline is available or all disabled
             const enabledMethodsCount = Object.values(resortData.payments).filter(v => v === '1').length;
@@ -384,23 +382,86 @@
             }
         },
 
+        updateCalculations: function() {
+            const subtotal = this.state.baseSubtotal;
+            let discount = 0;
+
+            if (this.state.couponDiscount) {
+                if (this.state.couponType === 'fixed') {
+                    discount += this.state.couponDiscount;
+                } else {
+                    discount += (subtotal * this.state.couponDiscount) / 100;
+                }
+            }
+
+            if (this.state.pointsRedeemed) {
+                discount += this.state.pointsRedeemed / 10;
+            }
+
+            const afterDiscount = Math.max(0, subtotal - discount);
+            const taxRate = parseFloat(resortData.taxes_fees.tax_rate || 0);
+            const taxAmount = (afterDiscount * taxRate) / 100;
+            const cleaningFee = parseFloat(resortData.taxes_fees.cleaning_fee || 0);
+            const baseFee = parseFloat(resortData.taxes_fees.base_fee || 0);
+
+            this.state.finalTotal = afterDiscount + taxAmount + cleaningFee + baseFee;
+            this.state.currentTaxAmount = taxAmount;
+            this.state.currentDiscountAmount = discount;
+        },
+
+        updateCalculationsUI: function() {
+            const subtotal = this.state.baseSubtotal;
+            const taxRate = parseFloat(resortData.taxes_fees.tax_rate || 0);
+            const cleaningFee = parseFloat(resortData.taxes_fees.cleaning_fee || 0);
+            const baseFee = parseFloat(resortData.taxes_fees.base_fee || 0);
+
+            let html = `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Subtotal:</span> <span>${this.formatPrice(subtotal)}</span></p>`;
+
+            if (this.state.currentDiscountAmount > 0) {
+                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0; color: #d63638;"><span>Discounts:</span> <span>-${this.formatPrice(this.state.currentDiscountAmount)}</span></p>`;
+            }
+
+            if (this.state.currentTaxAmount > 0) {
+                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Tax (${taxRate}%):</span> <span>${this.formatPrice(this.state.currentTaxAmount)}</span></p>`;
+            }
+            if (cleaningFee > 0) {
+                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Cleaning Fee:</span> <span>${this.formatPrice(cleaningFee)}</span></p>`;
+            }
+            if (baseFee > 0) {
+                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Resort Fee:</span> <span>${this.formatPrice(baseFee)}</span></p>`;
+            }
+
+            $('#resort-breakdown-container').html(html);
+            $('#grand-total-display-container').text(this.formatPrice(this.state.finalTotal));
+
+            const depositPercent = parseInt(resortData.deposit_percent || 100);
+            if (depositPercent < 100) {
+                const depositAmount = (this.state.finalTotal * depositPercent) / 100;
+                const balanceAmount = this.state.finalTotal - depositAmount;
+                $('#deposit-percent-label').text(depositPercent);
+                $('#deposit-amount-display').text(this.formatPrice(depositAmount));
+                $('#balance-amount-display').text(this.formatPrice(balanceAmount));
+                $('#deposit-summary-display').show();
+            } else {
+                $('#deposit-summary-display').hide();
+            }
+        },
+
         handlePointsApply: function() {
             const points = parseInt($('#resort-redeem-points').val());
             if (!points || points <= 0) return;
 
-            const discount = points / 10; // 10 points = 1 PHP
-            if (discount > this.state.finalTotal) {
-                alert('Points discount cannot exceed the total amount.');
+            const discount = points / 10;
+            // Simplified check, could be more precise
+            if (discount > this.state.baseSubtotal) {
+                alert('Points discount cannot exceed the subtotal amount.');
                 return;
             }
 
-            const newTotal = this.state.finalTotal - discount;
-            $('#discount-display').append(`<br>Loyalty Discount: -${this.formatPrice(discount)}`).show();
-            $('#grand-total-display-container').text(this.formatPrice(newTotal));
-
             this.state.pointsRedeemed = points;
-            this.state.finalTotal = newTotal;
-            this.updateDepositSummary();
+            this.updateCalculations();
+            this.updateCalculationsUI();
+
             $('#points-message').text('Points applied!').css('color', 'green');
             $('#resort-apply-points').prop('disabled', true);
             $('#resort-redeem-points').prop('disabled', true);
@@ -416,19 +477,13 @@
                 code: code
             }, (res) => {
                 if (res.success) {
-                    let discount = 0;
-                    if (res.data.type === 'fixed') {
-                        discount = parseFloat(res.data.amount);
-                    } else {
-                        discount = (this.state.finalTotal * parseFloat(res.data.amount)) / 100;
-                    }
-
-                    const newTotal = Math.max(0, this.state.finalTotal - discount);
-                    $('#discount-display').text(`Discount (${code}): -${this.formatPrice(discount)}`).show();
-                    $('#grand-total-display-container').text(this.formatPrice(newTotal));
                     this.state.couponCode = code;
-                    this.state.finalTotal = newTotal;
-                    this.updateDepositSummary();
+                    this.state.couponDiscount = parseFloat(res.data.amount);
+                    this.state.couponType = res.data.type;
+
+                    this.updateCalculations();
+                    this.updateCalculationsUI();
+
                     $('#coupon-message').text('Coupon applied!').css('color', 'green');
                 } else {
                     $('#coupon-message').text(res.data.message).css('color', 'red');
@@ -436,22 +491,11 @@
             });
         },
 
-        updateDepositSummary: function() {
-            const depositPercent = parseInt(resortData.deposit_percent || 100);
-            const depositAmount = (this.state.finalTotal * depositPercent) / 100;
-            const balanceAmount = this.state.finalTotal - depositAmount;
-
-            $('#deposit-amount-display').text(this.formatPrice(depositAmount));
-            $('#balance-amount-display').text(this.formatPrice(balanceAmount));
-            if (depositPercent < 100) {
-                $('#deposit-summary-display').show();
-            }
-        },
-
         handleCompleteBooking: function() {
             const paymentMethod = $('input[name="payment_method"]:checked').val();
             const ajaxAction = paymentMethod === 'stripe' ? 'resort_stripe_checkout' :
                                paymentMethod === 'paypal' ? 'resort_paypal_checkout' :
+                               paymentMethod === 'woocommerce' ? 'resort_woocommerce_checkout' :
                                'resort_submit_booking';
 
             $.ajax({
