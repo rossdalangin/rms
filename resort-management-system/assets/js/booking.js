@@ -338,12 +338,12 @@
 
         renderSummary: function() {
             const $summary = $('.booking-summary');
-            let roomsHtml = '<p><strong>Accommodations:</strong><br>' + this.state.selectedRooms.map(r => `&bull; ${r.title} (${this.formatPrice(r.price)})`).join('<br>') + '</p>';
+            let roomsHtml = '<p style="margin-bottom: 20px;"><strong>Accommodations:</strong><br>' + this.state.selectedRooms.map(r => `&bull; ${r.title} (${this.formatPrice(r.price)})`).join('<br>') + '</p>';
 
             let servicesHtml = '';
             let servicesTotal = 0;
             if (this.state.selectedServices.length > 0) {
-                servicesHtml = '<p><strong>Extras:</strong> ' + this.state.selectedServices.map(s => s.title).join(', ') + '</p>';
+                servicesHtml = '<p style="margin-bottom: 20px;"><strong>Extras:</strong> ' + this.state.selectedServices.map(s => s.title).join(', ') + '</p>';
                 this.state.selectedServices.forEach(s => servicesTotal += parseFloat(s.price));
             }
 
@@ -355,20 +355,20 @@
 
             $summary.html(`
                 ${roomsHtml}
-                <p><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
+                <p style="margin-bottom: 20px;"><strong>Dates:</strong> ${this.state.checkin} to ${this.state.checkout}</p>
                 ${servicesHtml}
-                <div id="resort-breakdown-container" style="border-top: 1px solid #ddd; margin-top: 15px; padding-top: 15px;">
+                <div id="resort-breakdown-container" style="border-top: 1px solid #ddd; margin-top: 25px; padding-top: 25px; margin-bottom: 25px;">
                     <!-- Calculations will be injected here -->
                 </div>
-                <div id="discount-display" style="color: #d63638; display:none;"></div>
-                <p style="display:flex; justify-content:space-between; margin: 15px 0 5px; font-size: 1.2em;"><strong>Total Price:</strong> <strong id="grand-total-display-container"></strong></p>
+                <div id="discount-display" style="color: #d63638; display:none; margin-bottom: 15px;"></div>
+                <p style="display:flex; justify-content:space-between; margin: 25px 0 15px; font-size: 1.3em; border-bottom: 1px solid #eee; padding-bottom: 15px;"><strong>Total Price:</strong> <strong id="grand-total-display-container"></strong></p>
 
-                <div id="deposit-summary-display" style="margin: 10px 0; padding: 15px; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 8px; display:none;">
-                    <p style="display:flex; justify-content:space-between; margin:0;"><strong>Due Now (<span id="deposit-percent-label"></span>%):</strong> <span id="deposit-amount-display"></span></p>
-                    <p style="display:flex; justify-content:space-between; margin:0; font-size: 0.9em; color: #666;"><span>Remaining Balance:</span> <span id="balance-amount-display"></span></p>
+                <div id="deposit-summary-display" style="margin: 20px 0; padding: 20px; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 12px; display:none;">
+                    <p style="display:flex; justify-content:space-between; margin:0 0 10px 0;"><strong>Due Now (<span id="deposit-percent-label"></span>%):</strong> <span id="deposit-amount-display" style="font-weight:700; color:var(--resort-primary);"></span></p>
+                    <p style="display:flex; justify-content:space-between; margin:0; font-size: 0.95em; color: #666;"><span>Remaining Balance:</span> <span id="balance-amount-display"></span></p>
                 </div>
-                <p><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name} (${this.state.guestData.phone || 'No phone'})</p>
-                ${this.state.guestData.special_requests ? `<p><strong>Requests:</strong> ${this.state.guestData.special_requests}</p>` : ''}
+                <p style="margin-top: 25px;"><strong>Guest:</strong> ${this.state.guestData.first_name} ${this.state.guestData.last_name} (${this.state.guestData.phone || 'No phone'})</p>
+                ${this.state.guestData.special_requests ? `<p style="margin-top: 15px;"><strong>Requests:</strong> ${this.state.guestData.special_requests}</p>` : ''}
             `);
 
             this.updateCalculationsUI();
@@ -415,20 +415,20 @@
             const cleaningFee = parseFloat(resortData.taxes_fees.cleaning_fee || 0);
             const baseFee = parseFloat(resortData.taxes_fees.base_fee || 0);
 
-            let html = `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Subtotal:</span> <span>${this.formatPrice(subtotal)}</span></p>`;
+            let html = `<p style="display:flex; justify-content:space-between; margin: 8px 0;"><span>Subtotal:</span> <span>${this.formatPrice(subtotal)}</span></p>`;
 
             if (this.state.currentDiscountAmount > 0) {
-                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0; color: #d63638;"><span>Discounts:</span> <span>-${this.formatPrice(this.state.currentDiscountAmount)}</span></p>`;
+                html += `<p style="display:flex; justify-content:space-between; margin: 8px 0; color: #d63638;"><span>Discounts:</span> <span>-${this.formatPrice(this.state.currentDiscountAmount)}</span></p>`;
             }
 
             if (this.state.currentTaxAmount > 0) {
-                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Tax (${taxRate}%):</span> <span>${this.formatPrice(this.state.currentTaxAmount)}</span></p>`;
+                html += `<p style="display:flex; justify-content:space-between; margin: 8px 0;"><span>Tax (${taxRate}%):</span> <span>${this.formatPrice(this.state.currentTaxAmount)}</span></p>`;
             }
             if (cleaningFee > 0) {
-                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Cleaning Fee:</span> <span>${this.formatPrice(cleaningFee)}</span></p>`;
+                html += `<p style="display:flex; justify-content:space-between; margin: 8px 0;"><span>Cleaning Fee:</span> <span>${this.formatPrice(cleaningFee)}</span></p>`;
             }
             if (baseFee > 0) {
-                html += `<p style="display:flex; justify-content:space-between; margin: 5px 0;"><span>Resort Fee:</span> <span>${this.formatPrice(baseFee)}</span></p>`;
+                html += `<p style="display:flex; justify-content:space-between; margin: 8px 0;"><span>Resort Fee:</span> <span>${this.formatPrice(baseFee)}</span></p>`;
             }
 
             $('#resort-breakdown-container').html(html);

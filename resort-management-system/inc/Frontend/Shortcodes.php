@@ -122,10 +122,10 @@ class Shortcodes {
 		ob_start();
 		?>
 		<div class="resort-guest-dashboard resort-booking-container">
-			<div class="guest-welcome" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:1px solid #eee; padding-bottom:20px;">
+			<div class="guest-welcome" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; border-bottom:2px solid #f0fafa; padding-bottom:30px;">
 				<div>
-					<h2 style="margin:0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $display_name ); ?></h2>
-					<p><?php _e( 'Welcome to your private guest portal.', 'resort-manager' ); ?></p>
+					<h2 style="margin:0 0 10px 0;"><?php printf( __( 'Aloha, %s!', 'resort-manager' ), $display_name ); ?></h2>
+					<p style="margin:0; color:var(--resort-muted);"><?php _e( 'Welcome to your private guest portal.', 'resort-manager' ); ?></p>
 				</div>
 				<div style="display:flex; gap:15px;">
 					<div class="loyalty-tier" style="background:var(--resort-secondary); color:#fff; padding:15px; border-radius:12px; text-align:center;">
@@ -139,9 +139,9 @@ class Shortcodes {
 				</div>
 			</div>
 
-			<div class="guest-perks-box" style="background: #fffdf5; border: 1px solid #ffeaa7; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-				<h4 style="margin-top:0; color: #d35400;"><span class="dashicons dashicons-awards"></span> <?php _e( 'Your Elite Perks:', 'resort-manager' ); ?> <?php echo $tier; ?></h4>
-				<ul style="margin-bottom:0; font-size: 13px; color: #636e72;">
+			<div class="guest-perks-box" style="background: #fffdf5; border: 1px solid #ffeaa7; padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+				<h4 style="margin:0 0 15px 0; color: #d35400;"><span class="dashicons dashicons-awards"></span> <?php _e( 'Your Elite Perks:', 'resort-manager' ); ?> <?php echo $tier; ?></h4>
+				<ul style="margin-bottom:0; font-size: 14px; color: #636e72; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; list-style:none; padding:0;">
 					<?php if ($total_spend > 200000) : ?>
 						<li>✔ <?php _e( 'Complimentary Private Jet Transfer', 'resort-manager' ); ?></li>
 						<li>✔ <?php _e( 'Unlimited 24/7 Personal Butler', 'resort-manager' ); ?></li>
@@ -176,12 +176,12 @@ class Shortcodes {
 			<?php if ( empty( $bookings ) ) : ?>
 				<p><?php _e( 'You have no reservations.', 'resort-manager' ); ?></p>
 			<?php else : ?>
-				<table class="resort-table" style="width:100%; border-collapse: collapse;">
+				<table class="resort-table" style="width:100%; border-collapse: collapse; margin-top: 20px;">
 					<thead>
-						<tr style="border-bottom: 2px solid #eee;">
-							<th style="text-align:left; padding:10px;">ID</th>
-							<th style="text-align:left; padding:10px;">Dates</th>
-							<th style="text-align:left; padding:10px;">Status</th>
+						<tr style="border-bottom: 3px solid #f0fafa;">
+							<th style="text-align:left; padding:15px; text-transform:uppercase; font-size:11px; letter-spacing:1px; color:var(--resort-primary);"><?php _e('Booking ID', 'resort-manager'); ?></th>
+							<th style="text-align:left; padding:15px; text-transform:uppercase; font-size:11px; letter-spacing:1px; color:var(--resort-primary);"><?php _e('Stay Dates', 'resort-manager'); ?></th>
+							<th style="text-align:left; padding:15px; text-transform:uppercase; font-size:11px; letter-spacing:1px; color:var(--resort-primary);"><?php _e('Current Status', 'resort-manager'); ?></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -190,9 +190,9 @@ class Shortcodes {
 							$checkout = get_post_meta( $booking->ID, '_resort_checkout', true );
 							$status = get_post_meta( $booking->ID, '_resort_status', true );
 							?>
-							<tr style="border-bottom: 1px solid #eee;">
-								<td style="padding:10px;">#<?php echo $booking->ID; ?></td>
-								<td style="padding:10px;"><?php echo esc_html( $checkin ); ?> - <?php echo esc_html( $checkout ); ?></td>
+							<tr style="border-bottom: 1px solid #f0fafa;">
+								<td style="padding:20px 15px; font-weight:600;">#<?php echo $booking->ID; ?></td>
+								<td style="padding:20px 15px;"><?php echo esc_html( $checkin ); ?> - <?php echo esc_html( $checkout ); ?></td>
 								<td style="padding:10px;">
 									<?php
 									$p_status = get_post_meta( $booking->ID, '_resort_payment_status', true );

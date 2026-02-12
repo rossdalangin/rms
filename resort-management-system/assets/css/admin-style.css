@@ -41,7 +41,7 @@
 #resort-calendar-container,
 .postbox.resort-admin-box {
     background: var(--resort-white);
-    padding: 30px;
+    padding: 40px;
     border: none;
     border-radius: var(--resort-radius);
     box-shadow: var(--resort-shadow);
@@ -89,7 +89,7 @@
 }
 
 .wp-list-table tbody td {
-    padding: 15px;
+    padding: 20px 15px;
     vertical-align: middle;
 }
 
