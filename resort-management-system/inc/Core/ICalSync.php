@@ -133,7 +133,19 @@ class ICalSync {
 
 	private function import_external_ical( $room_id, $url ) {
 		$response = wp_remote_get( $url );
+
 		if ( is_wp_error( $response ) ) {
+			update_post_meta( $room_id, '_resort_ical_last_sync_status', 'error' );
+			update_post_meta( $room_id, '_resort_ical_last_sync_error', $response->get_error_message() );
+			update_post_meta( $room_id, '_resort_ical_last_sync_time', current_time( 'mysql' ) );
+			return;
+		}
+
+		$status_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $status_code ) {
+			update_post_meta( $room_id, '_resort_ical_last_sync_status', 'error' );
+			update_post_meta( $room_id, '_resort_ical_last_sync_error', sprintf( 'HTTP %d', $status_code ) );
+			update_post_meta( $room_id, '_resort_ical_last_sync_time', current_time( 'mysql' ) );
 			return;
 		}
 
@@ -155,6 +167,7 @@ class ICalSync {
 		// Clear previous sync blocks for this room to avoid duplicates
 		$wpdb->delete( $table, [ 'room_id' => $room_id, 'status' => 'sync' ] );
 
+		$count = 0;
 		foreach ( $matches as $match ) {
 			$raw_start = $match[1];
 			$raw_end   = $match[2];
@@ -181,6 +194,12 @@ class ICalSync {
 				] );
 				$current = strtotime( '+1 day', $current );
 			}
+			$count++;
 		}
+
+		update_post_meta( $room_id, '_resort_ical_last_sync_status', 'success' );
+		update_post_meta( $room_id, '_resort_ical_last_sync_count', $count );
+		update_post_meta( $room_id, '_resort_ical_last_sync_time', current_time( 'mysql' ) );
+		delete_post_meta( $room_id, '_resort_ical_last_sync_error' );
 	}
 }

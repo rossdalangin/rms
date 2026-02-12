@@ -26,6 +26,7 @@ The "LuxeResort" menu in your WordPress dashboard is your central command center
 * Operational Control: Dedicated Housekeeping Dashboard for staff to manage room readiness and prioritize cleaning.
 * Reservation Calendar: A beautiful, interactive timeline where you can see who is arriving, who is staying, and which rooms are blocked by external sites like Airbnb.
 * CRM & Growth: Multi-CRM integration (HubSpot + Zoho) and detailed Marketing Attribution (UTM) for tracking ROI on your campaigns.
+* Taxes & Fees: Configure resort-wide taxes and cleaning fees that are automatically calculated and shown in a clear breakdown to guests.
 * Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
 * Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
 * Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends and competitor market data.
@@ -43,6 +44,7 @@ The plugin works in the background so you don't have to:
 * Abandoned Cart Recovery: If a guest stops halfway through a booking, the system sends them a friendly reminder email 15 minutes later.
 * Inventory Maintenance: Every hour, the system releases rooms held by "pending" bookings that never finished, keeping your calendar accurate.
 * Secure Finance: All payments are processed through encrypted REST APIs, and every transaction is logged for your accounting.
+* Multi-Currency: Guests can toggle between PHP, USD, EUR, and GBP to see prices in their familiar currency.
 
 ---
 

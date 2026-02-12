@@ -54,6 +54,15 @@ class Settings {
 			'resort-logs',
 			[ $this, 'render_logs_page' ]
 		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Shortcode Helper', 'resort-manager' ),
+			__( 'Shortcode Helper', 'resort-manager' ),
+			'edit_posts',
+			'resort-shortcodes',
+			[ $this, 'render_shortcode_helper_page' ]
+		);
 	}
 
 	public function register_settings() {
@@ -72,6 +81,9 @@ class Settings {
 		register_setting( 'resort_settings_group', 'resort_waiver_text' );
 		register_setting( 'resort_settings_group', 'resort_terms_text' );
 		register_setting( 'resort_settings_group', 'resort_email_template_confirmation' );
+		register_setting( 'resort_settings_group', 'resort_email_template_pre_arrival' );
+		register_setting( 'resort_settings_group', 'resort_email_template_post_departure' );
+		register_setting( 'resort_settings_group', 'resort_email_template_abandoned' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_api_key' );
 		register_setting( 'resort_settings_group', 'resort_mailchimp_list_id' );
 		register_setting( 'resort_settings_group', 'resort_hubspot_api_key' );
@@ -203,9 +215,9 @@ class Settings {
 		);
 
 		add_settings_field(
-			'resort_email_template',
-			__( 'Confirmation Email Template', 'resort-manager' ),
-			[ $this, 'render_email_template_field' ],
+			'resort_email_templates',
+			__( 'Email Templates', 'resort-manager' ),
+			[ $this, 'render_email_templates_fields' ],
 			'resort-settings',
 			'resort_notifications_section'
 		);
@@ -302,9 +314,25 @@ class Settings {
 		<?php
 	}
 
-	public function render_email_template_field() {
-		$value = get_option( 'resort_email_template_confirmation', '<h1>Booking Confirmed!</h1><p>Thank you for choosing LuxeResort.</p>' );
-		wp_editor( $value, 'resort_email_template_confirmation' );
+	public function render_email_templates_fields() {
+		$conf = get_option( 'resort_email_template_confirmation', '<h1>Booking Confirmed!</h1><p>Thank you for choosing LuxeResort. Your ID is {booking_id}.</p>' );
+		$pre = get_option( 'resort_email_template_pre_arrival', '<h1>See You Soon!</h1><p>We are excited to welcome you to paradise in 2 days. Need anything before you arrive?</p>' );
+		$post = get_option( 'resort_email_template_post_departure', '<h1>Thank You for Staying!</h1><p>We hope you enjoyed your tropical escape. Would you mind leaving us a review?</p>' );
+		$abandoned = get_option( 'resort_email_template_abandoned', '<h1>Still Interested?</h1><p>We noticed you didn\'t finish your booking. Your paradise sanctuary is still waiting!</p>' );
+
+		echo '<h4>' . __( '1. Confirmation Email', 'resort-manager' ) . '</h4>';
+		wp_editor( $conf, 'resort_email_template_confirmation', [ 'textarea_rows' => 5 ] );
+
+		echo '<br><h4>' . __( '2. Pre-Arrival Concierge (2 days prior)', 'resort-manager' ) . '</h4>';
+		wp_editor( $pre, 'resort_email_template_pre_arrival', [ 'textarea_rows' => 5 ] );
+
+		echo '<br><h4>' . __( '3. Post-Departure Feedback (1 day after)', 'resort-manager' ) . '</h4>';
+		wp_editor( $post, 'resort_email_template_post_departure', [ 'textarea_rows' => 5 ] );
+
+		echo '<br><h4>' . __( '4. Abandoned Booking Reminder', 'resort-manager' ) . '</h4>';
+		wp_editor( $abandoned, 'resort_email_template_abandoned', [ 'textarea_rows' => 5 ] );
+
+		echo '<p class="description">' . __( 'Available placeholders: {booking_id}, {first_name}, {last_name}, {checkin}, {checkout}', 'resort-manager' ) . '</p>';
 	}
 
 	public function render_competitor_fields() {
@@ -502,6 +530,92 @@ class Settings {
 	public function render_onboarding_proxy() {
 		$onboarding = new \ResortManager\Admin\Onboarding();
 		$onboarding->render_onboarding_page();
+	}
+
+	public function render_shortcode_helper_page() {
+		$shortcodes = [
+			[
+				'tag' => 'resort_booking',
+				'desc' => __( 'Main 5-step booking engine. Usually placed on a dedicated "Book Now" page.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_rooms_grid',
+				'desc' => __( 'Displays a beautiful responsive grid of all your accommodations.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_guest_dashboard',
+				'desc' => __( 'Private portal for guests to manage stays, request services, and view invoices.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_reviews',
+				'desc' => __( 'Tropical modern review slider/grid showing approved guest memories.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_lead_form',
+				'desc' => __( 'Captures guest interest and syncs to Mailchimp/CRM.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_room_calendar',
+				'desc' => __( 'Mini 30-day availability calendar for a specific room.', 'resort-manager' ),
+				'atts' => [ 'id' => __( 'The ID of the accommodation post.', 'resort-manager' ) ],
+				'example' => '[resort_room_calendar id="123"]'
+			],
+			[
+				'tag' => 'resort_service_booking',
+				'desc' => __( 'Standalone form for booking experiences like Spa or Tours.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_currency_switcher',
+				'desc' => __( 'A dropdown that allows guests to toggle between PHP, USD, EUR, and GBP.', 'resort-manager' ),
+				'atts' => []
+			],
+			[
+				'tag' => 'resort_gated_content',
+				'desc' => __( 'Hides inner content until a lead form is submitted. Perfect for "Secret Deals".', 'resort-manager' ),
+				'atts' => [
+					'title' => __( 'Header for the gated block.', 'resort-manager' ),
+					'desc'  => __( 'Instructions for the guest.', 'resort-manager' )
+				],
+				'example' => '[resort_gated_content title="Secret Promo"] Your Code: ALOHA2024 [/resort_gated_content]'
+			],
+		];
+		?>
+		<div class="wrap">
+			<h1><?php _e( 'LuxeResort Shortcode Helper', 'resort-manager' ); ?></h1>
+			<p class="description"><?php _e( 'Copy and paste these codes into any page or post to bring your paradise to life.', 'resort-manager' ); ?></p>
+
+			<div class="resort-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap:20px; margin-top:30px;">
+				<?php foreach ( $shortcodes as $s ) : ?>
+					<div class="resort-admin-card" style="margin-bottom:0; border-top-color: var(--resort-teal);">
+						<h3 style="margin-top:0;"><code>[<?php echo $s['tag']; ?>]</code></h3>
+						<p><?php echo $s['desc']; ?></p>
+
+						<?php if ( ! empty($s['atts']) ) : ?>
+							<div style="background:#f9f9f9; padding:10px; border-radius:4px; margin: 15px 0;">
+								<strong><?php _e( 'Attributes:', 'resort-manager' ); ?></strong>
+								<ul style="margin:5px 0 0 20px; list-style:disc;">
+									<?php foreach ( $s['atts'] as $attr => $val ) : ?>
+										<li><code><?php echo $attr; ?></code> - <?php echo $val; ?></li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+						<?php endif; ?>
+
+						<div style="margin-top:20px;">
+							<label><strong><?php _e( 'Example Code:', 'resort-manager' ); ?></strong></label><br>
+							<input type="text" value="<?php echo esc_attr($s['example'] ?? '['.$s['tag'].']'); ?>" class="large-text" readonly onclick="this.select();">
+						</div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php
 	}
 
 	public function render_logs_page() {

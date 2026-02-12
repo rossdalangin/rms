@@ -31,6 +31,7 @@ Manage your inventory under **LuxeResort > Accommodations**. Each accommodation 
 - **Amenities**: Features like "WiFi" or "Ocean View".
 - **iCal Synchronization (2-Way)**:
     - **Import**: Paste a URL from Airbnb/Booking.com into the **External iCal URL** field to block those dates locally.
+    - **Manual Sync**: Click the **"Sync Now"** button on the edit page for instant updates.
     - **Export**: Copy the unique **Export URL** found on the room's edit page and paste it into your other booking platforms.
 - **Rules (Min/Max Stay)**: Global duration rules are set in **Settings**.
 
@@ -186,6 +187,7 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_service_booking]` | A standalone booking form for guests who only want to book a spa or excursion without a room. |
 | `[resort_gated_content]` | Hides exclusive content (like a 'Secret Package') until the guest submits a lead form. |
 | `[resort_currency_switcher]` | Displays a dropdown for guests to view prices in PHP, USD, EUR, or GBP. |
+| `[resort_room_calendar]` | Shows a 30-day availability calendar for a specific room (Attribute: `id`). |
 
 ---
 
@@ -274,15 +276,36 @@ Configure your main competitors under **LuxeResort > Settings > Market Intellige
 
 ---
 
-## 14. Developer API
-Extend LuxeResort Manager with custom code.
+## 14. Developer API & Advanced Extensibility
+LuxeResort Manager is built with developers in mind. Use the following hooks to customize the behavior.
 
-### 12.1 PHP Hooks
-- `resort_booking_confirmed`: Triggers after successful payment.
-- `resort_submit_review`: Triggers when a guest submits feedback.
+### 14.1 Action Hooks
+| Hook | Description | Parameters |
+| :--- | :--- | :--- |
+| `resort_booking_confirmed` | Fires when a payment is verified. | `$booking_id` |
+| `resort_submit_review` | Fires when a guest submitted a review. | `$review_id`, `$booking_id` |
+| `resort_service_request_submitted` | Fires on in-stay service requests. | `$booking_id`, `$details` |
+| `resort_daily_sync` | Daily background task for iCal/concierge. | None |
+| `resort_cleanup_abandoned` | Hourly task to release inventory. | None |
 
-### 12.2 REST API Endpoints
-- `GET /wp-json/resort/v1/availability`: Fetch real-time room availability.
-- `GET /wp-json/resort/v1/services`: List all available extras.
-- `POST /wp-json/resort/v1/validate_coupon`: Validate promotional codes.
-- `GET /wp-json/resort/v1/sync/ical/{id}`: Export iCal feed.
+### 14.2 Filter Hooks
+| Hook | Description | Default |
+| :--- | :--- | :--- |
+| `resort_loyalty_point_rate` | Change points earned per currency unit. | `10` |
+| `resort_invoice_logo_height` | Customize logo size on invoices. | `60px` |
+| `resort_email_primary_color` | Change brand color in emails. | `#008080` |
+
+### 14.3 REST API Endpoints
+All endpoints are under the `resort/v1` namespace.
+- `GET /availability`: Fetch room/package availability.
+- `GET /services`: List available extras.
+- `POST /guest/requests`: Submit in-stay requests (requires auth).
+- `GET /guest/history`: View logged-in guest stay history.
+
+---
+
+## 15. The WooCommerce Bridge
+For resorts requiring specialized payment gateways (e.g., local banks, Crypto, or regional providers), LuxeResort Manager can bridge into **WooCommerce**.
+- **Setup**: Enable "WooCommerce Checkout" in Settings.
+- **Workflow**: The plugin creates a virtual product and order in WooCommerce. The guest completes payment via the WooCommerce checkout page.
+- **Auto-Sync**: Once the WC order is marked as "Completed" or "Processing", LuxeResort automatically confirms the reservation and blocks the calendar.

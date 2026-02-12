@@ -53,5 +53,7 @@ We use a combination of Custom Post Types (CPT) for content and Custom Tables fo
 - **Services/Extras**: Manage spa, tours, and add-ons.
 - **Payments**: Stripe/PayPal keys, Deposit % settings, Toggle enabled payment methods (Stripe, PayPal, Offline).
 - **Reports**: Revenue (with date filtering), Occupancy, CSV Export (Bookings & Activity Logs), and Inventory Cleanup.
+- **iCal Management**: 2-way sync with logging and health monitoring.
 - **Onboarding**: One-click demo setup and guided configuration.
+- **Shortcode Helper**: Centralized documentation for frontend components.
 - **Notifications**: Edit Email/SMS templates.

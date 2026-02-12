@@ -12,6 +12,9 @@ class PostTypes {
 	}
 
 	private static function register_accommodation() {
+		add_filter( 'manage_accommodation_posts_columns', [ self::class, 'accommodation_columns' ] );
+		add_action( 'manage_accommodation_posts_custom_column', [ self::class, 'accommodation_column_data' ], 10, 2 );
+
 		$labels = [
 			'name'               => _x( 'Accommodations', 'post type general name', 'resort-manager' ),
 			'singular_name'      => _x( 'Accommodation', 'post type singular name', 'resort-manager' ),
@@ -99,6 +102,52 @@ class PostTypes {
 			'date'       => $columns['date'],
 		];
 		return $new_columns;
+	}
+
+	public static function accommodation_columns( $columns ) {
+		$new_columns = [
+			'cb'         => $columns['cb'],
+			'title'      => $columns['title'],
+			'price'      => __( 'Price', 'resort-manager' ),
+			'capacity'   => __( 'Capacity', 'resort-manager' ),
+			'ical_sync'  => __( 'iCal Sync', 'resort-manager' ),
+			'date'       => $columns['date'],
+		];
+		return $new_columns;
+	}
+
+	public static function accommodation_column_data( $column, $post_id ) {
+		switch ( $column ) {
+			case 'price':
+				$price = get_post_meta( $post_id, '_resort_price', true );
+				echo \ResortManager\Core\PricingEngine::format_price( $price );
+				break;
+			case 'capacity':
+				echo get_post_meta( $post_id, '_resort_capacity', true ) . ' ' . __( 'guests', 'resort-manager' );
+				break;
+			case 'ical_sync':
+				$url = get_post_meta( $post_id, '_resort_ical_url', true );
+				if ( ! $url ) {
+					echo '<span style="color:#ccc;">' . __( 'No URL', 'resort-manager' ) . '</span>';
+					break;
+				}
+				$status = get_post_meta( $post_id, '_resort_ical_last_sync_status', true );
+				$time = get_post_meta( $post_id, '_resort_ical_last_sync_time', true );
+				$count = get_post_meta( $post_id, '_resort_ical_last_sync_count', true );
+
+				if ( 'success' === $status ) {
+					echo '<span style="color:green; font-weight:bold;">✔ ' . __( 'Synced', 'resort-manager' ) . '</span><br>';
+					echo '<small>' . sprintf( __( '%d events imported', 'resort-manager' ), $count ) . '</small><br>';
+					echo '<small>' . $time . '</small>';
+				} elseif ( 'error' === $status ) {
+					$error = get_post_meta( $post_id, '_resort_ical_last_sync_error', true );
+					echo '<span style="color:red; font-weight:bold;">✘ ' . __( 'Error', 'resort-manager' ) . '</span><br>';
+					echo '<small title="' . esc_attr($error) . '">' . esc_html( wp_trim_words($error, 5) ) . '</small>';
+				} else {
+					echo '<span style="color:orange;">' . __( 'Pending...', 'resort-manager' ) . '</span>';
+				}
+				break;
+		}
 	}
 
 	public static function booking_column_data( $column, $post_id ) {

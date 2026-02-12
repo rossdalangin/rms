@@ -19,11 +19,10 @@ class Notifications {
 		if ( ! $template ) {
 			$body = "<h1>" . __( 'Booking Confirmed!', 'resort-manager' ) . "</h1>";
 			$body .= "<p>" . sprintf( __( 'Thank you for your reservation. Your Booking ID is #%d.', 'resort-manager' ), $booking_id ) . "</p>";
+			$body .= "<p>" . __( 'We are preparing your paradise sanctuary. You can view your stay details in your private dashboard.', 'resort-manager' ) . "</p>";
 		} else {
-			$body = str_replace( '{booking_id}', $booking_id, $template );
+			$body = $this->replace_placeholders( $template, $booking_id );
 		}
-
-		$body .= "<p>" . __( 'We are preparing your paradise sanctuary. You can view your stay details in your private dashboard.', 'resort-manager' ) . "</p>";
 
 		$message = $this->wrap_email_template( $body );
 
@@ -71,12 +70,17 @@ class Notifications {
 
 		foreach ( $bookings as $booking ) {
 			$email = get_post_meta( $booking->ID, '_resort_guest_email', true );
-			$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
 			$subject = __( 'Your Paradise Escape Awaits - Pre-Arrival Concierge', 'resort-manager' );
 
-			$body = "<h2>" . sprintf( __( 'Aloha, %s!', 'resort-manager' ), $fname ) . "</h2>";
-			$body .= "<p>" . __( 'We are thrilled to welcome you to LuxeResort in just 2 days. To ensure your stay is perfect, would you like to pre-book any spa treatments or airport transfers?', 'resort-manager' ) . "</p>";
-			$body .= "<p><a href='" . home_url('/guest-dashboard/') . "' class='resort-btn'>" . __( 'Personalize My Stay', 'resort-manager' ) . "</a></p>";
+			$template = get_option( 'resort_email_template_pre_arrival' );
+			if ( ! $template ) {
+				$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
+				$body = "<h2>" . sprintf( __( 'Aloha, %s!', 'resort-manager' ), $fname ) . "</h2>";
+				$body .= "<p>" . __( 'We are thrilled to welcome you to LuxeResort in just 2 days. To ensure your stay is perfect, would you like to pre-book any spa treatments or airport transfers?', 'resort-manager' ) . "</p>";
+				$body .= "<p><a href='" . home_url('/guest-dashboard/') . "' class='resort-btn'>" . __( 'Personalize My Stay', 'resort-manager' ) . "</a></p>";
+			} else {
+				$body = $this->replace_placeholders( $template, $booking->ID );
+			}
 
 			$message = $this->wrap_email_template( $body );
 			wp_mail( $email, $subject, $message, [ 'Content-Type: text/html; charset=UTF-8' ] );
@@ -98,12 +102,17 @@ class Notifications {
 
 		foreach ( $bookings as $booking ) {
 			$email = get_post_meta( $booking->ID, '_resort_guest_email', true );
-			$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
 			$subject = __( 'Thank you for staying at LuxeResort', 'resort-manager' );
 
-			$body = "<h2>" . sprintf( __( 'Mahalo, %s!', 'resort-manager' ), $fname ) . "</h2>";
-			$body .= "<p>" . __( 'We hope you enjoyed your time in paradise. Your feedback helps us maintain our 5-star standards. Would you mind sharing a brief review of your stay?', 'resort-manager' ) . "</p>";
-			$body .= "<p><a href='" . home_url('/guest-dashboard/') . "' class='resort-btn'>" . __( 'Leave a Review', 'resort-manager' ) . "</a></p>";
+			$template = get_option( 'resort_email_template_post_departure' );
+			if ( ! $template ) {
+				$fname = get_post_meta( $booking->ID, '_resort_first_name', true );
+				$body = "<h2>" . sprintf( __( 'Mahalo, %s!', 'resort-manager' ), $fname ) . "</h2>";
+				$body .= "<p>" . __( 'We hope you enjoyed your time in paradise. Your feedback helps us maintain our 5-star standards. Would you mind sharing a brief review of your stay?', 'resort-manager' ) . "</p>";
+				$body .= "<p><a href='" . home_url('/guest-dashboard/') . "' class='resort-btn'>" . __( 'Leave a Review', 'resort-manager' ) . "</a></p>";
+			} else {
+				$body = $this->replace_placeholders( $template, $booking->ID );
+			}
 
 			$message = $this->wrap_email_template( $body );
 			wp_mail( $email, $subject, $message, [ 'Content-Type: text/html; charset=UTF-8' ] );
@@ -121,17 +130,33 @@ class Notifications {
 		$email = get_post_meta( $booking_id, '_resort_guest_email', true );
 		$subject = __( 'Still interested in your stay at LuxeResort?', 'resort-manager' );
 
-		$body = "<h1>" . __( 'We noticed you left something behind...', 'resort-manager' ) . "</h1>";
-		$body .= "<p>" . __( 'You started a booking but didn’t complete the payment. We have held your room for a short time, but it will be released soon.', 'resort-manager' ) . "</p>";
-		$body .= "<p><a href='" . home_url('/book-your-stay') . "' class='resort-btn'>" . __( 'Complete your booking now', 'resort-manager' ) . "</a></p>";
-
 		$instance = new self();
+		$template = get_option( 'resort_email_template_abandoned' );
+		if ( ! $template ) {
+			$body = "<h1>" . __( 'We noticed you left something behind...', 'resort-manager' ) . "</h1>";
+			$body .= "<p>" . __( 'You started a booking but didn’t complete the payment. We have held your room for a short time, but it will be released soon.', 'resort-manager' ) . "</p>";
+			$body .= "<p><a href='" . home_url('/book-your-stay') . "' class='resort-btn'>" . __( 'Complete your booking now', 'resort-manager' ) . "</a></p>";
+		} else {
+			$body = $instance->replace_placeholders( $template, $booking_id );
+		}
+
 		$message = $instance->wrap_email_template( $body );
 
 		$headers = [ 'Content-Type: text/html; charset=UTF-8' ];
 		wp_mail( $email, $subject, $message, $headers );
 
 		update_post_meta( $booking_id, '_resort_reminder_sent', '1' );
+	}
+
+	private function replace_placeholders( $content, $booking_id ) {
+		$placeholders = [
+			'{booking_id}' => $booking_id,
+			'{first_name}' => get_post_meta( $booking_id, '_resort_first_name', true ),
+			'{last_name}'  => get_post_meta( $booking_id, '_resort_last_name', true ),
+			'{checkin}'    => get_post_meta( $booking_id, '_resort_checkin', true ),
+			'{checkout}'   => get_post_meta( $booking_id, '_resort_checkout', true ),
+		];
+		return str_replace( array_keys( $placeholders ), array_values( $placeholders ), $content );
 	}
 
 	private function wrap_email_template( $content ) {
