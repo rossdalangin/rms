@@ -540,7 +540,23 @@ class Shortcodes {
 	}
 
 	public function render_reviews( $atts ) {
-		$reviews = get_posts( [ 'post_type' => 'review', 'numberposts' => 10, 'post_status' => 'publish' ] );
+		$atts = shortcode_atts( [
+			'featured' => '0',
+			'limit'    => 10
+		], $atts );
+
+		$args = [
+			'post_type'   => 'review',
+			'numberposts' => intval( $atts['limit'] ),
+			'post_status' => 'publish',
+		];
+
+		if ( '1' === $atts['featured'] ) {
+			$args['meta_key'] = '_resort_is_featured';
+			$args['meta_value'] = '1';
+		}
+
+		$reviews = get_posts( $args );
 		ob_start();
 		?>
 		<div class="resort-reviews-section resort-booking-container">

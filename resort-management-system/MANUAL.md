@@ -182,7 +182,7 @@ Guests automatically earn **1 point for every $10 spent**.
 | `[resort_booking]` | The primary 5-step booking engine. |
 | `[resort_rooms_grid]` | A beautiful gallery of all available accommodations. |
 | `[resort_guest_dashboard]` | Private area for guests to manage their bookings and leave reviews. |
-| `[resort_reviews]` | Displays the latest guest testimonials. |
+| `[resort_reviews]` | Displays the latest guest testimonials. (Attributes: `featured="1"`, `limit="5"`) |
 | `[resort_lead_form]` | A sleek lead capture form to build your elite guest list. |
 | `[resort_service_booking]` | A standalone booking form for guests who only want to book a spa or excursion without a room. |
 | `[resort_gated_content]` | Hides exclusive content (like a 'Secret Package') until the guest submits a lead form. |

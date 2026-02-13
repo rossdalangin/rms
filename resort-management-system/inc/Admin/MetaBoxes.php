@@ -13,6 +13,49 @@ class MetaBoxes {
 		add_action( 'admin_init', [ $this, 'handle_manual_block' ] );
 		add_action( 'add_meta_boxes', [ $this, 'add_booking_meta_boxes' ] );
 		add_action( 'save_post_booking', [ $this, 'save_booking_meta' ] );
+		add_action( 'add_meta_boxes', [ $this, 'add_review_meta_boxes' ] );
+		add_action( 'save_post_review', [ $this, 'save_review_meta' ] );
+	}
+
+	public function add_review_meta_boxes() {
+		add_meta_box(
+			'review_settings',
+			__( 'Review Settings', 'resort-manager' ),
+			[ $this, 'render_review_settings' ],
+			'review',
+			'side',
+			'default'
+		);
+	}
+
+	public function render_review_settings( $post ) {
+		wp_nonce_field( 'review_meta_box', 'review_meta_box_nonce' );
+		$rating = get_post_meta( $post->ID, '_resort_rating', true ) ?: 5;
+		$is_featured = get_post_meta( $post->ID, '_resort_is_featured', true );
+		?>
+		<p>
+			<label><strong><?php _e( 'Star Rating:', 'resort-manager' ); ?></strong></label><br>
+			<select name="resort_rating" class="widefat">
+				<?php for($i=1; $i<=5; $i++) : ?>
+					<option value="<?php echo $i; ?>" <?php selected($rating, $i); ?>><?php echo $i; ?> Stars</option>
+				<?php endfor; ?>
+			</select>
+		</p>
+		<p>
+			<label>
+				<input type="checkbox" name="resort_is_featured" value="1" <?php checked($is_featured, '1'); ?>>
+				<strong><?php _e( 'Feature this review', 'resort-manager' ); ?></strong>
+			</label>
+		</p>
+		<?php
+	}
+
+	public function save_review_meta( $post_id ) {
+		if ( ! isset( $_POST['review_meta_box_nonce'] ) || ! wp_verify_nonce( $_POST['review_meta_box_nonce'], 'review_meta_box' ) ) {
+			return;
+		}
+		update_post_meta( $post_id, '_resort_rating', intval( $_POST['resort_rating'] ) );
+		update_post_meta( $post_id, '_resort_is_featured', isset( $_POST['resort_is_featured'] ) ? '1' : '0' );
 	}
 
 	public function add_accommodation_meta_boxes() {

@@ -3,7 +3,7 @@
  * Plugin Name: LuxeResort Manager
  * Plugin URI: https://example.com/luxeresort-manager
  * Description: A premium Resort Management System for WordPress.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Jules
  * Author URI: https://example.com
  * License: GPL2
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'RESORT_MANAGER_VERSION', '1.0.0' );
+define( 'RESORT_MANAGER_VERSION', '1.1.0' );
 define( 'RESORT_MANAGER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'RESORT_MANAGER_URL', plugin_dir_url( __FILE__ ) );
 

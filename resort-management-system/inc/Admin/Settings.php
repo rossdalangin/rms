@@ -552,7 +552,11 @@ class Settings {
 			[
 				'tag' => 'resort_reviews',
 				'desc' => __( 'Tropical modern review slider/grid showing approved guest memories.', 'resort-manager' ),
-				'atts' => []
+				'atts' => [
+					'featured' => __( 'Set to "1" to only show featured reviews.', 'resort-manager' ),
+					'limit'    => __( 'Number of reviews to display (default: 10).', 'resort-manager' )
+				],
+				'example' => '[resort_reviews featured="1" limit="5"]'
 			],
 			[
 				'tag' => 'resort_lead_form',
