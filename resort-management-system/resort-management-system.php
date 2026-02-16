@@ -74,6 +74,7 @@ class ResortManager {
 		new ResortManager\Core\Notifications();
 		new ResortManager\Core\PWA();
 		new ResortManager\Core\CRM();
+		new ResortManager\Core\TemplateLoader();
 		new ResortManager\Core\Webhooks();
 
 		if ( is_admin() ) {

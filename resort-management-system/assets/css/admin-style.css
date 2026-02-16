@@ -9,6 +9,8 @@
     --resort-sand: #F4A460;
     --resort-white: #ffffff;
     --resort-light-teal: #f0f8f8;
+    --resort-accent: #FFD700;
+    --resort-muted: #636e72;
     --resort-shadow: 0 4px 15px rgba(0, 128, 128, 0.1);
     --resort-radius: 12px;
 }

@@ -103,8 +103,12 @@ class Maintenance {
 		$pages = [
 			'resort_booking_page' => [
 				'title'   => 'Book Your Stay',
-				'content' => '<!-- wp:paragraph -->
-<p>Embark on a journey of luxury and tranquility. Select your dates below to begin your reservation at our world-class resort.</p>
+				'content' => '<!-- wp:heading {"textAlign":"center","style":{"typography":{"lineHeight":"1.2"}}} -->
+<h2 class="has-text-align-center" style="line-height:1.2">Your Journey to Paradise Begins Here</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"textAlign":"center"} -->
+<p class="has-text-align-center">Embark on a journey of luxury and tranquility. Select your dates below to begin your reservation at our world-class resort.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->
@@ -118,7 +122,7 @@ class Maintenance {
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textAlign":"center"} -->
-<p class="has-text-align-center">From intimate garden suites to expansive oceanfront villas, discover the perfect setting for your next escape.</p>
+<p class="has-text-align-center">From intimate garden suites to expansive oceanfront villas, discover the perfect setting for your next escape. Each space is designed with breathable "Tropical Modern" principles to ensure absolute peace of mind.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->
@@ -128,7 +132,7 @@ class Maintenance {
 			'resort_dashboard_page' => [
 				'title'   => 'Guest Dashboard',
 				'content' => '<!-- wp:paragraph -->
-<p>Welcome back! Manage your upcoming stays, view past reservations, and leave feedback on your experiences.</p>
+<p>Welcome back to your private resort portal. Here you can manage your upcoming stays, request in-room services, and view your exclusive loyalty perks.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->
@@ -142,11 +146,39 @@ class Maintenance {
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"textAlign":"center"} -->
-<p class="has-text-align-center">Read honest reflections from our guests about their time at LuxeResort.</p>
+<p class="has-text-align-center">Read honest reflections from our guests about their time at LuxeResort. We pride ourselves on creating 5-star memories for every visitor.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:shortcode -->
-[resort_reviews]
+[resort_reviews featured="1"]
+<!-- /wp:shortcode -->',
+			],
+			'resort_services_page' => [
+				'title'   => 'Bespoke Experiences',
+				'content' => '<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="has-text-align-center">Elevate Your Stay</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"textAlign":"center"} -->
+<p class="has-text-align-center">Not staying overnight? You can still enjoy our world-class spa, guided tours, and private beach dinners. Reserve your experience below.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_service_booking]
+<!-- /wp:shortcode -->',
+			],
+			'resort_club_page' => [
+				'title'   => 'Join the Island Club',
+				'content' => '<!-- wp:heading {"textAlign":"center"} -->
+<h2 class="has-text-align-center">Exclusive Access Awaits</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph {"textAlign":"center"} -->
+<p class="has-text-align-center">Join our elite guest list to receive seasonal invitations, secret villa deals, and priority booking status.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:shortcode -->
+[resort_lead_form]
 <!-- /wp:shortcode -->',
 			],
 		];
@@ -167,6 +199,14 @@ class Maintenance {
 
 			if ( $page_id ) {
 				update_option( $option_key, $page_id );
+
+				// Apply custom templates
+				if ( 'resort_booking_page' === $option_key ) {
+					update_post_meta( $page_id, '_wp_page_template', 'resort-full-width.php' );
+				}
+				if ( 'resort_dashboard_page' === $option_key ) {
+					update_post_meta( $page_id, '_wp_page_template', 'resort-dashboard.php' );
+				}
 			}
 		}
 	}

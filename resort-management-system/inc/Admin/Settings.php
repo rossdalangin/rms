@@ -13,7 +13,7 @@ class Settings {
 			'LuxeResort',
 			'edit_posts', // Accessible by staff
 			'resort-manager',
-			[ $this, 'render_onboarding_proxy' ],
+			[ $this, 'render_dashboard_proxy' ],
 			'dashicons-palmtree',
 			25
 		);
@@ -21,10 +21,19 @@ class Settings {
 		// The first submenu is the same as the parent, we can rename it.
 		add_submenu_page(
 			'resort-manager',
-			__( 'Getting Started', 'resort-manager' ),
-			__( 'Getting Started', 'resort-manager' ),
+			__( 'Executive Dashboard', 'resort-manager' ),
+			__( 'Executive Dashboard', 'resort-manager' ),
 			'edit_posts',
 			'resort-manager',
+			[ $this, 'render_dashboard_proxy' ]
+		);
+
+		add_submenu_page(
+			'resort-manager',
+			__( 'Getting Started', 'resort-manager' ),
+			__( 'Getting Started', 'resort-manager' ),
+			'manage_options',
+			'resort-onboarding',
 			[ $this, 'render_onboarding_proxy' ]
 		);
 
@@ -525,6 +534,11 @@ class Settings {
 			<br><strong><?php _e( 'Example:', 'resort-manager' ); ?></strong> <?php _e( 'On a $1000 booking with a 50% policy, the guest pays $500 to secure the room.', 'resort-manager' ); ?>
 		</p>
 		<?php
+	}
+
+	public function render_dashboard_proxy() {
+		$dashboard = new \ResortManager\Admin\Dashboard();
+		$dashboard->render_dashboard();
 	}
 
 	public function render_onboarding_proxy() {

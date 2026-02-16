@@ -9,7 +9,7 @@ class Onboarding {
 		if ( isset( $_POST['resort_one_click_setup'] ) && check_admin_referer( 'resort_onboarding_nonce' ) ) {
 			\ResortManager\Admin\Maintenance::install_sample_data();
 			\ResortManager\Admin\Maintenance::create_default_pages();
-			echo '<div class="updated"><p>' . __( 'Success! Sample data installed and default pages created.', 'resort-manager' ) . '</p></div>';
+			echo '<div class="updated"><p>' . __( 'Success! Sample data installed and default pages created using Luxe templates.', 'resort-manager' ) . '</p></div>';
 		}
 
 		?>

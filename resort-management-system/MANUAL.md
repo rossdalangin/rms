@@ -15,9 +15,16 @@ From real-time availability and demand-based "Smart Pricing" to integrated marke
 1. Upload the `resort-management-system` folder to `/wp-content/plugins/`.
 2. Activate via the **Plugins** menu in WordPress.
 
-### 2.2 Onboarding Wizard
+### 2.2 The Executive Dashboard
+Once activated, the **LuxeResort** main menu provides an **Executive Dashboard**. This is your real-time command center, showing:
+- **Today's Summary**: Arrivals, Departures, and In-House guests.
+- **Financial Snapshot**: Current month's revenue at a glance.
+- **Occupancy Gauge**: Real-time visual of your resort's capacity utilization.
+- **System Activity**: A live feed of recent staff actions and bookings.
+
+### 2.3 Onboarding Wizard
 Navigate to **LuxeResort > Getting Started**.
-- **The One-Click Tropical Setup**: Click "Build My Paradise" to automatically populate your site with sample luxury villas, essential services, and pre-configured pages. This is the fastest way to see the plugin in action.
+- **The One-Click Tropical Setup**: Click "Build My Paradise" to automatically populate your site with sample luxury villas, essential services, and six pre-configured pages using professional "Luxe" templates. This is the fastest way to see the plugin in action.
 - **Manual Configuration**: Follow the numbered steps to configure your settings and manage your suites if you prefer to start from scratch.
 
 ---
@@ -63,6 +70,12 @@ Create discounts under **LuxeResort > Coupons**.
 LuxeResort Manager is fully compatible with modern page builders.
 - **Gutenberg**: Find the "Booking Engine", "Accommodations Grid", and "Guest Reviews" blocks in the editor.
 - **Elementor**: Three custom widgets are available under the "General" category for easy drag-and-drop design.
+
+### 4.4 Custom Page Templates
+LuxeResort provides two specialized page templates for a more immersive experience:
+- **LuxeResort Full Width Canvas**: Ideal for the main booking page, providing a distraction-free, 1200px wide centered container.
+- **LuxeResort Dashboard Template**: A themed layout for the Guest Portal, featuring a primary-color header and a floating content card.
+*To apply these, select them under 'Page Attributes' > 'Template' when editing any WordPress page.*
 
 ### 4.4 Loyalty Points Redemption
 Guests can redeem their accumulated points for real discounts during Step 5 (Payment).
