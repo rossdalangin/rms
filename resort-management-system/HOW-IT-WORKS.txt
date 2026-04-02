@@ -1,51 +1,51 @@
-LUXERESORT MANAGER - HOW IT WORKS
+LUXERESORT MANAGER - SYSTEM ARCHITECTURE & DOCUMENTATION GUIDE
 
-LuxeResort Manager is a complete "Paradise-in-a-Box" solution for WordPress. Here is a simple breakdown of how the system operates for both your guests and your staff.
+LuxeResort Manager is a complete "Paradise-in-a-Box" solution for WordPress. This guide explains how the system operates and where to find the essential documentation for each stakeholder.
 
 ---
 
-1. FOR THE GUEST (The Booking Journey)
+1. CORE DOCUMENTATION MAP
+-------------------------
+* plugin-explanation.txt: The executive summary of "What is this?" and "Why is it needed?"
+* MANUAL.md: The comprehensive user manual for daily configuration and advanced developer hooks.
+* RESORT-OWNER-GUIDE.md: A business-focused guide explaining the transformation from manual to automated management.
+* SALES-LANDING-PAGE.md: High-converting sales copy to attract new resort operators.
+* SOP-USER-LEVELS.md: Detailed operational workflows for Administrators, Staff, and Guests.
+* TUTORIAL-SCRIPT.md: A scene-by-scene script for training and onboarding.
+* MARKETING-STRATEGY.md: A complete growth strategy including a 30-day social media content calendar.
+* CONVERSION-&-SITE-STRUCTURE.md: A strategic breakdown of why our site structure drives higher bookings.
+
+---
+
+2. FOR THE GUEST (The Frictionless Journey)
+-------------------------------------------
+The guest experience is a smooth, 5-step AJAX process designed to maximize conversions:
+Step 1: Search - Real-time availability across all villas.
+Step 2: Selection - "Tropical Modern" grid showing rooms with clear pricing.
+Step 3: Extras - Upselling of luxury services (Spa, Tours, Transfers).
+Step 4: Guest Info - Simple collection of preferences and automatic account creation.
+Step 5: Payment - Secure checkout (Stripe, PayPal, WooCommerce, or Offline).
+Step 6: Management - Private dashboard for service requests, self check-in, and loyalty points.
+
+---
+
+3. FOR THE ADMIN (The Operational Hub)
 --------------------------------------
-The guest experience is a smooth, 5-step process designed to maximize conversions:
-
-Step 1: Search - Guests enter their stay dates and number of people. The system checks real-time availability across all your villas.
-Step 2: Selection - Guests see available rooms with high-quality images and total prices. They can select multiple rooms for their stay.
-Step 3: Extras - Guests can add luxury services like "Spa Treatments" or "Airport Transfers" to their stay.
-Step 4: Guest Info - A clean form collects contact details, meal preferences, and special requests. The system automatically creates a private guest account.
-Step 5: Payment - Guests pay securely via Stripe, PayPal, or choose "Pay at Resort." Once confirmed, their dates are instantly blocked across all platforms (iCal sync).
-Step 6: Management - Guests can download professional invoices and add their stay to their Google or Apple calendar directly from their dashboard.
-Step 7: In-Stay - Guests can self-check-in, request room services, and self-check-out directly from their dashboard.
+The "LuxeResort" menu in WordPress is the central command center:
+* Executive Dashboard: Real-time revenue, occupancy, and guest summary widgets.
+* Reservation Calendar: Interactive timeline with 2-way iCal synchronization (Airbnb/Booking.com).
+* Housekeeping Dashboard: Real-time room status tracking for operational staff.
+* Smart Pricing: Market Intelligence to track competitors and occupancy-based rate optimization.
+* CRM & Marketing: Deep integration with HubSpot, Zoho, and Mailchimp.
+* Loyalty Program: Automatic point calculation and redemption for repeat guests.
 
 ---
 
-2. FOR THE ADMIN (The Management Hub)
--------------------------------------
-The "LuxeResort" menu in your WordPress dashboard is your central command center:
-
-* Onboarding: Use the "One-Click Tropical Setup" to instantly generate demo rooms and professional pages.
-* Operational Control: Dedicated Housekeeping Dashboard for staff to manage room readiness and prioritize cleaning.
-* Reservation Calendar: A beautiful, interactive timeline where you can see who is arriving, who is staying, and which rooms are blocked by external sites like Airbnb.
-* CRM & Growth: Multi-CRM integration (HubSpot + Zoho) and detailed Marketing Attribution (UTM) for tracking ROI on your campaigns.
-* Taxes & Fees: Configure resort-wide taxes and cleaning fees that are automatically calculated and shown in a clear breakdown to guests.
-* Dynamic Pricing: Set rules to automatically raise prices for weekends or peak seasons, and lower them for quiet periods.
-* Loyalty Program: The system automatically awards guests 1 point for every $10 spent. You can track these in the Guest Profiles section.
-* Reports & Analytics: View your revenue, occupancy rates, and get "Smart Pricing" suggestions based on demand trends and competitor market data.
-* Marketing & Leads: Capture inquiries with the Lead Form and automatically sync them to Mailchimp.
-* Content Management: Use built-in Gutenberg blocks to easily add the booking engine, room grids, or reviews to any page.
-
----
-
-3. UNDER THE HOOD (The Automation)
-----------------------------------
-The plugin works in the background so you don't have to:
-
-* Daily iCal Sync: Every day, the system fetches bookings from your other channels (Airbnb, VRBO) to prevent double-bookings.
-* Loyalty Rewards: Guests earn 1 point for every $10 spent and can redeem them for discounts on future stays.
-* Abandoned Cart Recovery: If a guest stops halfway through a booking, the system sends them a friendly reminder email 15 minutes later.
-* Inventory Maintenance: Every hour, the system releases rooms held by "pending" bookings that never finished, keeping your calendar accurate.
-* Secure Finance: All payments are processed through encrypted REST APIs, and every transaction is logged for your accounting.
-* Multi-Currency: Guests can toggle between PHP, USD, EUR, and GBP to see prices in their familiar currency.
-
----
+4. SYSTEM AUTOMATIONS (Under the Hood)
+--------------------------------------
+* Hourly Inventory Cleanup: Releases rooms held by abandoned "pending" bookings.
+* Automated Concierge: Sends pre-arrival and post-departure emails via cron jobs.
+* Dynamic Currency Conversion: Instant switching between PHP, USD, EUR, and GBP.
+* Multi-Role Access: Specific capabilities for 'Resort Staff' to protect sensitive financial data.
 
 LuxeResort Manager: Helping you spend less time on software, and more time on hospitality.
