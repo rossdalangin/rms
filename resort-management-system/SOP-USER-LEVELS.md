@@ -5,63 +5,65 @@ This document defines the roles, responsibilities, and workflows for every user 
 
 ---
 
-## 🏛️ LEVEL 1: THE ADMINISTRATOR (Owner/Manager)
-**Focus:** Strategy, Finance, and System Integrity.
+## 🏛️ LEVEL 1: THE ADMINISTRATOR (Owner/General Manager)
+**User Role:** `administrator`
+**Focus:** Strategy, Financial Health, and System Integrity.
 
-### 📅 Daily Tasks (Morning Review)
-1.  **Revenue Check:** Navigate to **LuxeResort > Reports**. Review the revenue for the last 24 hours.
-2.  **Occupancy Audit:** Check the **Calendar** for any last-minute manual bookings or channel sync issues.
-3.  **Lead Follow-up:** Check **LuxeResort > Lead Captures**. Ensure high-value inquiries are added to the CRM.
+### 📅 Daily (The Morning Audit)
+1.  **Revenue & Dashboard Review:** Log in to the **Executive Dashboard**. Review today’s arrivals/departures and current month's revenue against targets.
+2.  **Lead Management:** Check **LuxeResort > Lead Captures**. Ensure any high-priority inquiries are followed up or synced to CRM (HubSpot/Zoho).
+3.  **Calendar Scan:** Quickly check the **Reservation Calendar** for any sync conflicts or maintenance blocks.
 
-### 🔄 Weekly Tasks
-1.  **iCal Health Check:** Go to the Accommodations list. Verify the "Sync Status" for all rooms. If a sync failed, click "Sync Now" manually.
-2.  **Coupon Management:** Deactivate expired promo codes and create new ones for upcoming weekend "Secret Deals."
-3.  **Pricing Optimization:** Review the **Revenue Optimization** report. If occupancy is > 80% for next month, consider increasing base rates by 10%.
+### 🔄 Weekly (System Optimization)
+1.  **iCal Health Check:** Navigate to the Accommodations list. Verify all rooms show a "Healthy" sync status. Manually trigger "Sync Now" if needed.
+2.  **Pricing Review:** Review the **Revenue Optimization** report. Adjust base rates if occupancy for the next 30 days is significantly above or below targets.
+3.  **Promotional Planning:** Deactivate expired coupons and create new codes for upcoming "Secret Deals."
 
-### 🛠️ System Maintenance
--   **Security:** Ensure Stripe/PayPal API keys are valid and "Test Mode" is OFF for live operations.
--   **Data Export:** Every month, export **Staff Activity Logs** and **Revenue Reports** to CSV for accounting records.
+### 🛠️ Monthly (Business Intelligence)
+1.  **Staff Audit:** Review and export **Staff Activity Logs** to CSV for accountability and training feedback.
+2.  **Financial Export:** Generate a full **Revenue Report** CSV for accounting and periodic analysis (AOV/LTV).
+3.  **Marketing ROI:** Compare booking attribution data (UTM) with marketing spend to optimize future campaigns.
 
 ---
 
 ## 🛎️ LEVEL 2: RESORT STAFF (Front Desk/Housekeeping)
 **User Role:** `resort_staff`
-**Focus:** Guest Flow, Service Fulfillment, and Room Readiness.
+**Focus:** Guest Flow, Service Response, and Room Readiness.
 
-### 🌅 Morning Routine (The Shift Start)
-1.  **Arrivals List:** Check **LuxeResort > Housekeeping**. Identify which rooms are checking out today and which new guests are arriving.
-2.  **Room Priority:** Prioritize cleaning for rooms where guests have requested "Early Check-in."
+### 🌅 Shift Start (Operational Setup)
+1.  **Arrivals & Departures:** Check **LuxeResort > Housekeeping Dashboard**. Identify rooms that require priority cleaning for early check-ins.
+2.  **Pending Requests:** Review the **Guest Communication Log** for any unfulfilled service requests from the previous shift.
 
-### 🧼 Operational Flow (Housekeeping)
-1.  **Room Status Update:** As soon as a guest leaves, mark the room as **'Cleaning'** in the Housekeeping Dashboard.
-2.  **The Checklist:** Follow the room-specific checklist (e.g., "Replenish Champagne", "Change Linens").
-3.  **Ready for Arrival:** Once complete, mark the room as **'Clean'**. This instantly notifies the front desk.
+### 🧼 Housekeeping Workflow
+1.  **Room Status:** As soon as a guest departs, mark the room as **'Cleaning'**.
+2.  **Checklist Completion:** Follow the room-specific checklist (e.g., replenish coffee, fresh linens).
+3.  **Ready for Front Desk:** Once complete, mark the room as **'Clean'**. This instantly updates the status for the Front Desk staff.
 
-### 📞 Guest Interaction (Front Desk)
-1.  **In-Stay Requests:** Monitor the **Guest Communication Log** for incoming service requests (e.g., "Fresh Towels").
-2.  **Assignment:** Assign the request to the available staff member and mark it as "Resolved" once fulfilled.
-3.  **Manual Check-in:** If a guest arrives in person, navigate to **Bookings**, find their ID, and update status to **'Checked In'**.
+### 📞 Front Desk & Concierge
+1.  **Guest Check-in:** For guests arriving in person, find their booking and update the status to **'Checked In'**. Verify if they have signed the **Digital Waiver**.
+2.  **Service Request Response:** Monitor the dashboard for "In-Stay Service Requests" (e.g., "Fresh Towels"). Assign tasks to housekeeping and mark as "Resolved" when finished.
+3.  **Payment Reconciliation:** For "Offline" bookings, record any cash/card payments directly in the **LuxeResort > Payments** screen.
 
 ---
 
 ## 👤 LEVEL 3: THE GUEST (Self-Service)
-**Focus:** Convenience and Seamless Experience.
+**Focus:** Convenience and Personalized Experience.
 
 ### 🏠 Pre-Arrival
-1.  **Confirmation:** Review the automated confirmation email.
-2.  **Personal Portal:** Access the **Guest Dashboard** to review stay details and download the digital invoice.
+1.  **Confirmation:** Review automated confirmation emails for stay details and location.
+2.  **Digital Waiver:** Access the link in the email to sign the liability waiver before arrival.
 
 ### 🏖️ During Stay
-1.  **Self-Service:** Use the dashboard to perform **Self Check-in** on arrival day.
-2.  **Requests:** Instead of calling the front desk, submit "Service Requests" (e.g., "More Coffee Pods") directly through the dashboard.
-3.  **Balance Payment:** If the stay was booked as "Pay at Resort," the guest can log in and pay their remaining balance via Stripe/PayPal at any time.
+1.  **Self Check-in:** On arrival day, use the **Guest Dashboard** to perform a "Digital Check-in."
+2.  **Concierge Requests:** Submit service requests (e.g., "More Pillows") directly through the dashboard instead of calling the desk.
+3.  **Balance Payment:** Log in to the dashboard at any time to pay any remaining balance via Stripe/PayPal.
 
-### 🌅 Post-Departure
-1.  **Self Check-out:** Click the **Check-out** button on the dashboard to notify staff for room cleaning.
-2.  **Review:** Submit a star-rated review via the dashboard to earn bonus **Loyalty Points**.
+### 🌅 Departure
+1.  **Self Check-out:** Click "Check-out" on the dashboard to notify housekeeping that the room is ready for cleaning.
+2.  **Feedback & Reviews:** Submit a star-rated review via the dashboard to earn **Loyalty Points** for the next visit.
 
 ---
 
-## 🛑 EMERGENCY PROCEDURES
--   **Double Booking:** In the rare event of a sync lag, the **Administrator** must immediately move one guest to a higher-tier room (Upgrade) or contact the external channel (e.g., Airbnb) to re-accommodate.
--   **Payment Failure:** If an online payment fails, the **Front Desk** should contact the guest to confirm an alternative "Offline" payment method or provide a secure payment link.
+## 🛑 EMERGENCY & SPECIAL PROCEDURES
+-   **Double Booking Recovery:** In case of sync lag, the **Administrator** must immediately upgrade the guest to a higher-tier room or coordinate with the external channel (e.g., Airbnb) for relocation.
+-   **Payment Failure:** If an automated payment fails, the **Front Desk** must contact the guest to provide a secure manual payment link or arrange for an alternative method.
